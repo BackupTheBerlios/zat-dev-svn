@@ -135,20 +135,57 @@ void zcpu::translate(int argc, char * const *argv)
 
 void zcpu::resolve()
 {
-	for (bool retry = true; symbols.size() != 0 && retry; ) {
-		retry = false;
+	bool repeat, delayed;
+
+	do {
+		repeat = false;
+		delayed = false;
 
 		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			if (!(*it)->isok())
+				delayed = true;
 			if ((*it)->evaluate(symbols))
-				retry = true;
+				repeat = true;
 		}
-	}
-	
-	if (opt.fsym.is_open()) {
-		opt.fsym.print("; symbol table follows (%u elements)\n", symbols.size());
+	} while (repeat);
 
-		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-			opt.fsym.print("; %s = %s\n", (*it)->c_str(), (*it)->extra());
+	if (delayed) {
+		if (opt.fsym.is_open()) {
+			bool lock = false;
+
+			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+				if ((*it)->islabel()) {
+					if (!lock) {
+						opt.fsym.print(";\n; values of the following labels could not be evaluated:\n");
+						lock = true;
+					}
+					opt.fsym.print("; %s (%s)\n", (*it)->c_str(), (*it)->extra());
+				}
+			}
+
+			lock = false;
+
+			if (opt.debug) {
+				for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+					if (!(*it)->islabel()) {
+						if (!lock) {
+							opt.fsym.print(";\n; the following expressions could not be calculated:\n");
+							lock = true;
+						}
+						opt.fsym.print("; %s\n", (*it)->c_str());
+					}
+				}
+			}
+		}
+
+		throw zemsg("not all expressions could be evaluated");
+	} else {
+		if (opt.fsym.is_open()) {
+			opt.fsym.print("; symbol table follows (%u elements)\n", symbols.size());
+
+			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+				opt.fsym.print("; %s = %s\n", (*it)->c_str(), (*it)->extra());
+			}
 		}
 	}
 }
@@ -278,11 +315,11 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 						out.add();
 					{
 						int value = 0;
-						zstring::const_iterator it = args.begin()->begin();
-						if (evaluate(it, value, 0)) {
+						const char *expr = args.begin()->c_str();
+						if (zymbol::evaluate(expr, value, 0, symbols)) {
 							out.block().set_origin(value);
 						} else {
-							zorigin *org = new zorigin(args.begin()->c_str(), &out.block());
+							zorigin *org = new zorigin(expr, &out.block());
 							symbols.push_back(org);
 							out.block().set_origin(org);
 						}
@@ -320,14 +357,11 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 {
 	int value = 0;
-	zstring::const_iterator it = expr.begin();
+	const char *it = expr.c_str();
 
-	if (!out.block().has_origin())
-		base = -1;
-
-	if (!evaluate(it, value, base)) {
+	if (!zymbol::evaluate(it, value, out.block().has_origin() ? base : -1, symbols)) {
 		value = 0;
-		// pust a symbol
+		symbols.push_back(new zexpression(expr.c_str(), &out.block(), base, out.block().size(), op));
 	}
 
 	switch (op) {
@@ -337,148 +371,11 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 		out.emit(static_cast<char>(value));
 		break;
 	case op_word:
-		if (value < -32768 || value > 65535) {
-			it = expr.begin();
-			value = 0;
-			evaluate(it, value, base);
+		if (value < -32768 || value > 65535)
 			throw zesyntax(expr.c_str(), "word overflow");
-		}
 		out.emit(static_cast<short>(value));
 		break;
 	default:
 		throw zesyntax(expr.c_str(), "unknown data type (internal error)");
 	}
-}
-
-bool zcpu::evaluate(zstring::const_iterator &expr, int &value, int base)
-{
-	int tval = 0;
-	char sign = '+';
-
-	while (*expr != '\0') {
-		if (*expr == '-' || *expr == '+' || *expr == '*' || *expr == '/') {
-			sign = *expr++;
-		}
-
-		else if (sign == 0) {
-			return false;
-		}
-
-		else if (*expr == '(') {
-			++expr;
-
-			if (!evaluate(expr, tval, base))
-				return false;
-
-			if (*expr != ')')
-				return false;
-
-			++expr;
-		}
-
-		else if (*expr == '#') {
-			++expr;
-			tval = get_hex(expr);
-		}
-
-		else if (*expr == '%') {
-			++expr;
-			tval = get_bin(expr);
-		}
-
-		else if (*expr == '$') {
-			if (base < 0)
-				return false;
-			++expr;
-			tval = base;
-		}
-
-		else if (isdigit(*expr)) {
-			tval = get_dec(expr);
-		}
-
-		else {
-			return false;
-		}
-
-		switch (sign) {
-		case '+':
-			value += tval;
-			break;
-		case '-':
-			value -= tval;
-			break;
-		case '*':
-			value *= tval;
-			break;
-		case '/':
-			if (tval == 0)
-				return false;
-			value /= tval;
-			break;
-		}
-	}
-
-	return true;
-}
-
-int zcpu::get_hex(zstring::const_iterator &e)
-{
-	int value = 0;
-
-	while (*e != 0) {
-		if (*e >= '0' && *e <= '9')
-			value = value * 16 + *e - '0';
-		else if (*e >= 'a' && *e <= 'f')
-			value = value * 16 + *e - 'a' + 10;
-		else if (*e >= 'A' && *e <= 'F')
-			value = value * 16 + *e - 'A' + 10;
-		else {
-			break;
-		}
-
-		++e;
-	}
-
-	return value;
-}
-
-int zcpu::get_bin(zstring::const_iterator &e)
-{
-	int value = 0;
-
-	while (*e != 0) {
-		if (*e == '0')
-			value = value * 2 + 0;
-		else if (*e == '1')
-			value = value * 2 + 1;
-		else {
-			value = 0;
-			break;
-		}
-	}
-
-	return value;
-}
-
-int zcpu::get_dec(zstring::const_iterator &e)
-{
-	int value = 0;
-	zstring::const_iterator base = e;
-
-	while (*e != 0) {
-		if (*e >= '0' && *e <= '9')
-			value = value * 10 + *e - '0';
-		else if (*e == 'h' || *e == 'H') {
-			e = base;
-			value = get_hex(e);
-			++e;
-			break;
-		} else {
-			break;
-		}
-		++e;
-	}
-
-	return value;
 }

@@ -34,4 +34,13 @@ public:
 	virtual zseverity severity() const { return zsev_error; }
 };
 
+class zemsg : public zerror
+{
+	char *msg;
+public:
+	zemsg(const char *msg);
+	~zemsg();
+	const char * c_str();
+};
+
 #endif // __zat_zerror_h

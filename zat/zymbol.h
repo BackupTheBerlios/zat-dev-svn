@@ -31,6 +31,11 @@ protected:
 	size_t base;
 	// Set when the expression is successfully evaluated.
 	bool ready;
+	// Methods to convert a string from a specific base to a number.
+	// Move the pointer to the character after the expression.
+	static int get_hex(const char *&e);
+	static int get_bin(const char *&e);
+	static int get_dec(const char *&e);
 public:
 	zymbol();
 	zymbol(const char *text);
@@ -40,8 +45,14 @@ public:
 	virtual bool evaluate(list &all) = 0;
 	// Misc.
 	const char * c_str() const { return text.c_str(); }
-	virtual const char * extra() const { return "unknown"; }
+	virtual const char * extra() const { return NULL; }
 	bool isok() const { return ready; }
+	virtual bool islabel() const { return false; }
+	// Evaluates the expression.  Upon success returns `true' and the
+	// pointer is moved to the next character after the expression.
+	// The `base' parameter holds the address of the currently
+	// translated instruction.
+	static bool evaluate(const char *&expr, int &value, int base, list &);
 };
 
 class zlabel : public zymbol
@@ -53,6 +64,7 @@ public:
 	~zlabel();
 	bool evaluate(list &all);
 	const char * extra() const { return expr.c_str(); }
+	bool islabel() const { return true; }
 };
 
 class zexpression : public zymbol

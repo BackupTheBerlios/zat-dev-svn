@@ -55,21 +55,7 @@ class zcpu
 	// could not be evaluated, emits zeros and adds the expression to the
 	// symbol table.
 	void emit(const zstring &expr, opcode, zoutput &out, int base);
-	// Evaluates the expression.  Upon success returns `true' and the
-	// pointer is moved to the next character after the expression.
-	bool evaluate(zstring::const_iterator &expr, int &value, int base);
-	// Methods to convert a string from a specific base to a number.
-	// Move the pointer to the character after the expression.
-	static int get_hex(zstring::const_iterator &e);
-	static int get_bin(zstring::const_iterator &e);
-	static int get_dec(zstring::const_iterator &e);
 public:
-	// The label on the current line.
-	zymbol *lastlabel;
-	// The address of the current line.
-	unsigned int caddr;
-	// The map of used bytes.  For listing only.
-	unsigned int usemap;
 	// Search path for input files.
 	vector< zstring > incdir;
 public:
