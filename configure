@@ -10,6 +10,7 @@ find_dir INCDIR "$PREFIX/include"
 find_dir LIBDIR "$PREFIX/lib"
 find_lib m
 find_func getopt
+find_func feof_unlocked
 
 if [ "$MDF_OSNAME" = "NT" ]; then
   MDF_LIBARCH="nt"

@@ -14,6 +14,10 @@
 
 #define FD reinterpret_cast<FILE *>(fd)
 
+#if !defined(HAVE_feof_unlocked)
+# define feof_unlocked feof
+#endif
+
 zstream::zstream()
 {
 	fd = NULL;
