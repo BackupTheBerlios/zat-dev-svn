@@ -50,21 +50,21 @@ void zcpu::add_instr(const char *src)
 		zstring tok = zstring::gettok(sep, ',');
 
 		if (* tok.c_str() == '@') {
-			if (tok == "@byte")
+			if (tok == ".byte")
 				code = op_byte;
-			else if (tok == "@word")
+			else if (tok == ".word")
 				code = op_word;
-			else if (tok == "@boffset")
+			else if (tok == ".boffset")
 				code = op_boffset;
-			else if (tok == "@zap")
+			else if (tok == ".zap")
 				code = op_zap;
-			else if (tok == "@equ")
-				code = op_equ;
-			else if (tok == "@org")
-				code = op_org;
-			else if (tok == "@include")
+			else if (tok == ".define")
+				code = op_define;
+			else if (tok == ".origin")
+				code = op_origin;
+			else if (tok == ".include")
 				code = op_include;
-			else if (tok == "@insert")
+			else if (tok == ".insert")
 				code = op_insert;
 			else
 				throw zesyntax(src, "unknown machine code extension");

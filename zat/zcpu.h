@@ -74,8 +74,8 @@ typedef enum opcode_e
 	op_word = -2,
 	op_boffset = -3,
 	op_zap = -4,
-	op_equ = -5,
-	op_org = -6,
+	op_define = -5,
+	op_origin = -6,
 	op_include = -7,
 	op_insert = -8,
 } opcode;
