@@ -20,6 +20,7 @@ public:
 	size_t hintv;
 public:
 	// Copies the text and calculates hash value.
+	zinst(const zinst &src);
 	zinst(const char *src) : text(src) { fixup(); }
 	zinst(const zstring &src) : text(src) { fixup(); }
 	// Statistics.

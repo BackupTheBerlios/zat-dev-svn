@@ -6,6 +6,13 @@
 #include "zat.h"
 #include "zinst.h"
 
+zinst::zinst(const zinst &src)
+{
+	text = src.text;
+	hinta = src.hinta;
+	hintv = src.hintv;
+}
+
 void zinst::fixup()
 {
 	bool got_space = false;
@@ -46,6 +53,7 @@ void zinst::fixup()
 
 bool zinst::compa(const zinst &with) const
 {
+	debug(1, " --- comparing '%s' with '%s'\n", text.c_str(), with.text.c_str());
 	return (text == with.text);
 }
 
@@ -58,38 +66,50 @@ bool zinst::compa(const zinst &with) const
 // optimized, which means they contain uppercase characters (except
 // for the quoted text), only one space and no comments at the
 // end of the line.
-bool zinst::compv(const zinst &pattern) const
+bool zinst::compv(const zinst &source) const
 {
-	zstring::const_iterator src = pattern.text.begin();
-	zstring::const_iterator dst = text.begin();
+	char bracket = 0;
+	zstring::const_iterator src = text.begin();
+	zstring::const_iterator dst = source.text.begin();
 
-	while (src != pattern.text.end() && dst != text.end()) {
+	while (src != text.end() && dst != source.text.end()) {
 		if (*src == '@') {
-			if (zstring::isquote(*src)) {
-				char q = *src++;
-				while (dst != text.end() && *dst != q)
+			++src;
+
+			if (zstring::isquote(*dst)) {
+				char q = *dst++;
+				while (dst != source.text.end() && *dst != q)
 					++dst;
-				if (dst == text.end())
+				if (dst == source.text.end())
 					return false;
 				++dst;
 			} else {
-				while (*dst != ',' && dst != text.end())
+				while (*dst != ',' && (bracket != *dst) && dst != source.text.end())
 					++dst;
 			}
 
 			// Now `dst' must point to the end of line or
 			// a comma.  Skip one, if so.
-			if (dst != text.end() && *dst == ',')
+			if (dst != source.text.end() && *dst == ',')
 				++dst;
-		} else if (*src++ != *dst++) {
-			break;
+		} else {
+			if (*src == '[')
+				bracket = ']';
+			else if (*src == '(')
+				bracket = ')';
+			else
+				bracket = 0;
+
+			if (*src++ != *dst++)
+				break;
 		}
 	}
 
-	if (src == pattern.text.end() && dst == text.end()) {
-		debug(2, " - match: '%s' vs. '%s'\n", pattern.text.c_str(), text.c_str());
+	if (src == text.end() && dst == source.text.end()) {
+		debug(2, " - match: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
 		return true;
 	} else {
+		debug(2, " - mismatch: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
 		return false;
 	}
 }

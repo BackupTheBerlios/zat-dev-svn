@@ -77,6 +77,7 @@ static void zmain(int argc, char * const * argv)
 		}
 	}
 
+	opt.open();
 	cpu.init(opt.cpu);
 	cpu.translate(argc - optind, argv + optind);
 	zymbol::rescan();

@@ -60,6 +60,12 @@ void zcpu::add_instr(const char *src)
 				code = op_zap;
 			else if (tok == "@equ")
 				code = op_equ;
+			else if (tok == "@org")
+				code = op_org;
+			else if (tok == "@include")
+				code = op_include;
+			else if (tok == "@insert")
+				code = op_insert;
 			else
 				throw zesyntax(src, "unknown machine code extension");
 			atomic = false;
@@ -75,8 +81,6 @@ void zcpu::add_instr(const char *src)
 		mapa[zinst(mnemo)] = codes;
 	else
 		mapv[zinst(mnemo)] = codes;
-
-	debug(3, "installed %s instruction '%s' (%u opcodes)\n", atomic ? "atomic" : "variable", mnemo.c_str(), codes.size());
 }
 
 void zcpu::init(const char *cpu_name)
@@ -174,12 +178,12 @@ void zcpu::translate(int argc, char * const *argv)
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		debug(1, "translating \"%s\".\n", i.name());
-		while (parse(i));
+		while (parse(i, *output[iout]));
 		input.pop_back();
 	}
 }
 
-bool zcpu::parse(zinput &in)
+bool zcpu::parse(zinput &in, zoutput &out)
 {
 	zstring label, line;
 
@@ -187,12 +191,15 @@ bool zcpu::parse(zinput &in)
 		return false;
 
 	if (get_label(label, line)) {
-		debug(1, " - label: %s\n", label.c_str());
+		debug(2, " - label: %s\n", label.c_str());
 	}
 
 	if (line.size() != 0) {
 		zinst inst(line);
-		debug(1, " - line: %s\n", inst.c_str());
+		if (!do_atomic(inst, out) && !do_variable(inst, out)) {
+			debug(1, " -- hashes: a=%u, v=%u.\n", inst.hinta, inst.hintv);
+			throw zesyntax(line.c_str(), "unknown instruction");
+		}
 	}
 
 	return true;
@@ -213,4 +220,30 @@ bool zcpu::get_label(zstring &label, zstring &line)
 	line.erase(0, src - line.begin());
 
 	return label.size() != 0;
+}
+
+bool zcpu::do_atomic(zinst &inst, zoutput &)
+{
+	mapa_t::const_iterator it = mapa.find(inst);
+
+	if (it == mapa.end()) {
+		debug(1, " - '%s' not found in atomics.\n", inst.c_str());
+		return false;
+	}
+
+	debug(1, " - found an atomic command: '%s'\n", inst.c_str());
+	return true;
+}
+
+bool zcpu::do_variable(zinst &inst, zoutput &)
+{
+	mapv_t::const_iterator it = mapv.find(inst);
+
+	if (it == mapv.end()) {
+		debug(1, " - '%s' not found in variables.\n", inst.c_str());
+		return false;
+	}
+
+	debug(1, " - found a variable command: '%s'\n", inst.c_str());
+	return true;
 }

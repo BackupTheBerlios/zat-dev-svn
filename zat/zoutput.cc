@@ -5,11 +5,14 @@
 
 #include "zoutput.h"
 #include "zmemblk.h"
+#include "zoptions.h"
 
 zoutput::zoutput(const char *fname) :
 	name(fname)
 {
 	blocks.push_back(new zmemblk());
+	if (opt.fsym.is_open())
+		opt.fsym.print("; output changed to \"%s\"\n", fname);
 }
 
 zoutput::~zoutput()

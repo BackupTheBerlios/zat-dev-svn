@@ -69,6 +69,12 @@ bool zstream::read(zstring &str)
 	return true;
 }
 
-void zstream::print(const char *, ...)
+void zstream::print(const char *format, ...)
 {
+	if (is_open()) {
+		va_list vl;
+		va_start (vl, format);
+		vfprintf(reinterpret_cast<FILE *>(fd), format, vl);
+		va_end(vl);
+	}
 }

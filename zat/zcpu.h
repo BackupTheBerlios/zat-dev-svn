@@ -20,6 +20,8 @@ using __gnu_cxx::hash_map;
 
 class zcpu
 {
+	typedef hash_map< zinst, vector<int>, zinst::mapa, zinst::mapa > mapa_t;
+	typedef hash_map< zinst, vector<int>, zinst::mapv, zinst::mapv > mapv_t;
 	// The queue of input files.  Most recent last.
 	vector<zinput> input;
 	// The list of output files.
@@ -27,16 +29,20 @@ class zcpu
 	// Index within the output vector.
 	unsigned int iout;
 	// Instructions with fixed machine code (atomic).
-	hash_map< zinst, vector<int>, zinst::mapa, zinst::mapa > mapa;
+	mapa_t mapa;
 	// Instructions with parameters (variable).
-	hash_map< zinst, vector<int>, zinst::mapv, zinst::mapv > mapv;
+	mapv_t mapv;
 	// Adds a cpu instruction.
 	void add_instr(const char *src);
 	// Translates one line of the source code.  Returns `false'
 	// when the file is over.
-	bool parse(zinput &in);
+	bool parse(zinput &in, zoutput &out);
 	// Installs a label.
 	bool get_label(zstring &label, zstring &line);
+	// Translates an atomic command, returns `true' on success.
+	bool do_atomic(zinst &i, zoutput &out);
+	// Translates a variable command, returns `true' on success.
+	bool do_variable(zinst &i, zoutput &out);
 public:
 	// The label on the current line.
 	zymbol *lastlabel;
@@ -69,6 +75,9 @@ typedef enum opcode_e
 	op_boffset = -3,
 	op_zap = -4,
 	op_equ = -5,
+	op_org = -6,
+	op_include = -7,
+	op_insert = -8,
 } opcode;
 
 
