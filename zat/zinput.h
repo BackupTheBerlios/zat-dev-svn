@@ -38,9 +38,8 @@ public:
 	// Processes one line and moves the pointer to the next
 	// one.  Returns false if the file is over.
 	zerror do_line(zoutput &out);
-#ifdef _DEBUG
-	const char * name() const { return meta.name.c_str(); }
-#endif
+	// Returns the name of the file.
+	inline const char * name() const { return meta.name.c_str(); }
 };
 
 #endif // __zaa_zinput_h
