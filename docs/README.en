@@ -10,13 +10,16 @@ Table of Contents
       1. Syntax.
       2. Output.
       3. Memory management.
-      4. Translation instructions.
-         1. Origin.
-         2. Output.
-         3. DefB.
-         4. DefW.
+      4. Meta code.
+         1. Byte.
+         2. ByteList.
+         3. BOffset.
+         4. Define.
          5. Include.
          6. Insert.
+         7. Origin.
+         8. Word.
+         9. WordList.
    3. Developer information.
       1. Translation.
    A. Distribution.
@@ -25,11 +28,11 @@ Table of Contents
 
 1. Introduction.
 
-   Zat is a table driven assembly language to binary file translator.
-   The table of possible mnemonics, corresponding machine code and
-   translation directive mapping is read from an external text file,
-   easy to read and edit (this makes it easy to quickly fix bugs or
-   adapt the translator to your favourite asm dialect).
+   Zat is a table driven assembly language translator.  The table of
+   possible mnemonics, corresponding machine code and translation
+   directive mapping is read from an external text file, easy to read
+   and edit (this makes it easy to quickly fix bugs or adapt the
+   translator to your favourite asm dialect).
 
    The current design deals with 16 bit machine words only.  It is
    expected to work with all 16-bit architectures.
@@ -39,24 +42,17 @@ Table of Contents
 
 2.1. Syntax.
 
-   The source file can contain assembly mnemonics, directives and
-   comments.  Mnemonics and directives consist of a one word
-   instruction and, optionally, one or more arguments, as defined
-   in the CPU definition table.  Comments begin with a semicolon
-   sign and continue until the end of the line.
-
    Each line of the source file can contain one or many of the
-   following optional components: a label, an assembly mnemonic
-   or a translation instruction (including parameters defined
-   by the current translation table), a comment.  Mnemonics and
-   corresponding parameters can not be to multiple lines.
+   following optional components: a label, a mnemonic or
+   a comment.  Mnemonics and corresponding parameters can not
+   be placed on different lines (i.e., one line per instruction).
 
    Source files must follow the following rules:
 
    o Only one label can be specified within a single line of the
      source code.  If more labels must be applied to a single
      instruction, they can be stacked in lines above the one with
-     the corresponding instruction.
+     the required instruction.
 
    o Mnemonics and translation instructions must be followed by
      a space and all necessary parameters.  The list of parameters
@@ -76,8 +72,10 @@ Table of Contents
    o Parameters that expect a variable value can be defined by
      expressions consisting of a mixture of numeric constants and
      references to labels, each pair separated by one of the following
-     arithmetic signs: +, -, / or *.  Brackets are not supported
-     at this time.
+     arithmetic signs: +, -, / or *.  Brackets can be used to group
+     subexpressions.  Operators are executed from left to right,
+     all are equal (i.e., multiplication does not take precedence
+     over addition).
 
      Numeric values can be specified in different ways.  Hexadecimal
      values can be prefixed with "0x", "$" or "#", or suffixed with
@@ -97,125 +95,137 @@ Table of Contents
 
    o Comments begin with a semicolon and span the rest of the line.
 
-   o Mnemonics, instructionsand symbols are case insensitive.  String
-     values are case sensitive and file names can also be case
-     sensitive, depending on the file system being used.
+   o Mnemonics and symbols are case insensitive.  String values are
+     case sensitive and file names can also be case sensitive,
+     depending on the file system being used.
 
 
 2.2. Output.
 
-   Zat only supports output to raw binary files.  These files can
-   then be linked to binaries of different formats using specific
-   tools.  Zat does not contain such tools currently.
+   Zat only supports one form of output: object files.  One object
+   file is created for all translation units processed with one
+   command (zat invokation).
+
+   The output file, which is by default named "zat.obj", contains
+   information about all memory segments, including names, and binary
+   blocks, including base address and size.  The content of an object
+   file can be listed with the `zodump' utility or converted to
+   another output format using a different utility, see below.
 
 
 2.3. Memory management.
 
-   Zat only supports flat memory.  The only limitation is the
-   translation address, which must be under 65536 (0x10000h).
+   Zat knows nothing about the memory model of the target architecture.
+   It is rather a task of the particular object file conversion utility
+   to maintain such integrity.  Zat will neither check the size of any
+   particular binary block, nor the address (which may well be out of
+   the 16 bit value range).
 
 
-2.4. Translation instructions.
+2.4. Meta code.
 
-   There are several instructions supported by zat directly, without
-   using the translation table.  These instructions can either be
-   used in their native form (prefixed with dots), or mapped to a
-   different form by the translation table.
+   There is a number of special values that can be used in the
+   machine code section of the translation table.  These codes
+   may be freely mixed with the real machine code.
 
+   Each meta code starts with a dot and corresponds to one
+   wildcard (the `@' character) in the instruction template.
 
-2.4.1. Origin.
-
-   Syntax: .origin <host> [, <exec>]
-
-   This instruction begins a new binary block.  Machine code will
-   be placed in the specified host address.  The optional phase
-   parameter specifies the address at which the machine code is
-   expected to execute (if not specified, defaults to the host
-   address).
-
-   Currently, this instruction is only used when rendering a flat
-   image of multiple memory blocks being saved to a single file.
+   The following chapters describe such codes.
 
 
-2.4.2. Output.
+2.4.1. Byte.
 
-   Syntax: .output <filename>
+   Syntax: .byte
 
-   Tells the translator that from this point the machine code
-   must be written to the specified file.
+   This meta code converts the expression spanned by the
+   corresponding wildcard to a numeric value and emits one
+   byte.  If the value requires more than one byte, an
+   error is generated.
+
+
+2.4.2. ByteList.
+
+   Syntax: .bytelist
+
+   Processes the parameter as a sequence of comma-separated
+   expressions, each of which emits a byte sized value.  Much
+   like a sequence of .byte codes.
+
+
+2.4.3. BOffset.
+
+   Syntax: .boffset
+
+   Calculates the difference between the value of the expression
+   and the current instruction's base address, then emits it as
+   a byte sized value.
+
+
+2.4.4. Define.
+
+   Syntax: .define
+
+   Applies the label on this line to the value of the expression.
+   If there was no label in the beginning of the current line, an
+   error is generated.
    
-   The translation address is set to the first byte after the last
-   binary block already assigned to that file.  The following code
-   will generate two files with flat code starting at address zero:
-
-      .output "1.bin"
-      ; source code.. starts at address zero (1)
-      .output "2.bin"
-      ; source code.. starts at address zero (2)
-      .output "1.bin"
-      ; source code.. continues at where (1) left off
-      .output "2.bin"
-      ; source code.. continues at where (2) left off
-
-   This approach can be used to write code and data segments to
-   different files while still having them mixed up within a single
-   source file.
-
-   The file specified for output will be written when the whole source
-   code is successfully translated.  It will contain a flat image of
-   all memory blocks with gaps between them filled with bytes
-   containing zero.
-
-
-2.4.3. DefB.
-
-   Syntax: .defb <expression> [, <expression> [, ...]]
-
-   This instruction emits bytes of data.  Each expression must
-   evaluate to a one byte value (-128..255) or a string.
-
-
-2.4.3. DefW.
-
-   Syntax: .defw <expression> [, <expression> [, ...]]
-
-   This instruction emits words of data.  Each expression must
-   evaluate to a one word value (-32768..65535) or a string,
-   which will be translated to a sequence of zero words plus
-   the code of a particular character.
-
-
-2.4.4. Equ.
-
-   Syntax: EQU <value>
-
-   Assigns a label to the specified value.  Normally, labels are
-   assigned to the current translation address.  With this instruction
-   a label can be assigned to a different value.
-
-   The value can be a mixture of constant numeric values and other
-   symbols, each pair separated by one of the following signs: -,
-   +, /, *.
-
-   The values are evaluated after the code generation is finished and
-   all sources are processed; it may refer to undefined symbols as
-   well.
+   When the label is applied, it is removed from the parser's
+   context, thus it's not possible to apply one label to multiple
+   expressions.
 
 
 2.4.5. Include.
 
-   Syntax: .include <filename>
+   Syntax: .include
 
-   Reads and processes the specified file.  When the file is over,
-   translation returns to where it left off.  Nesting is allowed.
+   Includes the specified source file, restarting translation
+   from its first line.  When the file is over, translation
+   restarts from where it left off.
+
+   There is no depth limit for included files, neither is ther
+   a control for duplicate includes.
 
 
 2.4.6. Insert.
 
-   Syntax: .insert <filename>
+   Syntax: .insert
 
-   Inserts the specified binary file at the current position in
-   resulting machine code.
+   Emits the content of the specified file, byte by byte.
+
+
+2.4.7. Origin.
+
+   Syntax: .origin
+
+   Starts a new block.  The value of the expression is used as
+   the base address.  The value may be unknown at the time of
+   this instruction being translated.
+
+
+2.4.8. Word.
+
+   Syntax: .word
+
+   Converts the expression spanned by the corresponding wildcard
+   to a numeric value and emits two bytes (little endian).  If the
+   value requires more than two bytes, an error is generated.
+
+
+2.4.9. WordList.
+
+   Syntax: .wordlist
+
+   Processes the parameter as a sequence of comma-separated
+   expressions, each of which emits a word sized value.  Much
+   like a sequence of .word codes.
+
+
+2.4.10. Zap.
+
+   Syntax: .zap
+
+   Ignores the expression spanned by the corresponding wildcard.
 
 
 3. Developer documentation.
