@@ -8,7 +8,6 @@
 
 #include "zat.h"
 #include "zcpu.h"
-#include "zymbol.h"
 #include "zoptions.h"
 #include "zeusage.h"
 
@@ -80,6 +79,7 @@ static void zmain(int argc, char * const * argv)
 	opt.open();
 	cpu.init(opt.cpu);
 	cpu.translate(argc - optind, argv + optind);
+	cpu.resolve();
 }
 
 int main(int argc, char * const * argv)

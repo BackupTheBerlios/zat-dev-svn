@@ -11,28 +11,14 @@
 #include "zinput.h"
 #include "zoutput.h"
 #include "zinst.h"
+#include "zymbol.h"
+#include "zconst.h"
 
 class zerror;
 class zymbol;
 
 using std::vector;
 using __gnu_cxx::hash_map;
-
-// Special values for machine code.
-typedef enum opcode_e
-{
-	op_byte = -1,
-	op_word = -2,
-	op_boffset = -3,
-	op_zap = -4,
-	op_define = -5,
-	op_origin = -6,
-	op_include = -7,
-	op_insert = -8,
-	op_blist = -9,
-	op_wlist = -10,
-	op_namespace = -11,
-} opcode;
 
 class zcpu
 {
@@ -48,6 +34,8 @@ class zcpu
 	mapa_t mapa;
 	// Instructions with parameters (variable).
 	mapv_t mapv;
+	// Symbols and expressions for delayed evaluation.
+	vector<zymbol *> symbols;
 	// Set when the instruction table is ready.  Used in zinst to
 	// fail comparing one instruction with another.
 	bool ready;
@@ -66,10 +54,10 @@ class zcpu
 	// Evaluates the expression and emits the result.  If the expression
 	// could not be evaluated, emits zeros and adds the expression to the
 	// symbol table.
-	void emit(const zstring &expr, opcode, zoutput &out, size_t base);
+	void emit(const zstring &expr, opcode, zoutput &out, int base);
 	// Evaluates the expression.  Upon success returns `true' and the
 	// pointer is moved to the next character after the expression.
-	bool evaluate(zstring::const_iterator &expr, int &value, size_t base);
+	bool evaluate(zstring::const_iterator &expr, int &value, int base);
 	// Methods to convert a string from a specific base to a number.
 	// Move the pointer to the character after the expression.
 	static int get_hex(zstring::const_iterator &e);
@@ -93,6 +81,8 @@ public:
 	void init(const char *cpu_name);
 	// Translate the specified input files.
 	void translate(int argc, char * const *argv);
+	// Resolves symbols.
+	void resolve();
 	// Misc.
 	bool is_ready() const { return ready; }
 };

@@ -4,13 +4,16 @@
 // $Id$
 
 #pragma once
+#include "zstring.h"
+
+class zorigin;
 
 class zmemblk
 {
-	// Origin host address.
-	unsigned int host;
-	// Origin phase address.
-	unsigned int phase;
+	// Base address.
+	size_t base;
+	// Set when the address is not known.
+	zorigin *basex;
 	// The machine code block.
 	struct data
 	{
@@ -40,4 +43,11 @@ public:
 	// Code emission.  Fails with memory allocations.
 	void emit(char byte);
 	void emit(short word);
+	// Changes the base address of the block.
+	void set_origin(int);
+	void set_origin(zorigin *);
+	// Returns `true' if the origin is known.
+	bool has_origin() const { return basex == NULL; }
+	// Returns the base address.
+	size_t get_origin() const { return (basex == NULL) ? base : NULL; }
 };

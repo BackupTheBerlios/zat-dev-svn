@@ -10,7 +10,6 @@
 #include "zcpu.h"
 #include "zinst.h"
 #include "zmemblk.h"
-#include "zymbol.h"
 #include "zoptions.h"
 #include "zefile.h"
 

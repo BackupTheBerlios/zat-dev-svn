@@ -25,4 +25,6 @@ public:
 	// Emits a byte.
 	void emit(char c) { block().emit(c); }
 	void emit(short s) { block().emit(s); }
+	// Starts a new block.
+	void add();
 };

@@ -133,6 +133,26 @@ void zcpu::translate(int argc, char * const *argv)
 	}
 }
 
+void zcpu::resolve()
+{
+	for (bool retry = true; symbols.size() != 0 && retry; ) {
+		retry = false;
+
+		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			if ((*it)->evaluate(symbols))
+				retry = true;
+		}
+	}
+	
+	if (opt.fsym.is_open()) {
+		opt.fsym.print("; symbol table follows (%u elements)\n", symbols.size());
+
+		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			opt.fsym.print("; %s = %s\n", (*it)->c_str(), (*it)->extra());
+		}
+	}
+}
+
 bool zcpu::parse(zinput &in, zoutput &out)
 {
 	zstring label, line;
@@ -141,7 +161,7 @@ bool zcpu::parse(zinput &in, zoutput &out)
 		return false;
 
 	if (get_label(label, line) && opt.fsym.is_open()) {
-		opt.fsym.print(";       ;                         ; ; %s\n", label.c_str());
+		opt.fsym.print(";        ;                         ; ; %s\n", label.c_str());
 	}
 
 	if (line.size() != 0) {
@@ -152,13 +172,21 @@ bool zcpu::parse(zinput &in, zoutput &out)
 			throw zesyntax(line.c_str(), "unknown instruction");
 		}
 
+		if (label.size() > 0)
+			symbols.push_back(new zlabel(label.c_str(), "$", &out.block(), offset));
+
 		// Dump the code.
 		if (opt.fsym.is_open()) {
 			bool pc_sent = false;
 			size_t lim = out.size();
 
 			do {
-				opt.fsym.print("; %04Xh ; ", offset);
+				if (offset >= lim)
+					opt.fsym.print(";        ; ");
+				else if (out.block().has_origin())
+					opt.fsym.print(";  %04Xh ; ", out.block().get_origin() + offset);
+				else
+					opt.fsym.print("; +%04Xh ; ", offset);
 
 				for (size_t idx = 0; idx < 8; ++idx, ++offset) {
 					if (offset >= lim)
@@ -212,8 +240,11 @@ bool zcpu::do_atomic(zinst &inst, zoutput &out)
 
 bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 {
-	size_t base = out.size();
 	mapv_t::const_iterator it = mapv.find(inst);
+	int base = out.block().get_origin() + out.block().size();
+
+	if (!out.block().has_origin())
+		base = -1;
 
 	if (it == mapv.end())
 		return false;
@@ -222,14 +253,7 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 		std::vector<zstring> args;
 		const std::vector<int> &codes = it->second;
 
-		if (it->first.get_args(inst.str(), &args)) {
-			if (opt.debug >= 4) {
-				opt.fsym.print(";       the next instruction has %u parameters:\n", args.size());
-				for (std::vector<zstring>::const_iterator it = args.begin(); it != args.end(); ++it) {
-					opt.fsym.print(";       %u. %s\n", it - args.begin() + 1, it->c_str());
-				}
-			}
-		}
+		it->first.get_args(inst.str(), &args);
 
 		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
 			if (*it >= 0) {
@@ -246,11 +270,27 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 					args.erase(args.begin());
 					break;
 				case op_zap:
+					args.erase(args.begin());
 					break;
 				case op_define:
+					symbols.push_back(new zlabel(label.c_str(), args.begin()->c_str(), &out.block(), base));
 					label.clear();
 					break;
 				case op_origin:
+					if (out.block().size() != 0)
+						out.add();
+					{
+						int value = 0;
+						zstring::const_iterator it = args.begin()->begin();
+						if (evaluate(it, value, 0)) {
+							out.block().set_origin(value);
+						} else {
+							zorigin *org = new zorigin(args.begin()->c_str(), &out.block());
+							symbols.push_back(org);
+							out.block().set_origin(org);
+						}
+					}
+					args.erase(args.begin());
 					break;
 				case op_include:
 					break;
@@ -275,7 +315,7 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 	return true;
 }
 
-void zcpu::emit(const zstring &expr, opcode op, zoutput &out, size_t base)
+void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 {
 	int value = 0;
 	zstring::const_iterator it = expr.begin();
@@ -305,7 +345,7 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, size_t base)
 	}
 }
 
-bool zcpu::evaluate(zstring::const_iterator &expr, int &value, size_t base)
+bool zcpu::evaluate(zstring::const_iterator &expr, int &value, int base)
 {
 	int tval = 0;
 	char sign = '+';
@@ -342,6 +382,8 @@ bool zcpu::evaluate(zstring::const_iterator &expr, int &value, size_t base)
 		}
 
 		else if (*expr == '$') {
+			if (base < 0)
+				return false;
 			++expr;
 			tval = base;
 		}
@@ -387,7 +429,6 @@ int zcpu::get_hex(zstring::const_iterator &e)
 		else if (*e >= 'A' && *e <= 'F')
 			value = value * 16 + *e - 'A' + 10;
 		else {
-			value = 0;
 			break;
 		}
 

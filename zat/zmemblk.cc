@@ -42,8 +42,8 @@ bool zmemblk::data::resize(size_t add)
 
 zmemblk::zmemblk()
 {
-	host = 0;
-	phase = 0;
+	base = 0;
+	basex = NULL;
 }
 
 zmemblk::~zmemblk()
@@ -62,4 +62,16 @@ void zmemblk::emit(short s)
 {
 	emit(static_cast<char>(s & 255));
 	emit(static_cast<char>((s >> 8) & 255));
+}
+
+void zmemblk::set_origin(int value)
+{
+	base = value;
+	basex = NULL;
+}
+
+void zmemblk::set_origin(zorigin *value)
+{
+	base = NULL;
+	basex = value;
 }
