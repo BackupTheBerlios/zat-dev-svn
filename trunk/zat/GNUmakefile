@@ -26,16 +26,11 @@ fake: all
 custom-cleandist:
 	rm -rf fake-$(VERSION) configure.h
 
-ifeq ($(MDF_OSNAME),openbsd)
-install: dist
-	cd dist/openbsd && CDROM_SITE="$(SRCPATH)" make
-else
 install: fake
   ifeq ($(PREFIX),)
 	@echo "The PREFIX envar is not defined."
   else
 	$(SUDO) cp -R $(wildcard fake-$(VERSION)/*) $(PREFIX)/ && rm -rf fake-$(VERSION)
   endif
-endif
 
 dist: dist-default
