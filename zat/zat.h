@@ -9,10 +9,7 @@
 # include "../configure.h"
 #endif
 
-#include <stdio.h>
-
 #include "zerror.h"
-#include "zsupport.h"
 
 #ifndef dimof
 # define dimof(arr) (sizeof(arr) / sizeof(arr[0]))
