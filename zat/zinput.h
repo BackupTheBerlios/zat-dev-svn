@@ -8,9 +8,9 @@
 #ifndef __zaa_zinput_h
 #define __zaa_zinput_h
 
-#include <stdio.h>
 #include "zat.h"
 #include "zstring.h"
+#include "zstream.h"
 
 class zoutput;
 
@@ -23,8 +23,8 @@ class zinput
 		unsigned int line;
 		meta_s(const char *name);
 	} meta;
-	// File handle.
-	FILE *in;
+	// File source.
+	zstream in;
 	// Extracts the label, if any.
 	void do_label(const char *&src, zoutput &out);
 public:

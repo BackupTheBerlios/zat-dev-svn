@@ -4,34 +4,9 @@
 // $Id$
 
 #include <ctype.h>
-#include <stdio.h>
 #include <string.h>
 
 #include "zsupport.h"
-
-char *read_line(char *buf, size_t size, FILE *in)
-{
-	char *str;
-	size_t idx;
-
-	str = NULL;
-
-	if (feof(in))
-		return NULL;
-
-	if (!feof(in) && (str = fgets(buf, size, in)) != NULL) {
-		if (buf[idx = strcspn(buf, "\r\n")])
-			buf[idx] = '\0';
-		/* fgets returns truncated string.  if we didn't get
-		 * any EOL character, then we couldn't read the whole
-		 * string, read the rest now.
-		 */
-		else while (!feof(in) && !IsEOL(fgetc(in)));
-	}
-
-	return str;
-}
-
 
 void strtoupper(char *src)
 {

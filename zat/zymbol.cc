@@ -56,24 +56,24 @@ bool zymbol::operator < (const zymbol &src) const
 
 void zymbol::dump()
 {
-	if (opt.fsym != NULL) {
+	if (opt.fsym.is_open()) {
 		std::sort(list.begin(), list.end());
 
-		fprintf(opt.fsym, "; Symbol table follows, total symbols: %u.\n", list.size());
+		opt.fsym.print("; Symbol table follows, total symbols: %u.\n", list.size());
 
 		for (iterator it = list.begin(); it != list.end(); ++it) {
 			int length = 16 - strlen(it->name.c_str());
 
-			fprintf(opt.fsym, "%s", it->name.c_str());
+			opt.fsym.print("%s", it->name.c_str());
 			while (length > 0) {
-				fprintf(opt.fsym, "\t");
+				opt.fsym.print("\t");
 				length -= 8;
 			}
 
 			if (it->bytes.size() != 0 || it->words.size() != 0 || it->offsets.size() != 0)
-				fprintf(opt.fsym, "EQU\t%04Xh\t; undefined (%u references)\n", it->value, it->bytes.size() + it->words.size());
+				opt.fsym.print("EQU\t%04Xh\t; undefined (%u references)\n", it->value, it->bytes.size() + it->words.size());
 			else
-				fprintf(opt.fsym, "EQU\t%04Xh\t; %u\n", it->value, it->value);
+				opt.fsym.print("EQU\t%04Xh\t; %u\n", it->value, it->value);
 		}
 	}
 }

@@ -10,6 +10,6 @@ class zusage : public zerror
 public:
 	zusage() { }
 	~zusage() { }
-	const char * c_str() { return "Invalid command line.  For help, type: zat -h\n";  }
+	const char * c_str() { return "invalid command line; for help, type: zat -h";  }
 	zseverity severity() const { return zsev_ok; }
 };

@@ -3,9 +3,7 @@
 //
 // $Id$
 
-#include <stdlib.h>
-
-#include "zerror.h"
+#include "zefile.h"
 #include "zoptions.h"
 
 zoptions opt;
@@ -25,24 +23,14 @@ zoptions::zoptions()
 
 zoptions::~zoptions()
 {
-	if (fsym != NULL)
-		fclose(fsym);
-	if (fout != NULL)
-		fclose(fout);
 }
 
 
-bool zoptions::open()
+void zoptions::open()
 {
-	if (sym != NULL && (fsym = fopen(sym, "wb")) == NULL) {
-		perror("could not open symbol file for writing");
-		return false;
-	}
+	if (sym != NULL && !fsym.open(sym, true))
+		throw zefile("could not open symbol file for writing", sym);
 
-	if (out != NULL && (fout = fopen(out, "wb")) == NULL) {
-		perror("could not open output file for writing");
-		return false;
-	}
-
-	return true;
+	if (out != NULL && !fout.open(out, true))
+		throw zefile("could not open output file for writing", out);
 }

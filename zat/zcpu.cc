@@ -11,6 +11,7 @@
 #include "zinst.h"
 #include "zoptions.h"
 #include "zefile.h"
+#include "zstream.h"
 
 zcpu cpu;
 
@@ -24,28 +25,32 @@ zcpu::~zcpu()
 
 void zcpu::init(const char *cpu_name)
 {
-	FILE *in;
-	char buf[4096], *src;
+	zstream in;
+	std::string fname, line;
 
-	if (strchr(cpu_name, '/') == NULL)
-		snprintf(buf, sizeof(buf), PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
-	else
-		strncpy(buf, cpu_name, sizeof(buf));
+	if (strchr(cpu_name, '/') == NULL) {
+		fname = PREFIX "/" SHAREPATH "/cpu/" + std::string(cpu_name);
+	} else {
+		fname = cpu_name;
+	}
 
-	debug("reading the translation table from %s\n", buf);
+	in.open(fname.c_str());
 
-	if ((in = fopen(buf, "rb")) == NULL)
-		throw zefile("could not open file for reading", buf);
+	if (!in.is_open())
+		throw zefile("could not open instruction table for reading", fname.c_str());
 
+	while (in.read(line)) {
+		zinst::feed(line.c_str());
+	}
+
+	/*
 	while ((src = read_line(buf, sizeof(buf), in)) != NULL)
 		zinst::feed(buf);
 
 	fclose(in);
+	*/
 
-	debug("optimizing the translation table.\n");
 	zinst::optimize();
-
-	debug("creating a default output.\n");
 	output.push_back(new zoutput(opt.out));
 }
 

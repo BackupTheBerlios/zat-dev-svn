@@ -6,8 +6,7 @@
 #ifndef __zaa_zoptions_h
 #define __zaa_zoptions_h
 
-#include <stdio.h>
-#include <string>
+#include "zstream.h"
 
 class zoptions
 {
@@ -17,8 +16,8 @@ public:
 	const char *cpu;
 	const char *sym;
 	// File handles.
-	FILE *fsym;
-	FILE *fout;
+	zstream fsym;
+	zstream fout;
 	// Debug verbosity.
 	unsigned int debug;
 	// The point where errors start.  Defaults to ret_errors,
@@ -32,7 +31,7 @@ public:
 	// Memory and file handle clean-up.
 	~zoptions();
 	// Opens all necessary file handles.
-	bool open();
+	void open();
 };
 
 extern zoptions opt;

@@ -6,7 +6,6 @@
 #ifndef __zaa_zsupport_h
 #define __zaa_zsupport_h
 
-extern char * read_line(char *, size_t, FILE *);
 extern void strtoupper(char *src);
 extern unsigned int crc32(const void *src, size_t size);
 extern char * zatok(char *str, char sep, char **save);

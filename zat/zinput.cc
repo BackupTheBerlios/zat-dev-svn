@@ -24,31 +24,26 @@ zinput::meta_s::meta_s(const char *fname)
 
 zinput::zinput(const char *fname) : meta(fname)
 {
-	in = NULL;
 }
 
 zinput::~zinput()
 {
-	if (in != NULL)
-		fclose(in);
 }
 
 bool zinput::open()
 {
-	if (in != NULL) {
-		debug("file \"%s\" is already open.\n", name());
-		return true;
-	}
+	if (in.is_open())
+		throw zefile("trying to open an already open file", name());
 
 	if (meta.name.has_path()) {
 		debug("looking for \"%s\" using absolute path.\n", meta.name.c_str());
-		in = fopen(meta.name.c_str(), "rb");
+		in.open(meta.name.c_str());
 	} else {
 		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
 			std::string path = *it + "/" + std::string(meta.name.c_str());
 
 			debug("looking for \"%s\"...", path.c_str());
-			if ((in = fopen(path.c_str(), "rb")) != NULL) {
+			if (in.open(path.c_str())) {
 				debug(" found!\n");
 				break;
 			} else {
@@ -57,7 +52,7 @@ bool zinput::open()
 		}
 	}
 
-	return (in != NULL);
+	return in.is_open();
 }
 
 // Finds a label on the current line.  The pointer in the string
@@ -80,22 +75,18 @@ void zinput::do_label(const char *&src, zoutput &out)
 		++src;
 }
 
-bool zinput::do_line(zoutput &out)
+bool zinput::do_line(zoutput & /* out */)
 {
-	char line[1024], *tmp;
-	const char *str = line;
+	std::string line;
 	vector < pair<int, string> > args;
 
-	if (in == NULL)
-		throw zeclosedfile();
-
-	if ((tmp = read_line(line, sizeof(line), in)) == NULL)
+	if (!in.read(line))
 		return false;
 
 	meta.line++;
 
-	do_label(str, out);
-	zinst::match(str, args);
+	// do_label(line.c_str(), out);
+	zinst::match(line.c_str(), args);
 
 	return true;
 }
