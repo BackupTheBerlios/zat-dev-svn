@@ -201,6 +201,7 @@ jp nz,@|c2,.word
 jp @|c3,.word
 call nz,@|c4,.word
 push bc|c5
+add a,@|c6,.byte
 rst 0|c7
 ret z|c8
 ret|c9

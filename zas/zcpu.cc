@@ -193,18 +193,9 @@ void zcpu::resolve()
 			}
 		}
 
-		lock = false;
-
-		if (opt.debug.symtab) {
-			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-				if (!(*it)->islabel() && !(*it)->isok()) {
-					if (!lock) {
-						fprintf(stderr, "The following expressions could not be calculated:\n");
-						lock = true;
-					}
-					fprintf(stderr, " - %s\n", (*it)->c_str());
-				}
-			}
+		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			if (!(*it)->islabel() && !(*it)->isok())
+				fprintf(stderr, "zas: unresolved expression: %s\n", (*it)->c_str());
 		}
 
 		throw zemsg("not all expressions could be evaluated");
