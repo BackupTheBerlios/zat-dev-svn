@@ -71,8 +71,10 @@ void zcpu::add_instr(const char *src)
 				code = op_blist;
 			else if (tok == ".wordlist")
 				code = op_wlist;
+			else if (tok == ".namespace")
+				code = op_namespace;
 			else
-				throw zesyntax(src, "unknown machine code extension");
+				throw zesyntax(src, "unknown translation directive");
 			atomic = false;
 		} else {
 			char *unused;
@@ -138,17 +140,15 @@ bool zcpu::parse(zinput &in, zoutput &out)
 	if (!in.read(line))
 		return false;
 
-	if (get_label(label, line)) {
-		if (opt.fsym.is_open())
-			opt.fsym.print("; label: %s\n", label.c_str());
+	if (get_label(label, line) && opt.fsym.is_open()) {
+		opt.fsym.print(";       label: %s\n", label.c_str());
 	}
 
 	if (line.size() != 0) {
 		zinst inst(line);
 		size_t offset = out.size();
 
-		if (!do_atomic(inst, out) && !do_variable(inst, out)) {
-			debug(1, " -- hashes: a=%u, v=%u.\n", inst.hinta, inst.hintv);
+		if (!do_atomic(inst, out) && !do_variable(inst, out, label)) {
 			throw zesyntax(line.c_str(), "unknown instruction");
 		}
 
@@ -210,7 +210,7 @@ bool zcpu::do_atomic(zinst &inst, zoutput &out)
 	return true;
 }
 
-bool zcpu::do_variable(zinst &inst, zoutput &out)
+bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 {
 	mapv_t::const_iterator it = mapv.find(inst);
 
@@ -235,6 +235,7 @@ bool zcpu::do_variable(zinst &inst, zoutput &out)
 				case op_zap:
 					break;
 				case op_define:
+					label.clear();
 					break;
 				case op_origin:
 					break;
@@ -245,6 +246,7 @@ bool zcpu::do_variable(zinst &inst, zoutput &out)
 				case op_blist:
 					break;
 				case op_wlist:
+					throw zesyntax(inst.c_str(), "unsupported command");
 					break;
 				default:
 					throw zesyntax(inst.c_str(), "unsupported parameter");

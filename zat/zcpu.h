@@ -42,7 +42,8 @@ class zcpu
 	// Translates an atomic command, returns `true' on success.
 	bool do_atomic(zinst &i, zoutput &out);
 	// Translates a variable command, returns `true' on success.
-	bool do_variable(zinst &i, zoutput &out);
+	// Resets the label if a .define command was executed.
+	bool do_variable(zinst &i, zoutput &out, zstring &label);
 	// Set when the instruction table is ready.  Used in zinst to
 	// fail comparing one instruction with another.
 	bool ready;
@@ -81,6 +82,7 @@ typedef enum opcode_e
 	op_insert = -8,
 	op_blist = -9,
 	op_wlist = -10,
+	op_namespace = -11,
 } opcode;
 
 
