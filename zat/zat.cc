@@ -47,7 +47,7 @@ static void show_help()
 		"   t              : show the instruction table being processed\n"
 		"   T              : show timing information\n"
 		"   0              : show instruction probes as they don't match\n"
-		"   1              : show instruction probes as they match\n"
+		"   1              : show instruction probes as they do\n"
 		"");
 }
 
