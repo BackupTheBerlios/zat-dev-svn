@@ -16,4 +16,13 @@ public:
 	zseverity severity() const { return zsev_ok; }
 };
 
+class zeoption : public zerror
+{
+	char *msg;
+public:
+	zeoption(const char *msg, int c);
+	~zeoption();
+	const char * c_str() { return msg; }
+};
+
 #endif

@@ -109,6 +109,8 @@ static void do_debug(const char *args)
 		case '1':
 			opt.debug.tplmatch = sign;
 			break;
+		default:
+			throw zeoption("unknown debug option", *args);
 		}
 
 		++args;
@@ -142,6 +144,8 @@ static void do_symbols(const char *args)
 		case 's':
 			opt.symbols.source = sign;
 			break;
+		default:
+			throw zeoption("unknown symbol table option", *args);
 		}
 
 		++args;
