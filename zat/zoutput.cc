@@ -28,9 +28,17 @@ void zoutput::add()
 	blocks.push_back(new zmemblk());
 }
 
-void zoutput::show_map() const
+void zoutput::write() const
 {
-	opt.fmap.print("  Segment name: %s\n", name.c_str());
+	zstring count;
+
+	if (opt.fmap.is_open())
+		opt.fmap.print("Segment name: %s\n", name.c_str());
+
+	count.format("%u", blocks.size());
+	opt.fout.write(name.c_str(), name.size() + 1);
+	opt.fout.write(count.c_str(), count.size() + 1);
+
 	for (std::vector<zmemblk *>::const_iterator it = blocks.begin(); it != blocks.end(); ++it)
-		(*it)->show_map();
+		(*it)->write();
 }

@@ -161,11 +161,8 @@ void zcpu::translate(int argc, char * const *argv)
 
 	stat.trantime = gettime() - stat.trantime;
 
-	if (opt.fmap.is_open()) {
-		opt.fmap.print("Memory layour follows.\n");
-		for (std::vector<zoutput *>::const_iterator it = output.begin(); it != output.end(); ++it)
-			(*it)->show_map();
-	}
+	for (std::vector<zoutput *>::const_iterator it = output.begin(); it != output.end(); ++it)
+		(*it)->write();
 }
 
 void zcpu::resolve()

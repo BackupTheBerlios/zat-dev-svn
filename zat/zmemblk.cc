@@ -77,7 +77,18 @@ void zmemblk::set_origin(zorigin *value)
 	basex = value;
 }
 
-void zmemblk::show_map() const
+void zmemblk::write() const
 {
-	opt.fmap.print("    addr: %04Xh, size: %04Xh (%u)\n", base, code.size, code.size);
+	zstring tmp;
+
+	if (opt.fmap.is_open())
+		opt.fmap.print("  addr: %04Xh, size: %04Xh (%u)\n", base, code.size, code.size);
+
+	tmp.format("%u", base);
+	opt.fout.write(tmp.c_str(), tmp.size() + 1);
+
+	tmp.format("%u", code.size);
+	opt.fout.write(tmp.c_str(), tmp.size() + 1);
+
+	opt.fout.write(code.code, code.size);
 }

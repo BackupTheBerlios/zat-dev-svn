@@ -28,8 +28,8 @@ public:
 	void emit(short s) { block().emit(s); }
 	// Starts a new block.
 	void add();
-	// Prints segment map to the symbol file.
-	void show_map() const;
+	// Writes the content to the object file.
+	void write() const;
 };
 
 #endif
