@@ -3,7 +3,7 @@
 
 include Makedefs.faerion.include
 
-DIRS     = lib zat zodump
+DIRS     = lib zas zodump
 PACK     = zat
 DISTLIST = share/LICENSE share/cpu/Z80
 DISTMASK = *.cc *.h GNUmakefile
