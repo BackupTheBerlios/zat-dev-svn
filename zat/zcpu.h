@@ -18,6 +18,22 @@ class zymbol;
 using std::vector;
 using __gnu_cxx::hash_map;
 
+// Special values for machine code.
+typedef enum opcode_e
+{
+	op_byte = -1,
+	op_word = -2,
+	op_boffset = -3,
+	op_zap = -4,
+	op_define = -5,
+	op_origin = -6,
+	op_include = -7,
+	op_insert = -8,
+	op_blist = -9,
+	op_wlist = -10,
+	op_namespace = -11,
+} opcode;
+
 class zcpu
 {
 	typedef hash_map< zinst, vector<int>, zinst::mapa, zinst::mapa > mapa_t;
@@ -32,6 +48,9 @@ class zcpu
 	mapa_t mapa;
 	// Instructions with parameters (variable).
 	mapv_t mapv;
+	// Set when the instruction table is ready.  Used in zinst to
+	// fail comparing one instruction with another.
+	bool ready;
 	// Adds a cpu instruction.
 	void add_instr(const char *src);
 	// Translates one line of the source code.  Returns `false'
@@ -44,9 +63,18 @@ class zcpu
 	// Translates a variable command, returns `true' on success.
 	// Resets the label if a .define command was executed.
 	bool do_variable(zinst &i, zoutput &out, zstring &label);
-	// Set when the instruction table is ready.  Used in zinst to
-	// fail comparing one instruction with another.
-	bool ready;
+	// Evaluates the expression and emits the result.  If the expression
+	// could not be evaluated, emits zeros and adds the expression to the
+	// symbol table.
+	void emit(const zstring &expr, opcode, zoutput &out, size_t base);
+	// Evaluates the expression.  Upon success returns `true' and the
+	// pointer is moved to the next character after the expression.
+	bool evaluate(zstring::const_iterator &expr, int &value, size_t base);
+	// Methods to convert a string from a specific base to a number.
+	// Move the pointer to the character after the expression.
+	static int get_hex(zstring::const_iterator &e);
+	static int get_bin(zstring::const_iterator &e);
+	static int get_dec(zstring::const_iterator &e);
 public:
 	// The label on the current line.
 	zymbol *lastlabel;
@@ -68,22 +96,5 @@ public:
 	// Misc.
 	bool is_ready() const { return ready; }
 };
-
-// Special values for machine code.
-typedef enum opcode_e
-{
-	op_byte = -1,
-	op_word = -2,
-	op_boffset = -3,
-	op_zap = -4,
-	op_define = -5,
-	op_origin = -6,
-	op_include = -7,
-	op_insert = -8,
-	op_blist = -9,
-	op_wlist = -10,
-	op_namespace = -11,
-} opcode;
-
 
 extern zcpu cpu;
