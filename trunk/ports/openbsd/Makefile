@@ -1,11 +1,11 @@
 COMMENT=	"Zero Attitude Toolchain"
 
 ZAT=		0.1
-SNAPSHOT=	20050324
+SNAPSHOT=	20050327
 VERSION=	${ZAT}-${SNAPSHOT}
 DISTNAME=	zat-${VERSION}
 CATEGORIES=	devel
-MASTER_SITES=	http://zat.sourceforge.net/files/
+MASTER_SITES=	${HOMEPAGE}files/
 
 HOMEPAGE=	http://zat.sourceforge.net/
 
