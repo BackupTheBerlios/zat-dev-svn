@@ -18,9 +18,11 @@
 #include "zstream.h"
 #include "zesyntax.h"
 
+using std::vector;
+
 zcpu cpu;
 
-zcpu::zcpu()
+zcpu::zcpu() : mapa(31), mapv(13)
 {
 	ready = false;
 }
@@ -90,9 +92,9 @@ void zcpu::add_instr(const char *src)
 	}
 
 	if (atomic) {
-		mapa[zinst(mnemo)] = codes;
+		mapa.add(zinst(mnemo), codes);
 	} else {
-		mapv[zinst(mnemo)] = codes;
+		mapv.add(zinst(mnemo), codes);
 	}
 }
 
@@ -225,7 +227,7 @@ bool zcpu::parse(zinput &in, zoutput &out)
 		zinst inst(line);
 		size_t offset = out.size();
 
-		if (!do_atomic(inst, out) && !do_variable(inst, out, label)) {
+		if (!do_atomic(inst.str(), out) && !do_variable(inst.str(), out, label)) {
 			throw zesyntax(line.c_str(), "unknown instruction");
 		}
 
@@ -282,34 +284,34 @@ bool zcpu::get_label(zstring &label, zstring &line)
 	return label.size() != 0;
 }
 
-bool zcpu::do_atomic(zinst &inst, zoutput &out)
+bool zcpu::do_atomic(const zstring &line, zoutput &out)
 {
-	mapa_t::const_iterator it = mapa.find(inst);
+	const std::vector<int> *codes;
 
-	if (it == mapa.end())
+	if (!mapa.findx(line, &codes))
 		return false;
 
-	for (std::vector<int>::const_iterator bit = it->second.begin(); bit != it->second.end(); ++bit)
+	for (std::vector<int>::const_iterator bit = codes->begin(); bit != codes->end(); ++bit)
 		out.emit(static_cast<char>(*bit));
 
 	return true;
 }
 
-bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
+bool zcpu::do_variable(const zstring &line, zoutput &out, zstring &label)
 {
-	mapv_t::const_iterator it = mapv.find(inst);
+	const zinst *inst;
+	const std::vector<int> *data;
 	int base = out.block().get_origin() + out.block().size();
 
-	if (it == mapv.end())
+	if (!mapv.findt(line, &data, &inst))
 		return false;
 
-	if (it->second.size() != 0) {
+	if (data->size() != 0) {
 		std::vector<zstring> args;
-		const std::vector<int> &codes = it->second;
 
-		it->first.get_args(inst.str(), &args);
+		inst->get_args(line, &args);
 
-		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+		for (std::vector<int>::const_iterator it = data->begin(); it != data->end(); ++it) {
 			if (*it >= 0) {
 				out.emit(static_cast<char>(*it));
 			} else {
@@ -365,7 +367,7 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 					args.erase(args.begin());
 					break;
 				default:
-					throw zesyntax(inst.c_str(), "unsupported parameter");
+					throw zesyntax(line.c_str(), "unsupported parameter");
 				}
 			}
 		}

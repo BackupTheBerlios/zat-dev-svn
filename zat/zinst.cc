@@ -10,11 +10,26 @@
 zinst::zinst(const zinst &src)
 {
 	text = src.text;
-	hinta = src.hinta;
-	hintv = src.hintv;
+	hint = src.hint;
 }
 
-void zinst::fixup()
+void zinst::init(const char *src)
+{
+	char br = 0;
+
+	hint = 0;
+	text = src;
+
+	optimize(text);
+
+	if (text.find('@') != zstring::npos)
+		br = ' ';
+
+	for (zstring::const_iterator it = text.begin(); it != text.end() && *it != br; ++it)
+		zstring::hadd(it, hint);
+}
+
+void zinst::optimize(zstring &text)
 {
 	bool got_space = false;
 	zstring::const_iterator src;
@@ -40,35 +55,17 @@ void zinst::fixup()
 	}
 
 	text.resize(dst - text.begin());
-
-	hintv = 0;
-
-	for (src = text.begin(); src != text.end() && *src != ' '; ++src)
-		hintv = hintv * 5 + *src;
-
-	hinta = hintv;
-
-	while (src != text.end())
-		hinta = hinta * 5 + *src++;
 }
 
-bool zinst::compa(const zinst &with) const
+unsigned int zinst::calc_hash(const zstring &src, bool atomic)
 {
-	return (text == with.text);
-}
+	unsigned int hval = 0;
+	char br = atomic ? '\0' : ' ';
 
-// With the gcc implementation at hand ("gcc version 3.3 20030304
-// (Apple Computer, Inc. build 1671)") the current object is the
-// map element being analyzed and `pattern' is the key for which
-// the caller is looking up.
-//
-// This method assumes that both instructions have already been
-// optimized, which means they contain uppercase characters (except
-// for the quoted text), only one space and no comments at the
-// end of the line.
-bool zinst::compv(const zinst &source) const
-{
-	return cpu.is_ready() ? get_args(source.text, NULL) : false;
+	for (zstring::const_iterator it = src.begin(); it != src.end() && *it != br; ++it)
+		zstring::hadd(it, hval);
+
+	return hval;
 }
 
 bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
@@ -125,4 +122,14 @@ bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 		debug(9, " - mismatch: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
 		return false;
 	}
+}
+
+bool zinst::matchx(const zstring &src) const
+{
+	return (src == text);
+}
+
+bool zinst::matcht(const zstring &src) const
+{
+	return get_args(src, NULL);
 }

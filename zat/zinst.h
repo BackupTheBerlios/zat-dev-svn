@@ -13,41 +13,30 @@ class zinst
 {
 	// The template of the instruction.
 	zstring text;
-	// Optimizes the text, calculates the hint.
-	void fixup();
+	// Hash value, calculated by the constructor.
+	unsigned int hint;
+	// Initializes the instruction.  Called by constructors.
+	void init(const char *);
 public:
-	// Hash values, stored to speed things up.
-	size_t hinta;
-	size_t hintv;
-public:
-	// Copies the text and calculates hash value.
+	// Primary constructors.
+	zinst(const char *src) { init(src); }
+	zinst(const zstring &src) { init(src.c_str()); }
+	// Copy constructor.
 	zinst(const zinst &src);
-	zinst(const char *src) : text(src) { fixup(); }
-	zinst(const zstring &src) : text(src) { fixup(); }
 	// Statistics.
 	const char *c_str() const { return text.c_str(); }
 	const zstring & str() const { return text; }
-	// Comparators.
-	bool compa(const zinst &) const;
-	bool compv(const zinst &) const;
-	// Used by the map of atomic instructions.
-	struct mapa
-	{
-		size_t operator()(const zinst &src) const
-			{ return src.hinta; }
-		bool operator()(const zinst &a, const zinst &b) const
-			{ return (a.hinta == b.hinta) ? a.compa(b) : false; }
-	};
-	// Used by the map of variable instructions.
-	struct mapv
-	{
-		size_t operator()(const zinst &src) const
-			{ return src.hintv; }
-		bool operator()(const zinst &a, const zinst &b) const
-			{ return (a.hintv == b.hintv) ? a.compv(b) : false; }
-	};
+	unsigned int hash() const { return hint; }
 	// Extracts strings that correspond to parameters.
 	bool get_args(const zstring &src, std::vector<zstring> *args) const;
+	// Optimizes the string (removes extra spaces, capitalizes,
+	// etc).  This makes the process of matching straightforward.
+	static void optimize(zstring &text);
+	// Calculates hash value for an optimized string.
+	static unsigned int calc_hash(const zstring &, bool atomic);
+	// Compares with a line of source code.
+	bool matchx(const zstring &) const;
+	bool matcht(const zstring &) const;
 };
 
 #endif

@@ -37,6 +37,8 @@ public:
 	static bool iseol(char c) { return (c == '\r' || c == '\n'); }
 	// Extracts a token from a string.
 	static zstring gettok(const char *&src, char sep);
+	// Adds the character to the hash.
+	static void hadd(const_iterator &it, unsigned int &hval) { hval = hval * 5 + *it; }
 };
 
 #endif

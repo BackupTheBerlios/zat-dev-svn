@@ -7,36 +7,31 @@
 
 #ifndef __zat_zcpu_h
 #define __zat_zcpu_h
-#include <ext/hash_map>
 #include <vector>
-#include "zinput.h"
-#include "zoutput.h"
-#include "zinst.h"
-#include "zymbol.h"
 #include "zconst.h"
+#include "zfoundry.h"
+#include "zinput.h"
+#include "zinst.h"
+#include "zoutput.h"
+#include "zymbol.h"
 
 class zerror;
 class zymbol;
 
-using std::vector;
-using __gnu_cxx::hash_map;
-
 class zcpu
 {
-	typedef hash_map< zinst, vector<int>, zinst::mapa, zinst::mapa > mapa_t;
-	typedef hash_map< zinst, vector<int>, zinst::mapv, zinst::mapv > mapv_t;
 	// The queue of input files.  Most recent last.
-	vector<zinput> input;
+	std::vector<zinput> input;
 	// The list of output files.
-	vector<zoutput *> output;
+	std::vector<zoutput *> output;
 	// Index within the output vector.
 	unsigned int iout;
 	// Instructions with fixed machine code (atomic).
-	mapa_t mapa;
+	zfoundry mapa;
 	// Instructions with parameters (variable).
-	mapv_t mapv;
+	zfoundry mapv;
 	// Symbols and expressions for delayed evaluation.
-	vector<zymbol *> symbols;
+	std::vector<zymbol *> symbols;
 	// Set when the instruction table is ready.  Used in zinst to
 	// fail comparing one instruction with another.
 	bool ready;
@@ -48,10 +43,10 @@ class zcpu
 	// Installs a label.
 	bool get_label(zstring &label, zstring &line);
 	// Translates an atomic command, returns `true' on success.
-	bool do_atomic(zinst &i, zoutput &out);
+	bool do_atomic(const zstring &i, zoutput &out);
 	// Translates a variable command, returns `true' on success.
 	// Resets the label if a .define command was executed.
-	bool do_variable(zinst &i, zoutput &out, zstring &label);
+	bool do_variable(const zstring &i, zoutput &out, zstring &label);
 	// Evaluates the expression and emits the result.  If the expression
 	// could not be evaluated, emits zeros and adds the expression to the
 	// symbol table.
@@ -60,7 +55,7 @@ class zcpu
 	static size_t gettime(void);
 public:
 	// Search path for input files.
-	vector< zstring > incdir;
+	std::vector< zstring > incdir;
 	// Statistics.
 	struct stat_s
 	{
