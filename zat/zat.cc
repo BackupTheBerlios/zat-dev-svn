@@ -1,22 +1,15 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
-//
-// This program is the part of the toolkit that actually assembles the
-// source code.  It does not know anything about a particular instruction
-// set; it reads the necessary definition file and builds temporary lookup
-// tables of CPU instructions and arguments.
 
 #include <getopt.h>
 #include <stdio.h>
 
 #include "zat.h"
 #include "zcpu.h"
-#include "zinst.h"
 #include "zymbol.h"
 #include "zoptions.h"
-
 
 static const char *version =
 	"zat " VERSION "\n"
@@ -35,75 +28,9 @@ static int usage()
 	return ret_syntax;
 }
 
-
-static zerror setup_cpu()
-{
-	FILE *in;
-	char buf[4096], *src;
-
-	snprintf(buf, sizeof(buf), PREFIX "/" SHAREPATH "/cpu/%s", opt.cpu);
-
-	if (opt.debug)
-		fprintf(stdout, "reading instruction set from %s\n", buf);
-
-	if ((in = fopen(buf, "rb")) == NULL)
-		return ret_bad_cpu_table;
-
-	while ((src = read_line(buf, sizeof(buf), in)) != NULL) {
-		char *state;
-		char *mnemo, *codes;
-
-		while (IsWS(*src))
-			++src;
-		if (*src == ';')
-			continue;
-
-		strtoupper(src);
-
-		mnemo = zatok(src, '|', &state);
-		codes = zatok(NULL, '|', &state);
-
-		if (codes == NULL)
-			return ret_bad_cpu_table;
-
-		new zinst(mnemo, codes);
-	}
-
-	zinst::optimize();
-	return ret_ok;
-}
-
-
-static zerror do_file(const char *fname)
-{
-	char line[1024], *tmp;
-	zerror rc = ret_ok;
-	FILE *in = fopen(fname, "rb");
-
-	if (in == NULL)
-		return ret_inerr;
-
-	cpu.fname = fname;
-	cpu.line = 1;
-
-	while ((tmp = read_line(line, sizeof(line), in)) != NULL) {
-		const char *str = line;
-
-		if ((rc = zinst::translate(str)) != ret_ok && rc != ret_ok_nodata)
-			break;
-
-		++cpu.line;
-	}
-
-	fclose(in);
-	return rc;
-}
-
-
 int main(int argc, char * const argv[])
 {
 	zerror rc = ret_ok;
-	std::vector<const char *> preargs;
 
 	for (char ch; (ch = getopt(argc, argv, "c:dhI:Mo:qs:vW")) > 0; ) {
 		switch (ch) {
@@ -134,8 +61,7 @@ int main(int argc, char * const argv[])
 				"");
 			return ret_syntax;
 		case 'I':
-			preargs.push_back("-I");
-			preargs.push_back(optarg);
+			cpu.incdir.push_back(optarg);
 			break;
 		case 'M':
 			break;
@@ -159,40 +85,19 @@ int main(int argc, char * const argv[])
 		}
 	}
 
-	argv += optind;
-	argc -= optind;
-
-	if (argc == 0)
-		return usage();
-
-	if ((rc = setup_cpu()) != ret_ok) {
-		rc.repex();
+	if ((rc = cpu.init(opt.cpu)) != ret_ok) {
+		rc.report();
 		return rc;
-	} else if (opt.debug) {
-		zinst::dump();
 	}
 
-	if (!opt.open())
-		return ret_outerr;
-
-	while (argc != 0) {
-		if ((rc = do_file(*argv)) != ret_ok) {
-			rc.repin();
-			if (rc.is_error())
-				return rc;
-		}
-		++argv, --argc;
+	if ((rc = cpu.translate(argc - optind, argv + optind)) != ret_ok) {
+		rc.report();
+		return rc;
 	}
 
 	if ((rc = zymbol::rescan()) != ret_ok) {
-		rc.repex();
+		rc.report();
 		return rc;
-	}
-
-	if (opt.fsym != NULL) {
-		if (opt.debug)
-			zinst::dump();
-		zymbol::dump();
 	}
 
 	return rc;

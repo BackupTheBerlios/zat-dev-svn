@@ -1,60 +1,52 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
+//
+// Describes a virtual machine.
 
 #ifndef __zaa_zcpu_h
 #define __zaa_zcpu_h
 
+#include <vector>
+#include <string>
+
+#include "zinput.h"
+#include "zoutput.h"
+
 class zerror;
+class zymbol;
 
 class zcpu
 {
-	class blockdef;
-public:
-	// current file name
-	const char *fname;
-	// current line number
-	unsigned int line;
-	// current translation address
-	unsigned int addr;
-	// Emulated memory size.
-	unsigned int ramsize;
-	// Emulated memory data.
-	unsigned char *ramdata;
+	// The queue of input files.  Most recent last.
+	std::vector<zinput> input;
+	// The list of output files.
+	std::vector<zoutput *> output;
+	// Index within the output vector.
+	unsigned int iout;
 public:
 	// The label on the current line.
-	class zymbol *lastlabel;
+	zymbol *lastlabel;
 	// The address of the current line.
 	unsigned int caddr;
 	// The map of used bytes.  For listing only.
 	unsigned int usemap;
+	// Search path for input files.
+	std::vector< std::string > incdir;
 public:
 	// Initialization.
 	zcpu();
 	// Memory and file handle clean-up.
 	~zcpu();
-	// Emits a single byte at the current address.
-	zerror emit_b(int);
-	zerror emit_b(int, unsigned int at);
-	zerror emit_w(int);
-	zerror emit_w(int, unsigned int at);
+	// Initializes the CPU table.
+	zerror init(const char *cpu_name);
+	// Translate the specified input files.
+	zerror translate(int argc, char * const *argv);
 	// Initializes temporary data.
 	void initcom();
 	// Marks last N bytes as unused.
 	void unuse(unsigned int N);
-};
-
-
-class zcpu::blockdef
-{
-public:
-	// Position at which the block starts (within the ram image)
-	unsigned int at;
-	// The size of the block, in bytes.
-	unsigned int size;
-public:
-	blockdef();
 };
 
 

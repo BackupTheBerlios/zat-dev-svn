@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -15,6 +15,8 @@ const char * zerror::c_str() const
 		return "all clear";
 	case ret_ok_nodata:
 		return "the command emitted nothing";
+	case ret_no_input_files:
+		return "no input files";
 	case ret_syntax:
 		return "syntax error";
 	case ret_inerr:
@@ -58,7 +60,7 @@ const char * zerror::prefix() const
 	else if (is_warning())
 		return "warning: ";
 	else
-		return "";
+		return "zat: ";
 }
 
 
@@ -79,20 +81,7 @@ bool zerror::is_error() const
 	return (code >= ret_errors);
 }
 
-
-void zerror::repin(const char *arg) const
+void zerror::report() const
 {
-	if (arg != NULL && *arg != '\0')
-		fprintf(stderr, "%s:%u: %s%s: %s\n", cpu.fname, cpu.line, prefix(), c_str(), arg);
-	else
-		fprintf(stderr, "%s:%u: %s%s\n", cpu.fname, cpu.line, prefix(), c_str());
-}
-
-
-void zerror::repex(const char *arg) const
-{
-	if (arg != NULL && *arg != '\0')
-		fprintf(stderr, "%s%s: %s\n", prefix(), c_str(), arg);
-	else
-		fprintf(stderr, "%s%s\n", prefix(), c_str());
+	fprintf(stderr, "%s%s.\n", prefix(), c_str());
 }

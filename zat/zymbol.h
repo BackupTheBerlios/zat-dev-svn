@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -96,6 +96,7 @@ public:
 	static void dump();
 	// Installs a new label or reports ret_duplicate_label.
 	static zerror install(const char *expr, int value, bool delayed = false);
+	static zerror install(const char *expr, const zmemblk &);
 	// Finds a label or an expression, returns NULL if no luck.
 	static zymbol* find(const char *);
 	// Delays a label, remembers where to emit its value.

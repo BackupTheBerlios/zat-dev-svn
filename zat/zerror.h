@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -11,6 +11,7 @@ typedef enum retc_e
 {
 	ret_ok,
 	ret_ok_nodata,
+	ret_no_input_files,
 
 	ret_warnings,
 	ret_byte_overflow = ret_warnings,
@@ -47,10 +48,8 @@ public:
 	bool is_ok() const;
 	bool is_warning() const;
 	bool is_error() const;
-	// Reports an error in the context of a file.
-	void repin(const char *arg = 0) const;
-	// Reports an error out of the context of a file.
-	void repex(const char *arg = 0) const;
+	// Reports a generic error.
+	void report() const;
 };
 
 #endif // __zaa_zerror_h

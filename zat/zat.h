@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -18,7 +18,5 @@
 #ifndef dimof
 # define dimof(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
-
-FILE* zat_pre(int argc, const char **argv);
 
 #endif // __zat_h_included__

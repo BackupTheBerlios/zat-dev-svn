@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -12,6 +12,7 @@
 #include "zoptions.h"
 #include "zstring.h"
 
+/*
 static zstring get_token(const char *&src)
 {
 	zstring rc;
@@ -39,8 +40,9 @@ static zstring get_token(const char *&src)
 
 	return rc;
 }
+*/
 
-
+/*
 zerror do_defw(const char *src)
 {
 	while (*src != '\0') {
@@ -65,7 +67,6 @@ zerror do_defw(const char *src)
 	return ret_ok;
 }
 
-
 zerror do_defb(const char *src)
 {
 	while (*src != '\0') {
@@ -89,6 +90,7 @@ zerror do_defb(const char *src)
 
 	return ret_ok;
 }
+*/
 
 
 zerror do_org(const char *src)
@@ -98,7 +100,7 @@ zerror do_org(const char *src)
 
 	switch (rc = zinst::evaluate(zstring(src), value)) {
 	case ret_ok:
-		cpu.addr = value;
+		// cpu.addr = value;
 		return ret_ok_nodata;
 	default:
 		return rc;
@@ -131,8 +133,10 @@ zerror do_include(const char *)
 zdirective zdirs[] = {
 	{ "EQU", do_equ },
 	{ "ORG", do_org },
+	/*
 	{ "DEFB", do_defb },
 	{ "DEFW", do_defw },
+	*/
 	{ "INCLUDE", do_include },
 	{ NULL, NULL }
 };

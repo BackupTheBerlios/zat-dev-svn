@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -217,7 +217,6 @@ bool zinst::find_dir(const char *line, zerror &rc)
 	return false;
 }
 
-
 bool zinst::find_asm(const char *line, zerror &rc)
 {
 	zinst *inst;
@@ -227,21 +226,25 @@ bool zinst::find_asm(const char *line, zerror &rc)
 
 	if ((rc = find(buf, inst)) == ret_ok || rc == ret_ok_nodata) {
 		if (inst != NULL) {
+			/*
 			// Current position in the instruction name.
 			const char *atcmd = inst->name.c_str();
 			// Current position in the source line.
 			const char *atsrc = buf;
+			*/
 
 			// Emit byte by byte.  Get to parse arguments as
 			// soon as we encounter the references.
 			for (std::vector<int>::iterator it = inst->codes.begin(); it != inst->codes.end(); ++it) {
 				zerror tmprc;
 
+				/*
 				if (*it < 0) {
 					tmprc = evaluate(atcmd, atsrc, *it);
 				} else {
 					tmprc = cpu.emit_b(*it);
 				}
+				*/
 
 				if (tmprc != ret_ok)
 					return tmprc;
@@ -415,7 +418,7 @@ zerror zinst::evaluate(zstring expr, int &value)
 				++tmp;
 		}
 		else if (*tmp == '$' && !(isalnum(*(tmp + 1)) || *(tmp + 1) == '_')) {
-			tval = cpu.addr;
+			// tval = cpu.addr;
 		}
 		else if (isalpha(*tmp) || *tmp == '_') {
 			zymbol *lab;
@@ -428,8 +431,9 @@ zerror zinst::evaluate(zstring expr, int &value)
 
 			if ((lab = zymbol::find(label.c_str())) == NULL || lab->is_delayed()) {
 				zerror rc = ret_undefined_label;
-				if (opt.debug >= 2)
-					rc.repin(label.c_str());
+				if (opt.debug >= 2) {
+					// rc.repin(label.c_str());
+				}
 				return rc;
 			} else {
 				value = lab->get_value();
@@ -437,8 +441,9 @@ zerror zinst::evaluate(zstring expr, int &value)
 		}
 		else {
 			zerror rc = ret_bad_expression;
-			if (opt.debug)
-				rc.repin(expr.c_str());
+			if (opt.debug) {
+				// rc.repin(expr.c_str());
+			}
 			return rc;
 		}
 
@@ -468,9 +473,10 @@ zerror zinst::evaluate(const char *&atcmd, const char *&atsrc, int mode)
 
 	switch ((rc = evaluate(expr, value))) {
 	case ret_undefined_label:
-		if (opt.debug >= 2)
-			fprintf(stderr, "%s:%u: expression evaluation delayed: %s\n", cpu.fname, cpu.line, expr.c_str());
-		zymbol::delay(expr.c_str(), cpu.addr, mode);
+		if (opt.debug >= 2) {
+			// fprintf(stderr, "%s:%u: expression evaluation delayed: %s\n", cpu.fname, cpu.line, expr.c_str());
+		}
+		// zymbol::delay(expr.c_str(), cpu.addr, mode);
 		break;
 	case ret_ok:
 		break;
@@ -482,17 +488,17 @@ zerror zinst::evaluate(const char *&atcmd, const char *&atsrc, int mode)
 	case op_byte:
 		if (rc == ret_undefined_label)
 			skipsize = 1;
-		rc = cpu.emit_b(value);
+		// rc = cpu.emit_b(value);
 		break;
 	case op_word:
 		if (rc == ret_undefined_label)
 			skipsize = 2;
-		rc = cpu.emit_w(value);
+		// rc = cpu.emit_w(value);
 		break;
 	case op_offset:
 		if (rc == ret_undefined_label)
 			skipsize = 1;
-		rc = cpu.emit_b((rc == ret_ok) ? value - cpu.caddr : 0);
+		// rc = cpu.emit_b((rc == ret_ok) ? value - cpu.caddr : 0);
 		break;
 	}
 
@@ -504,107 +510,4 @@ zerror zinst::evaluate(const char *&atcmd, const char *&atsrc, int mode)
 		cpu.unuse(skipsize);
 
 	return rc;
-}
-
-
-// This function deals with a single line, which contains one instruction
-// and, optionally, is prefixed with a label.  The line may also contain
-// comments, which are stripped by the normalize() method.
-zerror zinst::translate(const char *src)
-{
-	zerror rc;
-
-	cpu.initcom();
-
-	// we have found a label.
-	if (isalpha(*src) || *src == '_') {
-		zstring name;
-		const char *tmp = src;
-
-		while (!IsWS(*tmp) && *tmp != '\0')
-			++tmp;
-
-		name = zstring(src, tmp - src);
-
-		if ((rc = zymbol::install(name.c_str(), cpu.addr)) != ret_ok) {
-			if (opt.debug)
-				fprintf(stderr, "%s:%u: error installing label %s: %s\n", cpu.fname, cpu.line, name.c_str(), rc.c_str());
-			return rc;
-		}
-
-		if (opt.debug >= 3 && opt.fsym != NULL) {
-			name.capsize();
-			fprintf(opt.fsym, "; %04Xh ; ", cpu.caddr);
-
-			for (unsigned int left = maxlength * 3 - strlen(name.c_str()) - 1; left != 0; --left)
-				fputc(' ', opt.fsym);
-
-			fprintf(opt.fsym, "%s ;\n", name.c_str());
-		}
-
-		src = tmp;
-	}
-
-	while (IsWS(*src))
-		++src;
-
-	if (*src == '\0')
-		return ret_ok_nodata;
-
-	if (!find_dir(src, rc) && !find_asm(src, rc))
-		rc = ret_syntax;
-
-	if (opt.fsym != NULL && opt.debug >= 2) {
-		unsigned int mask = 1;
-
-		while (cpu.caddr != cpu.addr) {
-			unsigned int left = maxlength;
-
-			fprintf(opt.fsym, "; %04Xh ;", cpu.caddr);
-
-			if (rc != ret_ok_nodata) {
-				while (left != 0 && cpu.caddr != cpu.addr) {
-					if (mask != 0 && (cpu.usemap & mask) == 0)
-						fprintf(opt.fsym, " ??");
-					else
-						fprintf(opt.fsym, " %02X", cpu.ramdata[cpu.caddr]);
-					++cpu.caddr;
-					--left;
-					mask <<= 1;
-				}
-			}
-
-			while (left != 0) {
-				fprintf(opt.fsym, "   ");
-				--left;
-			}
-
-			if (src != NULL)
-				fprintf(opt.fsym, " ; %s\n", src);
-			else
-				fprintf(opt.fsym, " ;\n");
-
-			src = NULL;
-
-			if (rc == ret_ok_nodata)
-				break;
-		}
-	}
-
-	return rc;
-}
-
-
-const char * get_opcode_name(int code)
-{
-	switch (code) {
-	case op_byte:
-		return "byte";
-	case op_word:
-		return "word";
-	case op_offset:
-		return "offset";
-	default:
-		return "unknown";
-	}
 }

@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -58,7 +58,6 @@ private:
 	// that "cmd" may be null even if the function returns ret_ok.
 	// This happens when CPU independent assembler directives such
 	// as ORG, DEFB and so on are processed.
-	static zerror find(const char *, zinst *&cmd);
 	static bool find_dir(const char *line, zerror &rc);
 	static bool find_asm(const char *line, zerror &rc);
 public:
@@ -100,18 +99,17 @@ public:
 	// stores the information into the list of unresolved labels
 	// for later resolution.
 	static zerror translate(const char *);
+	// Finds a command for the current instruction.
+	static zerror find(const char *, zinst *&cmd);
 };
-
 
 enum opcodes
 {
 	op_byte = -1,
 	op_word = -2,
 	op_offset = -3,
+	op_include = -4,
+	op_origin = -5,
 };
-
-
-const char * get_opcode_name(int code);
-
 
 #endif // __zaa_zinst_h

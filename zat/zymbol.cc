@@ -1,4 +1,4 @@
-// ZAA, ZX Assembler assembler (umm).
+// Zat Assembler Toolchain.
 // Copyright (c) 2004 hex@mirkforce.net
 //
 // $Id$
@@ -10,9 +10,10 @@
 
 #include "zcpu.h"
 #include "zinst.h"
-#include "zymbol.h"
+#include "zmemblk.h"
 #include "zoptions.h"
 #include "zstring.h"
+#include "zymbol.h"
 
 std::vector<zymbol> zymbol::list;
 
@@ -96,23 +97,27 @@ void zymbol::emit()
 {
 	// Emit all byte sized values.
 	for (std::vector<unsigned int>::iterator it = bytes.begin(); it != bytes.end(); ++it) {
-		cpu.emit_b(value, *it);
+		// cpu.emit_b(value, *it);
 	}
 	bytes.clear();
 
 	// Emit all word sized values.
 	for (std::vector<unsigned int>::iterator it = words.begin(); it != words.end(); ++it) {
-		cpu.emit_w(value, *it);
+		// cpu.emit_w(value, *it);
 	}
 	words.clear();
 
 	// Emit all offset values.
 	for (std::vector<unsigned int>::iterator it = offsets.begin(); it != offsets.end(); ++it) {
-		cpu.emit_b(value, *it);
+		// cpu.emit_b(value, *it);
 	}
 	offsets.clear();
 }
 
+zerror zymbol::install(const char *expr, const zmemblk &em)
+{
+	return install(expr, em.size(), true);
+}
 
 zerror zymbol::install(const char *expr, int value, bool delayed)
 {
@@ -177,7 +182,8 @@ void zymbol::delay(const char *expr, unsigned int pc, int mode)
 		lab->offsets.push_back(pc);
 		break;
 	default:
-		zerror(ret_bad_label_type).repin(expr);
+		// zerror(ret_bad_label_type).repin(expr);
+		;
 	}
 }
 
@@ -223,8 +229,9 @@ zerror zymbol::rescan()
 				zstring name(it->name);
 
 				if (zinst::evaluate(name, it->get_value()) == ret_ok) {
-					if (opt.debug >= 2)
-						fprintf(stderr, "%s:%u: delayed label %s resolved to %04Xh\n", cpu.fname, cpu.line, it->name.c_str(), it->get_value());
+					if (opt.debug >= 2) {
+						// fprintf(stderr, "%s:%u: delayed label %s resolved to %04Xh\n", cpu.fname, cpu.line, it->name.c_str(), it->get_value());
+					}
 
 					it->emit();
 
