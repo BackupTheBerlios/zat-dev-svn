@@ -53,6 +53,8 @@ void zcpu::add_instr(const char *src)
 				code = op_word;
 			else if (tok == "@boffset")
 				code = op_boffset;
+			else if (tok == "@zap")
+				code = op_zap;
 			else
 				throw zesyntax(src, "unknown machine code extension");
 			atomic = false;
@@ -69,7 +71,7 @@ void zcpu::add_instr(const char *src)
 	else
 		mapv[zinst(mnemo)] = codes;
 
-	debug(2, " - installed(%c) '%s'\n", atomic ? 'a' : 'v', mnemo.c_str());
+	debug(3, "installed %s instruction '%s' (%u opcodes)\n", atomic ? "atomic" : "variable", mnemo.c_str(), codes.size());
 }
 
 void zcpu::init(const char *cpu_name)

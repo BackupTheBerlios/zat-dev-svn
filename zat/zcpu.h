@@ -62,6 +62,7 @@ typedef enum opcode_e
 	op_byte = -1,
 	op_word = -2,
 	op_boffset = -3,
+	op_zap = -4,
 } opcode;
 
 
