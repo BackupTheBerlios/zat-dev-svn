@@ -185,30 +185,28 @@ void zcpu::resolve()
 	} while (repeat);
 
 	if (delayed) {
-		if (opt.fsym.is_open()) {
-			bool lock = false;
+		bool lock = false;
 
+		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			if ((*it)->islabel() && !(*it)->isok()) {
+				if (!lock) {
+					fprintf(stderr, "Values of the following labels could not be evaluated:\n");
+					lock = true;
+				}
+				fprintf(stderr, " - %s (%s)\n", (*it)->c_str(), (*it)->extra());
+			}
+		}
+
+		lock = false;
+
+		if (opt.debug.symtab) {
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-				if ((*it)->islabel() && !(*it)->isok()) {
+				if (!(*it)->islabel() && !(*it)->isok()) {
 					if (!lock) {
-						fprintf(stderr, "Values of the following labels could not be evaluated:\n");
+						fprintf(stderr, "The following expressions could not be calculated:\n");
 						lock = true;
 					}
-					fprintf(stderr, " - %s (%s)\n", (*it)->c_str(), (*it)->extra());
-				}
-			}
-
-			lock = false;
-
-			if (opt.debug.symtab) {
-				for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-					if (!(*it)->islabel() && !(*it)->isok()) {
-						if (!lock) {
-							fprintf(stderr, "The following expressions could not be calculated:\n");
-							lock = true;
-						}
-						fprintf(stderr, " - %s\n", (*it)->c_str());
-					}
+					fprintf(stderr, " - %s\n", (*it)->c_str());
 				}
 			}
 		}
@@ -216,11 +214,11 @@ void zcpu::resolve()
 		throw zemsg("not all expressions could be evaluated");
 	} else {
 		if (opt.fsym.is_open()) {
-			opt.fsym.print(";\n; symbol table follows (%u elements)\n", symbols.size());
+			opt.fsym.print(";\n; Symbol table follows (%u elements)\n", symbols.size());
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 				if ((*it)->islabel())
-					opt.fsym.print(";  %04Xh ;                         ; %s\n", (*it)->get_value(), (*it)->c_str());
+					opt.fsym.print(";  %04Xh ;                         ; %s\n", (*it)->get_value() & 0xFFFF, (*it)->c_str());
 			}
 		}
 	}
