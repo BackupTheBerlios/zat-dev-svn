@@ -33,5 +33,8 @@ SHAREPATH="share/$PRODUCT/$VERSION"
 # The path to the binaries.
 BINPATH="bin"
 
+# The path to the sources.
+SRCPATH="`pwd`"
+
 out_include "configure.h" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT" "PREFIX" "CONTACT"
-out_makefile "Makedefs.faerion.include" "*" "SUDO" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX"
+out_makefile "Makedefs.faerion.include" "*" "SUDO" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX" "SRCPATH"
