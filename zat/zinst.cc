@@ -111,8 +111,10 @@ bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 			else
 				bracket = 0;
 
-			if (*si++ != *ti++)
+			if (*si != *ti)
 				break;
+
+			++si, ++ti;
 		}
 	}
 
