@@ -54,13 +54,14 @@ bool zstream::read(zstring &str)
 
 	int c;
 	for (; (c = getc_unlocked(in)) != EOF; ) {
-		if (zstring::iseol(c)) {
-			while (zstring::iseol(c))
+		if (c == '\r') {
+			while (c == '\r')
 				c = getc_unlocked(in);
-			if (c != EOF)
+			if (c != '\n' && c != EOF)
 				ungetc(c, in);
 			break;
-		}
+		} else if (c == '\n')
+			break;
 
 		str.push_back(c);
 	}
