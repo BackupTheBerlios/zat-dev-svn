@@ -73,14 +73,19 @@ bool zprofile(const char *prefix, zprofile_func func)
 {
 	const char *home = getenv("HOME");
 
+#if !defined(_WIN32)
+	if (!zprofile_file("/etc/zat.rc", prefix, func))
+		return false;
+#endif
+
 	if (home != NULL) {
 		zstring path;
-		path.format("%s/.zat.rc", home);
+		path.format("%s/.zatrc", home);
 		if (!zprofile_file(path.c_str(), prefix, func))
 			return false;
 	}
 
-	if (!zprofile_file("./.zat.rc", prefix, func))
+	if (!zprofile_file("./.zatrc", prefix, func))
 		return false;
 
 	return true;
