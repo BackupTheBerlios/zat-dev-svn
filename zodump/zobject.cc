@@ -18,14 +18,15 @@ bool zobject::open(const char *fname)
 	if (!in.open(fname, false))
 		return false;
 
-	while (true) {
+	do {
 		segment seg;
-
 		if (!seg.read(in))
 			return false;
+		if (seg.blocks.size() != 0)
+			segments.push_back(seg);
+	} while (in.tell() < in.size());
 
-		fprintf(stdout, "Segment read: %s\n", seg.name.c_str());
-	}
+	return true;
 }
 
 bool zobject::segment::read(zstream &in)
@@ -35,9 +36,11 @@ bool zobject::segment::read(zstream &in)
 	in >> name;
 	in >> count;
 
-	while (count != 0) {
+	while (count-- != 0) {
 		block b;
 		b.read(in);
+		if (b.size != 0)
+			blocks.push_back(b);
 	}
 
 	return true;

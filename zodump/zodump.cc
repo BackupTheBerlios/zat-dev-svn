@@ -23,7 +23,7 @@ static int usage()
 	return 1;
 }
 
-static bool do_file(const char *fname)
+static bool do_file(const char *fname, bool dec)
 {
 	zobject o;
 
@@ -38,14 +38,17 @@ static bool do_file(const char *fname)
 		fprintf(stdout, "  Segment: %s\n", it->name.c_str());
 
 		for (zobject::segment::const_iterator cit = it->blocks.begin(); cit != it->blocks.end(); ++cit) {
-			fprintf(stdout, "    Block at %04Xh, size: %04Xh.\n", cit->base, cit->size);
+			if (dec)
+				fprintf(stdout, "    Block at %u, size: %u.\n", cit->base, cit->size);
+			else
+				fprintf(stdout, "    Block at %04Xh, size: %04Xh.\n", cit->base, cit->size);
 		}
 	}
 
 	return true;
 }
 
-bool zmain(int argc, char * const * argv)
+void zmain(int argc, char * const * argv)
 {
 	bool dec = false;
 
@@ -55,7 +58,8 @@ bool zmain(int argc, char * const * argv)
 			dec = true;
 			break;
 		case 'h':
-			return usage();
+			usage();
+			return;
 		default:
 			throw zeusage();
 		}
@@ -68,13 +72,10 @@ bool zmain(int argc, char * const * argv)
 		throw zenofiles();
 
 	while (argc != 0) {
-		if (!do_file(*argv))
-			return false;
+		do_file(*argv, dec);
 		--argc;
 		++argv;
 	}
-
-	return true;
 }
 
 int main(int argc, char * const * argv)
