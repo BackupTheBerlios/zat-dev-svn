@@ -1,9 +1,9 @@
 # Makefile for GNU Make.
-# $Id: GNUmakefile,v 1.1.1.1 2004/09/13 21:16:29 vhex Exp $
+# $Id$
 
 include Makedefs.faerion.include
 
-DIRS = zat zatp
+DIRS = zat
 
 custom-cleandist = custom-cleandist
 
@@ -15,8 +15,6 @@ fake: all
 	mkdir -p fake-$(VERSION)/$(SHAREPATH)/cpu
 	cp zat/zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/
 	ln -s zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/zat
-	cp zatp/zatp-$(VERSION) fake-$(VERSION)/$(BINPATH)
-	ln -s zatp-$(VERSION) fake-$(VERSION)/$(BINPATH)/zatp
 	cp share/cpu/Z80 fake-$(VERSION)/$(SHAREPATH)/cpu
 	cp share/LICENSE fake-$(VERSION)/share
 

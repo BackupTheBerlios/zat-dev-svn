@@ -33,4 +33,5 @@ BINPATH=bin
 
 DEFS="$DEFS VERSION=\\\"$VERSION\\\" PREFIX=\\\"$PREFIX\\\" SHAREPATH=\\\"$SHAREPATH\\\" BINPATH=\\\"$BINPATH\\\" CONTACT=\\\"$CONTACT\\\""
 
+out_include "configure.h"
 out_makefile "Makedefs.faerion.include" "*" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT"
