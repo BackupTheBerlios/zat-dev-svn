@@ -1,8 +1,9 @@
+$Id
 --- GNUmakefile.orig	Sun Mar 27 01:20:37 2005
 +++ GNUmakefile	Tue Mar 29 11:07:12 2005
 @@ -1,5 +1,4 @@
  # Makefile for GNU Make.
--# $Id: GNUmakefile 149 2005-03-26 22:18:22Z vhex $
+-# $Id$
  
  include Makedefs.faerion.include
  
