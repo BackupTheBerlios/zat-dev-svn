@@ -5,7 +5,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#ifndef _WIN32
+# include <sys/time.h>
+#else
+# include <windows.h>
+#endif
+#include "zat.h"
 #include "zcpu.h"
 #include "zinst.h"
 #include "zoptions.h"
@@ -105,7 +110,10 @@ void zcpu::init(const char *cpu_name)
 	if (!in.open(fname.c_str()))
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
+	stat.tabtime = gettime();
 	for (zstring line; in.read(line); add_instr(line.c_str()));
+	stat.tabtime = gettime() - stat.tabtime;
+
 	ready = true;
 
 	output.push_back(new zoutput(opt.out));
@@ -125,17 +133,23 @@ void zcpu::translate(int argc, char * const *argv)
 	if (input.size() == 0)
 		throw zenofiles();
 
+	stat.trantime - gettime();
+
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		debug(1, "translating \"%s\".\n", i.name());
 		while (parse(i, *output[iout]));
 		input.pop_back();
 	}
+
+	stat.trantime = gettime() - stat.trantime;
 }
 
 void zcpu::resolve()
 {
 	bool repeat, delayed;
+
+	stat.fixtime = gettime();
 
 	do {
 		repeat = false;
@@ -190,6 +204,8 @@ void zcpu::resolve()
 			}
 		}
 	}
+
+	stat.fixtime = gettime() - stat.fixtime;
 }
 
 bool zcpu::parse(zinput &in, zoutput &out)
@@ -198,6 +214,8 @@ bool zcpu::parse(zinput &in, zoutput &out)
 
 	if (!in.read(line))
 		return false;
+
+	stat.lines++;
 
 	if (get_label(label, line) && opt.fsym.is_open()) {
 		opt.fsym.print(";        ;                         ; ; %s\n", label.c_str());
@@ -380,4 +398,28 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 	default:
 		throw zesyntax(expr.c_str(), "unknown data type (internal error)");
 	}
+}
+
+size_t zcpu::gettime(void)
+{
+	size_t sec, msec;
+	static size_t base = 0;
+
+#ifdef _WIN32
+	SYSTEMTIME st;
+	GetSystemTime(&st);
+	sec = static_cast<size_t>(st.wSecond);
+	msec = static_cast<size_t>(st.wMilliseconds);
+#else
+	struct timeval tv;
+	memset(&tv, 0, sizeof(tv));
+	gettimeofday(&tv, NULL);
+	sec = static_cast<size_t>(tv.tv_sec);
+	msec = static_cast<size_t>(tv.tv_usec / 1000);
+#endif
+
+	if (base == 0)
+		base = sec;
+
+	return (sec - base) * 1000 + msec;
 }

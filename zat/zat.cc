@@ -23,7 +23,7 @@ static void zmain(int argc, char * const * argv)
 {
 	zerror rc;
 
-	for (char ch; (ch = getopt(argc, argv, "c:dhI:Mo:qs:vW")) > 0; ) {
+	for (char ch; (ch = getopt(argc, argv, "c:dhI:Mo:qs:tvW")) > 0; ) {
 		switch (ch) {
 		case 'c':
 			opt.cpu = optarg;
@@ -47,6 +47,7 @@ static void zmain(int argc, char * const * argv)
 				"  -o filename     : default output file name\n"
 				"  -q              : quiet, suppress unnecessary messages\n"
 				"  -s filename     : dump symbols to the file\n"
+				"  -t              : show process timing\n"
 				"  -v              : display version number and exit\n"
 				"  -W              : treat warnings as errors\n"
 				"");
@@ -65,6 +66,9 @@ static void zmain(int argc, char * const * argv)
 		case 's':
 			opt.sym = optarg;
 			break;
+		case 't':
+			opt.timing = true;
+			break;
 		case 'v':
 			fprintf(stdout, "%s\n", version);
 			return;
@@ -80,6 +84,12 @@ static void zmain(int argc, char * const * argv)
 	cpu.init(opt.cpu);
 	cpu.translate(argc - optind, argv + optind);
 	cpu.resolve();
+
+	if (opt.timing) {
+		fprintf(stdout, "Table read in %u msec.\n", cpu.stat.tabtime);
+		fprintf(stdout, "Translation done in %u msec (%u lines processed).\n", cpu.stat.trantime, cpu.stat.lines);
+		fprintf(stdout, "Symbol table fixed in %u msec.\n", cpu.stat.fixtime);
+	}
 }
 
 int main(int argc, char * const * argv)

@@ -18,6 +18,7 @@ zoptions::zoptions()
 	debug = 0;
 	errstart = zsev_error;
 	quiet = false;
+	timing = false;
 }
 
 

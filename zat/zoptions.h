@@ -23,6 +23,8 @@ public:
 	int errstart;
 	// Set to suppress extraneous output.
 	bool quiet;
+	// Set to show timing.
+	bool timing;
 public:
 	// Initialization.
 	zoptions();

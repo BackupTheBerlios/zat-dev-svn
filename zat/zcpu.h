@@ -55,9 +55,28 @@ class zcpu
 	// could not be evaluated, emits zeros and adds the expression to the
 	// symbol table.
 	void emit(const zstring &expr, opcode, zoutput &out, int base);
+	// Returns time offset in msec.
+	static size_t gettime(void);
 public:
 	// Search path for input files.
 	vector< zstring > incdir;
+	// Statistics.
+	struct stat_s
+	{
+		// Instruction table parsing time.
+		size_t tabtime;
+		// Translation time.
+		size_t trantime;
+		// Symbol table fixup time.
+		size_t fixtime;
+		// Lines of code.
+		size_t lines;
+		// Initialization.
+		stat_s()
+		{
+			lines = 0;
+		}
+	} stat;
 public:
 	// Initialization.
 	zcpu();
