@@ -23,7 +23,7 @@ CONTACT=hex@faerion.oss
 PRODUCT=zat
 
 # Product version number, currently only used in help screens.
-VERSION=1.0
+VERSION=0.1-20050317
 
 # The path to common files (tables, etc).
 SHAREPATH=share/$PRODUCT-$VERSION
