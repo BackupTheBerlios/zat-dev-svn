@@ -21,6 +21,10 @@ public:
 	bool has_path() const;
 	// Compares with a standard string.
 	bool operator == (const char *src) const;
+	// Assignment.
+	zstring& operator = (const zstring &src);
+	// Formats a string.
+	zstring& format(const char *format, ...);
 	// Checks whether a character is a white space.
 	static bool isws(char c) { return (c == ' ' || c == '\t'); }
 	// Checks whether a character is a quotation mark.

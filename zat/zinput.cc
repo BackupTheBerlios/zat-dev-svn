@@ -39,8 +39,8 @@ bool zinput::open()
 		debug(1, "looking for \"%s\" using absolute path.\n", meta.name.c_str());
 		in.open(meta.name.c_str());
 	} else {
-		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
-			std::string path = *it + "/" + std::string(meta.name.c_str());
+		for (std::vector< zstring >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
+			zstring path = zstring().format("%s/%s", it->c_str(), meta.name.c_str());
 
 			if (in.open(path.c_str())) {
 				break;
@@ -73,7 +73,7 @@ void zinput::do_label(const char *&src, zoutput &out)
 
 bool zinput::do_line(zoutput & /* out */)
 {
-	std::string line;
+	zstring line;
 	vector < pair<int, string> > args;
 
 	if (!in.read(line))

@@ -12,9 +12,9 @@ zoptions::zoptions()
 {
 	out = "zat.bin";
 	cpu = "Z80";
-	sym = NULL;
-	fout = NULL;
-	fsym = NULL;
+	sym = 0;
+	fout = 0;
+	fsym = 0;
 	debug = 0;
 	errstart = zsev_error;
 	quiet = false;
@@ -28,9 +28,9 @@ zoptions::~zoptions()
 
 void zoptions::open()
 {
-	if (sym != NULL && !fsym.open(sym, true))
+	if (sym != 0 && !fsym.open(sym, true))
 		throw zefile("could not open symbol file for writing", sym);
 
-	if (out != NULL && !fout.open(out, true))
+	if (out != 0 && !fout.open(out, true))
 		throw zefile("could not open output file for writing", out);
 }

@@ -4,14 +4,14 @@
 // $Id$
 
 #pragma once
-#include <string>
 #include <vector>
+#include "zstring.h"
 
 class zmemblk;
 
 class zoutput
 {
-	std::string name;
+	zstring name;
 	std::vector<zmemblk *> blocks;
 public:
 	zoutput(const char *fname);

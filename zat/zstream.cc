@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include "zstream.h"
+#include "zstring.h"
 
 zstream::zstream()
 {
@@ -38,7 +39,7 @@ bool zstream::is_eof()
 	return feof(reinterpret_cast<FILE *>(fd));
 }
 
-bool zstream::read(std::string &str)
+bool zstream::read(zstring &str)
 {
 	FILE *in = reinterpret_cast<FILE *>(fd);
 	

@@ -3,6 +3,7 @@
 //
 // $Id$
 
+#include <stdarg.h>
 #include "zstring.h"
 
 void zstring::capsize()
@@ -56,4 +57,25 @@ bool zstring::operator == (const char *src) const
 		if (::toupper(*it) != ::toupper(*src))
 			break;
 	return (*src == 0);
+}
+
+zstring& zstring::operator = (const zstring &src)
+{
+	*(std::string *)this = src;
+	return *this;
+}
+
+zstring& zstring::format(const char *format, ...)
+{
+	char *tmp;
+	va_list vl;
+
+	va_start(vl, format);
+	asprintf(&tmp, format, vl);
+	va_end(vl);
+
+	*this = tmp;
+	free(tmp);
+
+	return *this;
 }

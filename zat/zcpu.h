@@ -40,7 +40,7 @@ public:
 	// The map of used bytes.  For listing only.
 	unsigned int usemap;
 	// Search path for input files.
-	vector< std::string > incdir;
+	vector< zstring > incdir;
 public:
 	// Initialization.
 	zcpu();

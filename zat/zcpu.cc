@@ -77,10 +77,10 @@ void zcpu::add_instr(const char *src)
 void zcpu::init(const char *cpu_name)
 {
 	zstream in;
-	std::string fname, line;
+	zstring fname, line;
 
 	if (strchr(cpu_name, '/') == NULL) {
-		fname = PREFIX "/" SHAREPATH "/cpu/" + std::string(cpu_name);
+		fname.format(PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
 	} else {
 		fname = cpu_name;
 	}
@@ -90,7 +90,7 @@ void zcpu::init(const char *cpu_name)
 	if (!in.is_open())
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
-	for (std::string line; in.read(line); add_instr(line.c_str()));
+	for (zstring line; in.read(line); add_instr(line.c_str()));
 
 	output.push_back(new zoutput(opt.out));
 }
