@@ -19,6 +19,25 @@
 # define feof_unlocked feof
 #endif
 
+#if defined(_WIN32)
+static FILE* fixopen(const char *fname, const char *mode)
+{
+	FILE *rc;
+	char *tempname = strdup(fname);
+
+	for (char *tmp = tempname; *tmp != 0; ++tmp) {
+		if (*tmp == '/')
+			*tmp = '\\';
+	}
+
+	rc = fopen(tempname);
+	free(tempname);
+	return rc;
+}
+#else
+# define fixopen fopen
+#endif
+
 zstream::zstream()
 {
 	fd = NULL;
@@ -38,7 +57,7 @@ bool zstream::open(const zstring &fname, bool writable)
 {
 	close();
 
-	if ((fd = fopen(fname.c_str(), writable ? "w" : "r")) != NULL) {
+	if ((fd = fixopen(fname.c_str(), writable ? "w" : "r")) != NULL) {
 		name = fname;
 		prune = writable;
 		flockfile(FD);
