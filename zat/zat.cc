@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 
@@ -10,6 +10,7 @@
 #include "zcpu.h"
 #include "zymbol.h"
 #include "zoptions.h"
+#include "zeusage.h"
 
 static const char *version =
 	"zat " VERSION "\n"
@@ -19,18 +20,9 @@ static const char *version =
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 	;
 
-static int usage()
+static void zmain(int argc, char * const * argv)
 {
-	fprintf(stdout, "%s",
-		"zat: invalid command line.\n"
-		"For help, type: zat -h\n"
-		"");
-	return ret_syntax;
-}
-
-int main(int argc, char * const argv[])
-{
-	zerror rc = ret_ok;
+	zerror rc;
 
 	for (char ch; (ch = getopt(argc, argv, "c:dhI:Mo:qs:vW")) > 0; ) {
 		switch (ch) {
@@ -59,7 +51,7 @@ int main(int argc, char * const argv[])
 				"  -v              : display version number and exit\n"
 				"  -W              : treat warnings as errors\n"
 				"");
-			return ret_syntax;
+			return;
 		case 'I':
 			cpu.incdir.push_back(optarg);
 			break;
@@ -76,29 +68,27 @@ int main(int argc, char * const argv[])
 			break;
 		case 'v':
 			fprintf(stdout, "%s\n", version);
-			return 0;
+			return;
 		case 'W':
-			opt.errstart = ret_warnings;
+			opt.errstart = zsev_warning;
 			break;
 		default:
-			return usage();
+			throw zusage();
 		}
 	}
 
-	if ((rc = cpu.init(opt.cpu)) != ret_ok) {
-		rc.report();
-		return rc;
-	}
+	cpu.init(opt.cpu);
+	cpu.translate(argc - optind, argv + optind);
+	zymbol::rescan();
+}
 
-	if ((rc = cpu.translate(argc - optind, argv + optind)) != ret_ok) {
-		rc.report();
-		return rc;
+int main(int argc, char * const * argv)
+{
+	try {
+		zmain(argc, argv);
+		return 0;
+	} catch (zerror &e) {
+		fprintf(stderr, "zat: %s\n", e.c_str());
+		return 1;
 	}
-
-	if ((rc = zymbol::rescan()) != ret_ok) {
-		rc.report();
-		return rc;
-	}
-
-	return rc;
 }

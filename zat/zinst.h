@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 //
@@ -59,14 +59,14 @@ class zinst
 	// removes all extraneous spaces and so on.
 	static bool normalize(char *dst, size_t size, const char *src);
 	// Matches the source against one command.
-	zerror match1(const char *src, vector< pair<int, string> > &params);
+	bool match1(const char *src, vector< pair<int, string> > &params);
 public:
 	// Finds a matching command in the table.  Fills the array
 	// with paris of machine code and, optionally, the text of the
 	// parameter.
-	static zerror match(const char *src, vector< pair<int, string> > &params);
+	static void match(const char *src, vector< pair<int, string> > &params);
 	// Installs a new command.
-	static zerror feed(const char *src);
+	static void feed(const char *src);
 	// Optimizes the list.
 	static void optimize();
 	// Initialization.

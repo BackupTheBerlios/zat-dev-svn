@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 
@@ -14,6 +14,7 @@
 #include "zymbol.h"
 #include "zoptions.h"
 #include "zstring.h"
+#include "zesyntax.h"
 
 vector<zinst> zinst::hash[123];
 
@@ -141,15 +142,10 @@ bool zinst::operator < (const zinst &src) const
 	return (strcmp(name.c_str(), src.name.c_str()) < 0);
 }
 
-zerror zinst::feed(const char *src)
+void zinst::feed(const char *src)
 {
 	while (IsWS(*src))
 		++src;
-
-	if (*src == ';')
-		return ret_ok_nodata;
-
-	return ret_ok_nodata;
 }
 
 void zinst::optimize()
@@ -173,7 +169,7 @@ zinst::slot& zinst::find(const char *)
 
 // Finds an instruction that matches the source line, copies
 // its arguments to the args vector, return `ret_ok' on success.
-zerror zinst::match(const char *src, vector< pair<int, string> > &args)
+void zinst::match(const char *src, vector< pair<int, string> > &args)
 {
 	char line[1024];
 	zname mnemo(src);
@@ -182,16 +178,16 @@ zerror zinst::match(const char *src, vector< pair<int, string> > &args)
 	normalize(line, sizeof(line), src);
 
 	for (iterator it = s.begin(); it != s.end(); ++it) {
-		if (*it == mnemo && it->match1(line, args) == ret_ok)
-			return ret_ok;
+		if (*it == mnemo && !it->match1(line, args))
+			return;
 	}
 
-	return ret_ok_nodata;
+	throw zesyntax(src);
 }
 
 // Checks whether the specified (normalized) source line matches the
 // current instruction.
-zerror zinst::match1(const char *src, vector< pair<int, string> > &args)
+bool zinst::match1(const char *src, vector< pair<int, string> > &args)
 {
 	size_t idx = 0;
 
@@ -205,7 +201,7 @@ zerror zinst::match1(const char *src, vector< pair<int, string> > &args)
 				if (*src == '"' || *src == '\'') {
 					for (char c = *src++; *src != c && *src != '\0'; ++src);
 					if (*src++ == 0)
-						return ret_quote_mismatch;
+						throw zesyntax(src, "mismatched quote");
 				} else {
 					++src;
 				}
@@ -218,17 +214,17 @@ zerror zinst::match1(const char *src, vector< pair<int, string> > &args)
 			// fail if there is no parameter needed (but we
 			// were parsing a @, which is a place holder)
 			if (idx >= codes.size())
-				return ret_too_much_parameters;
+				throw zesyntax(src, "too much parameters");
 
 			// insert the parameters
 			args.push_back(pair<int, string>(codes[idx++], string(tsrc, src - tsrc)));
 		}
 
 		else if (*m != *src)
-			return ret_ok_nodata;
+			return false;
 	}
 
-	return ret_ok;
+	return true;
 }
 
 #ifdef NEVER

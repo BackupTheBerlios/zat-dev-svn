@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 
@@ -10,6 +10,7 @@
 #include "zerror.h"
 #include "zinst.h"
 #include "zoptions.h"
+#include "zefile.h"
 
 zcpu cpu;
 
@@ -21,7 +22,7 @@ zcpu::~zcpu()
 {
 }
 
-zerror zcpu::init(const char *cpu_name)
+void zcpu::init(const char *cpu_name)
 {
 	FILE *in;
 	char buf[4096], *src;
@@ -34,7 +35,7 @@ zerror zcpu::init(const char *cpu_name)
 	debug("reading the translation table from %s\n", buf);
 
 	if ((in = fopen(buf, "rb")) == NULL)
-		return ret_bad_cpu_table;
+		throw zefile("could not open file for reading", buf);
 
 	while ((src = read_line(buf, sizeof(buf), in)) != NULL)
 		zinst::feed(buf);
@@ -46,8 +47,6 @@ zerror zcpu::init(const char *cpu_name)
 
 	debug("creating a default output.\n");
 	output.push_back(new zoutput(opt.out));
-
-	return ret_ok;
 }
 
 /*
@@ -111,31 +110,22 @@ void zcpu::unuse(unsigned int /*N*/)
 
 // Translates all specified input files.  If a file could not be
 // opened or no input files were specified, returns false.
-zerror zcpu::translate(int argc, char * const *argv)
+void zcpu::translate(int argc, char * const *argv)
 {
-	zerror rc = ret_ok;
-
 	while (argc != 0) {
 		input.push_back(zinput(*argv));
-		if (!input[input.size() - 1].open()) {
-			debug("could not read from \"%s\".\n", *argv);
-			return ret_inerr;
-		}
+		if (!input[input.size() - 1].open())
+			throw zefile("could not open file for reading", *argv);
 		--argc, ++argv;
 	}
 
-	if (input.size() == 0) {
-		return ret_no_input_files;
-	}
+	if (input.size() == 0)
+		throw zenofiles();
 
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		debug("translating \"%s\".\n", i.name());
-		while ((rc = i.do_line(*output[iout])) == ret_ok)
-			;
+		while (i.do_line(*output[iout]));
 		input.pop_back();
 	}
-
-	debug("translation %s.\n", (rc == ret_ok) ? "succeeded" : "failed");
-	return rc;
 }

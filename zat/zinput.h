@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 //
@@ -26,7 +26,7 @@ class zinput
 	// File handle.
 	FILE *in;
 	// Extracts the label, if any.
-	zerror do_label(const char *&src, zoutput &out);
+	void do_label(const char *&src, zoutput &out);
 public:
 	// Sets the file name and initializes everything else.
 	zinput(const char *fname);
@@ -37,7 +37,7 @@ public:
 	bool open();
 	// Processes one line and moves the pointer to the next
 	// one.  Returns false if the file is over.
-	zerror do_line(zoutput &out);
+	bool do_line(zoutput &out);
 	// Returns the name of the file.
 	inline const char * name() const { return meta.name.c_str(); }
 };

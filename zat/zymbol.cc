@@ -1,5 +1,5 @@
 // Zat Assembler Toolchain.
-// Copyright (c) 2004 hex@mirkforce.net
+// Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
 
@@ -14,6 +14,7 @@
 #include "zoptions.h"
 #include "zstring.h"
 #include "zymbol.h"
+#include "zesymbol.h"
 
 std::vector<zymbol> zymbol::list;
 
@@ -114,12 +115,12 @@ void zymbol::emit()
 	offsets.clear();
 }
 
-zerror zymbol::install(const char *expr, const zmemblk &em)
+void zymbol::install(const char *expr, const zmemblk &em)
 {
-	return install(expr, em.size(), true);
+	install(expr, em.size(), true);
 }
 
-zerror zymbol::install(const char *expr, int value, bool delayed)
+void zymbol::install(const char *expr, int value, bool delayed)
 {
 	zymbol *old;
 	zstring name(expr);
@@ -128,16 +129,16 @@ zerror zymbol::install(const char *expr, int value, bool delayed)
 
 	if ((old = find(name.c_str())) != NULL) {
 		if (delayed)
-			return ret_ok;
+			return;
 
 		if (!old->is_delayed()) {
-			return ret_dup_label;
+			throw zesymbol();
 		} else {
 			old->value = value;
 			old->emit();
 
 			// Do not add to the list.
-			return ret_ok;
+			return;
 		}
 	}
 
@@ -145,8 +146,6 @@ zerror zymbol::install(const char *expr, int value, bool delayed)
 
 	if (cpu.lastlabel == NULL)
 		cpu.lastlabel = &(*(list.end() - 1));
-
-	return ret_ok;
 }
 
 
@@ -214,7 +213,7 @@ bool zymbol::is_label() const
 }
 
 
-zerror zymbol::rescan()
+void zymbol::rescan()
 {
 	/*
 	bool redo = true;
@@ -255,6 +254,4 @@ zerror zymbol::rescan()
 		}
 	}
 	*/
-
-	return ret_ok;
 }

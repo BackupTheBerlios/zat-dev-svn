@@ -3,10 +3,11 @@
 
 include ../Makedefs.faerion.include
 
-TARGET = executable
-PROG   = zat-$(VERSION)
-SRCS   = $(wildcard *.cc support/*.cc)
-LIBS  += stdc++
+TARGET  = executable
+INCDIR += errors
+PROG    = zat-$(VERSION)
+SRCS    = $(wildcard *.cc errors/*.cc support/*.cc)
+LIBS   += stdc++
 
 custom-clean = custom-clean
 custom-cleandist = custom-cleandist
