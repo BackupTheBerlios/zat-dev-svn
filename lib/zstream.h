@@ -40,6 +40,9 @@ public:
 	void write(const void *from, size_t size);
 	// Formatted output.
 	void print(const char *format, ...);
+	// Serialization.
+	zstream& operator << (const zstring &);
+	zstream& operator << (size_t);
 };
 
 #endif

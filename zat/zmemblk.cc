@@ -79,16 +79,11 @@ void zmemblk::set_origin(zorigin *value)
 
 void zmemblk::write() const
 {
-	zstring tmp;
-
 	if (opt.fmap.is_open())
 		opt.fmap.print("  addr: %04Xh, size: %04Xh (%u)\n", base, code.size, code.size);
 
-	tmp.format("%u", base);
-	opt.fout.write(tmp.c_str(), tmp.size() + 1);
-
-	tmp.format("%u", code.size);
-	opt.fout.write(tmp.c_str(), tmp.size() + 1);
+	opt.fout << base;
+	opt.fout << code.size;
 
 	opt.fout.write(code.code, code.size);
 }

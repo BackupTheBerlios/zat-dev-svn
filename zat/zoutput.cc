@@ -30,14 +30,11 @@ void zoutput::add()
 
 void zoutput::write() const
 {
-	zstring count;
-
 	if (opt.fmap.is_open())
 		opt.fmap.print("Segment name: %s\n", name.c_str());
 
-	count.format("%u", blocks.size());
-	opt.fout.write(name.c_str(), name.size() + 1);
-	opt.fout.write(count.c_str(), count.size() + 1);
+	opt.fout << name;
+	opt.fout << blocks.size();
 
 	for (std::vector<zmemblk *>::const_iterator it = blocks.begin(); it != blocks.end(); ++it)
 		(*it)->write();

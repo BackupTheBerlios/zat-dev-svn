@@ -107,3 +107,16 @@ void zstream::print(const char *format, ...)
 		clean = false;
 	}
 }
+
+zstream& zstream::operator << (const zstring &str)
+{
+	write(str.c_str(), str.size() + 1);
+	return *this;
+}
+
+zstream& zstream::operator << (size_t sz)
+{
+	zstring tmp;
+	tmp.format("%u", sz);
+	return (*this << tmp);
+}
