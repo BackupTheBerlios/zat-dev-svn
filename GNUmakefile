@@ -3,7 +3,7 @@
 
 include Makedefs.faerion.include
 
-DIRS = zat
+DIRS = lib zat zodump
 LIST = $(wildcard configure configure.in GNUmakefile Makedefs.faerion \
        docs/README.* share/LICENSE share/cpu/Z80 zat/GNUmakefile \
        zat/*.cc zat/*.h zat/errors/*.h zat/errors/*.cc)
