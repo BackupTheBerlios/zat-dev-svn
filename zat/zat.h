@@ -19,4 +19,10 @@
 # define dimof(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
 
+#if defined(_DEBUG)
+void debug(const char *format, ...);
+#else
+inline void debug(const char *, ...) { }
+#endif
+
 #endif // __zat_h_included__

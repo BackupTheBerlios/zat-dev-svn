@@ -31,6 +31,9 @@ typedef enum retc_e
 	ret_bad_expression,
 	ret_undefined_symbols,
 	ret_no_label,
+	ret_bracket_mismatch,
+	ret_quote_mismatch,
+	ret_too_much_parameters,
 };
 
 

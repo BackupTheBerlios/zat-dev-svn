@@ -12,6 +12,8 @@
 #include "zmemblk.h"
 #include "zymbol.h"
 
+using namespace std;
+
 zinput::meta_s::meta_s(const char *fname)
 {
 	name = fname;
@@ -30,16 +32,20 @@ zinput::~zinput()
 
 bool zinput::open()
 {
-	typedef std::vector< std::string >::iterator sit;
-
-	if (in != NULL)
+	if (in != NULL) {
+		debug("file \"%s\" is already open.\n", name());
 		return true;
+	}
 
-	for (sit it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
-		std::string path = *it + "." + meta.name;
+	if (meta.name.has_path())
+		in = fopen(meta.name.c_str(), "rb");
+	else {
+		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
+			std::string path = *it + "." + std::string(meta.name.c_str());
 
-		if ((in = fopen(path.c_str(), "rb")) != NULL)
-			break;
+			if ((in = fopen(path.c_str(), "rb")) != NULL)
+				break;
+		}
 	}
 
 	return (in != NULL);
@@ -71,10 +77,10 @@ zerror zinput::do_label(const char *&src, zoutput &out)
 
 zerror zinput::do_line(zoutput &out)
 {
-	zinst *inst;
 	zerror rc = ret_ok;
 	char line[1024], *tmp;
 	const char *str = line;
+	vector < pair<int, string> > args;
 
 	if ((tmp = read_line(line, sizeof(line), in)) == NULL)
 		return ret_ok_nodata;
@@ -84,7 +90,7 @@ zerror zinput::do_line(zoutput &out)
 	if ((rc = do_label(str, out)) >= ret_warnings)
 		return rc;
 
-	if ((rc = zinst::find(str, inst)) == ret_ok) {
+	if ((rc = zinst::match(str, args)) == ret_ok) {
 		// inst->render(out);
 	}
 

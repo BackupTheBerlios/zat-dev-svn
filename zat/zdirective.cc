@@ -90,7 +90,6 @@ zerror do_defb(const char *src)
 
 	return ret_ok;
 }
-*/
 
 
 zerror do_org(const char *src)
@@ -128,15 +127,16 @@ zerror do_include(const char *)
 {
 	return ret_ok_nodata;
 }
+*/
 
 
 zdirective zdirs[] = {
+	/*
 	{ "EQU", do_equ },
 	{ "ORG", do_org },
-	/*
 	{ "DEFB", do_defb },
 	{ "DEFW", do_defw },
-	*/
 	{ "INCLUDE", do_include },
+	*/
 	{ NULL, NULL }
 };

@@ -84,3 +84,14 @@ unsigned int zstring::hint() const
 
 	return value;
 }
+
+bool zstring::has_path() const
+{
+#ifdef _WIN32
+	if (strchr(data, '\\') != NULL)
+		return true;
+#endif
+	if (strchr(data, '/') != NULL)
+		return true;
+	return false;
+}

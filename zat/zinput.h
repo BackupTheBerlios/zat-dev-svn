@@ -9,9 +9,8 @@
 #define __zaa_zinput_h
 
 #include <stdio.h>
-#include <string>
-
 #include "zat.h"
+#include "zstring.h"
 
 class zoutput;
 
@@ -20,7 +19,7 @@ class zinput
 	// File statistics.
 	struct meta_s
 	{
-		std::string name;
+		zstring name;
 		unsigned int line;
 		meta_s(const char *name);
 	} meta;
@@ -39,6 +38,9 @@ public:
 	// Processes one line and moves the pointer to the next
 	// one.  Returns false if the file is over.
 	zerror do_line(zoutput &out);
+#ifdef _DEBUG
+	const char * name() const { return meta.name.c_str(); }
+#endif
 };
 
 #endif // __zaa_zinput_h

@@ -8,6 +8,7 @@
 
 #include "zcpu.h"
 #include "zerror.h"
+#include "zinst.h"
 #include "zoptions.h"
 
 zcpu cpu;
@@ -25,35 +26,25 @@ zerror zcpu::init(const char *cpu_name)
 	FILE *in;
 	char buf[4096], *src;
 
-	snprintf(buf, sizeof(buf), PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
+	if (strchr(cpu_name, '/') == NULL)
+		snprintf(buf, sizeof(buf), PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
+	else
+		strncpy(buf, cpu_name, sizeof(buf));
 
-	if (opt.debug)
-		fprintf(stdout, "reading instruction set from %s\n", buf);
+	debug("reading the translation table from %s\n", buf);
 
 	if ((in = fopen(buf, "rb")) == NULL)
 		return ret_bad_cpu_table;
 
-	while ((src = read_line(buf, sizeof(buf), in)) != NULL) {
-		char *state;
-		char *mnemo, *codes;
+	while ((src = read_line(buf, sizeof(buf), in)) != NULL)
+		zinst::feed(buf);
 
-		while (IsWS(*src))
-			++src;
-		if (*src == ';')
-			continue;
+	fclose(in);
 
-		strtoupper(src);
+	debug("optimizing the translation table.\n");
+	zinst::optimize();
 
-		mnemo = zatok(src, '|', &state);
-		codes = zatok(NULL, '|', &state);
-
-		if (codes == NULL)
-			return ret_bad_cpu_table;
-
-		// FIXME: new zinst(mnemo, codes);
-	}
-
-	// FIXME: zinst::optimize();
+	debug("translation table read ok.\n");
 	return ret_ok;
 }
 
@@ -123,6 +114,7 @@ zerror zcpu::translate(int argc, char * const *argv)
 	while (argc != 0) {
 		input.push_back(zinput(*argv));
 		if (!input[input.size() - 1].open()) {
+			debug("could not read from \"%s\".\n", *argv);
 			return ret_inerr;
 		}
 		--argc, ++argv;
@@ -133,10 +125,13 @@ zerror zcpu::translate(int argc, char * const *argv)
 	}
 
 	while (input.size() != 0) {
-		while (input[input.size() - 1].do_line(*output[iout]))
+		zinput &i = input[input.size() - 1];
+		debug("translating \"%s\".\n", i.name());
+		while (i.do_line(*output[iout]))
 			;
 		input.pop_back();
 	}
 
+	debug("translation finished.\n");
 	return ret_ok;
 }

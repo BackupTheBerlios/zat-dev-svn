@@ -1,5 +1,5 @@
 # Makefile for GNU Make.
-# $Id: GNUmakefile,v 1.2 2004/09/14 08:28:46 vhex Exp $
+# $Id$
 
 include ../Makedefs.faerion.include
 
@@ -24,4 +24,4 @@ custom-cleandist:
 	rm -f $(PROG)
 
 test: all
-	./zaa -i z80.asm -o z80.out -s z80.sym -dd
+	./$(PROG) -c ../share/cpu/Z80 -dd ../test/01/Z80.asm

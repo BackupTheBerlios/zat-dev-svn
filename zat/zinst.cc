@@ -15,10 +15,9 @@
 #include "zoptions.h"
 #include "zstring.h"
 
-std::vector<zinst> zinst::hash[123];
+vector<zinst> zinst::hash[123];
 
 unsigned int zinst::maxlength = 8;
-
 
 static inline int ctoh(char c)
 {
@@ -29,7 +28,7 @@ static inline int ctoh(char c)
 	return 0;
 }
 
-
+/*
 static bool is_word(const char *line, const char *word)
 {
 	while (*word != '\0') {
@@ -40,7 +39,6 @@ static bool is_word(const char *line, const char *word)
 
 	return IsWS(*line) || (*line == '\0');
 }
-
 
 static bool is_hex(const char *src)
 {
@@ -58,7 +56,6 @@ static bool is_hex(const char *src)
 	return !(isalnum(*src) || *src == '_');
 }
 
-
 static bool is_dec(const char *src)
 {
 	while (isdigit(*src))
@@ -66,7 +63,6 @@ static bool is_dec(const char *src)
 
 	return !(isalnum(*src) || *src == '_');
 }
-
 
 static bool is_bin(const char *src)
 {
@@ -83,7 +79,6 @@ static bool is_bin(const char *src)
 
 	return !(isalnum(*src) || *src == '_');
 }
-
 
 zinst::zinst(const char *src, char *data)
 {
@@ -121,18 +116,16 @@ zinst::zinst(const char *src, char *data)
 
 	s.push_back(*this);
 }
+*/
 
+zinst::zinst()
+{
+	atomic = false;
+}
 
 zinst::~zinst()
 {
 }
-
-
-zinst::zinst(const zinst &src)
-{
-	*this = src;
-}
-
 
 zinst& zinst::operator = (const zinst &src)
 {
@@ -143,55 +136,28 @@ zinst& zinst::operator = (const zinst &src)
 	return *this;
 }
 
-std::vector<zinst> & zinst::get_slot(const char *name)
-{
-	size_t size = 0;
-
-	for (const char *src = name; *src != '\0' && !IsWS(*src); ++src, ++size);
-
-	return hash[crc32(name, size) % dimof(hash)];
-}
-
-
-void zinst::dump()
-{
-#if defined(_DEBUG)
-	if (opt.fsym != NULL && opt.debug >= 3) {
-		fprintf(opt.fsym,
-			";\n"
-			"; CPU instruction table follows (\"slot. name\").  This information helps\n"
-			"; debugging CPU definition tables, normally you wouldn't need it.  Empty\n"
-			"; slots are OK, it only means that the hashing function could be better.\n"
-			";\n");
-
-		for (unsigned int idx = 0; idx < dimof(hash); ++idx) {
-			slot s = hash[idx];
-
-			if (s.size() == 0) {
-				fprintf(opt.fsym, "; %03u.\n", idx+1);
-			} else for (iterator it = s.begin(); it != s.end(); ++it) {
-				fprintf(opt.fsym, "; %03u. %s\n", idx+1, it->name.c_str());
-			}
-		}
-
-		fprintf(opt.fsym, ";\n");
-	}
-#endif
-}
-
-
 bool zinst::operator < (const zinst &src) const
 {
 	return (strcmp(name.c_str(), src.name.c_str()) < 0);
 }
 
+zerror zinst::feed(const char *src)
+{
+	while (IsWS(*src))
+		++src;
+
+	if (*src == ';')
+		return ret_ok_nodata;
+
+	return ret_ok_nodata;
+}
 
 void zinst::optimize()
 {
 	for (unsigned int idx = 0; idx < dimof(hash); ++idx) {
 		slot s = hash[idx];
 
-		std::sort(s.begin(), s.end());
+		sort(s.begin(), s.end());
 
 		for (iterator it = s.begin(); it != s.end(); ++it)
 			if (it->length > maxlength)
@@ -199,65 +165,73 @@ void zinst::optimize()
 	}
 }
 
-
-bool zinst::find_dir(const char *line, zerror &rc)
+// FIXME: implement it, actually.
+zinst::slot& zinst::find(const char *)
 {
-	for (zdirective *dir = zdirs; dir->name != NULL; ++dir) {
-		if (is_word(line, dir->name)) {
-			while (!IsWS(*line) && *line != '\0')
-				++line;
-			while (IsWS(*line))
-				++line;
-
-			rc = dir->func(line);
-			return true;
-		}
-	}
-
-	return false;
+	return hash[0];
 }
 
-bool zinst::find_asm(const char *line, zerror &rc)
+// Finds an instruction that matches the source line, copies
+// its arguments to the args vector, return `ret_ok' on success.
+zerror zinst::match(const char *src, vector< pair<int, string> > &args)
 {
-	zinst *inst;
-	char buf[256];
+	char line[1024];
+	zname mnemo(src);
+	slot &s = find(mnemo.c_str());
 
-	normalize(buf, sizeof(buf), line);
+	normalize(line, sizeof(line), src);
 
-	if ((rc = find(buf, inst)) == ret_ok || rc == ret_ok_nodata) {
-		if (inst != NULL) {
-			/*
-			// Current position in the instruction name.
-			const char *atcmd = inst->name.c_str();
-			// Current position in the source line.
-			const char *atsrc = buf;
-			*/
+	for (iterator it = s.begin(); it != s.end(); ++it) {
+		if (*it == mnemo && it->match1(line, args) == ret_ok)
+			return ret_ok;
+	}
 
-			// Emit byte by byte.  Get to parse arguments as
-			// soon as we encounter the references.
-			for (std::vector<int>::iterator it = inst->codes.begin(); it != inst->codes.end(); ++it) {
-				zerror tmprc;
+	return ret_ok_nodata;
+}
 
-				/*
-				if (*it < 0) {
-					tmprc = evaluate(atcmd, atsrc, *it);
+// Checks whether the specified (normalized) source line matches the
+// current instruction.
+zerror zinst::match1(const char *src, vector< pair<int, string> > &args)
+{
+	size_t idx = 0;
+
+	args.clear();
+
+	for (const char *m = name.c_str(); *m != 0; ++m) {
+		if (*m == '@') {
+			const char *tsrc = src;
+
+			while (*src != ',' && *src != '\0') {
+				if (*src == '"' || *src == '\'') {
+					for (char c = *src++; *src != c && *src != '\0'; ++src);
+					if (*src++ == 0)
+						return ret_quote_mismatch;
 				} else {
-					tmprc = cpu.emit_b(*it);
+					++src;
 				}
-				*/
-
-				if (tmprc != ret_ok)
-					return tmprc;
 			}
+
+			// insert fixed data
+			while (idx < codes.size() && codes[idx] >= 0)
+				args.push_back(pair<int, string>(codes[idx++], string()));
+
+			// fail if there is no parameter needed (but we
+			// were parsing a @, which is a place holder)
+			if (idx >= codes.size())
+				return ret_too_much_parameters;
+
+			// insert the parameters
+			args.push_back(pair<int, string>(codes[idx++], string(tsrc, src - tsrc)));
 		}
 
-		return true;
+		else if (*m != *src)
+			return ret_ok_nodata;
 	}
 
-	return false;
+	return ret_ok;
 }
 
-
+#ifdef NEVER
 zerror zinst::find(const char *line, zinst *&cmd)
 {
 	slot s = get_slot(line);
@@ -302,7 +276,7 @@ zerror zinst::find(const char *line, zinst *&cmd)
 
 	return ret_bad_mnemo;
 }
-
+#endif
 
 // Compacts an instruction close to the form that's used in the
 // instruction set definition file.  Capitalizes everything,
@@ -369,6 +343,7 @@ bool zinst::normalize(char *dst, size_t size, const char *src)
 }
 
 
+/*
 zerror zinst::evaluate(zstring expr, int &value)
 {
 	value = 0;
@@ -511,3 +486,4 @@ zerror zinst::evaluate(const char *&atcmd, const char *&atsrc, int mode)
 
 	return rc;
 }
+*/

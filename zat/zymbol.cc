@@ -216,6 +216,7 @@ bool zymbol::is_label() const
 
 zerror zymbol::rescan()
 {
+	/*
 	bool redo = true;
 
 	while (redo) {
@@ -253,6 +254,7 @@ zerror zymbol::rescan()
 			return ret_undefined_symbols;
 		}
 	}
+	*/
 
 	return ret_ok;
 }
