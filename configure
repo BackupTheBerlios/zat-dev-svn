@@ -18,19 +18,19 @@ else
 fi
 
 # The address displayed in copyright and contact messages.
-CONTACT=hex@faerion.oss
+CONTACT="hex@faerion.oss"
 
 # Product name.
-PRODUCT=zat
+PRODUCT="zat"
 
 # Product version number, currently only used in help screens.
-VERSION=0.1
+VERSION="0.1"
 
 # The path to common files (tables, etc).
-SHAREPATH=share/$PRODUCT-$VERSION
+SHAREPATH="share/$PRODUCT/$VERSION"
 
 # The path to the binaries.
-BINPATH=bin
+BINPATH="bin"
 
 out_include "configure.h" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT" "PREFIX" "CONTACT"
 out_makefile "Makedefs.faerion.include" "*" "SUDO" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX"
