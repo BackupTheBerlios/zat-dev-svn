@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zesyntax_h
+#define __zat_zesyntax_h
 #include "zerror.h"
 
 class zesyntax : public zerror
@@ -14,3 +15,5 @@ public:
 	~zesyntax();
 	const char * c_str() { return msg; }
 };
+
+#endif

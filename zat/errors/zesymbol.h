@@ -5,7 +5,8 @@
 //
 // Exceptions related to symbols.
 
-#pragma once
+#ifndef __zat_zesymbol_h
+#define __zat_zesymbol_h
 #include "zerror.h"
 
 class zesymbol : public zerror
@@ -15,3 +16,5 @@ public:
 	~zesymbol() { }
 	const char * c_str() { return "duplicate label"; }
 };
+
+#endif

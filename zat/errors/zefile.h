@@ -5,7 +5,8 @@
 //
 // Exceptions related to file operations.
 
-#pragma once
+#ifndef __zat_zefile_h
+#define __zat_zefile_h
 #include "zerror.h"
 
 class zefile : public zerror
@@ -32,3 +33,5 @@ public:
 	~zeclosedfile() { }
 	const char * c_str() { return "reading from a closed file"; }
 };
+
+#endif
