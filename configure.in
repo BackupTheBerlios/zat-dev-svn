@@ -179,7 +179,7 @@ mdc_init()
   echo "You are using $MDF_OSNAME."
   DEFS="$DEFS OSNAME=$MDF_OSNAME"
 
-  if [ -n "$MF_X" ]; then
+  if [ -z "$MF_Y" ]; then
     echo -n "Configuration options:"
   
     if [ "$MF_STATIC" = "1" ]; then
@@ -194,6 +194,7 @@ mdc_init()
       CFLAGS="$CFLAGS -O0 -g -pipe"
       OPTIONS="$OPTIONS debug"
     else
+		  echo -n " release"
       CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -finline-functions"
     fi
   
