@@ -32,6 +32,8 @@ fake: all
 	mkdir -p fake-$(VERSION)/$(SHAREPATH)/cpu
 	cp zat/zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/
 	ln -s zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/zat
+	cp zodump/zodump-$(VERSION) fake-$(VERSION)/$(BINPATH)/
+	ln -s zodump-$(VERSION) fake-$(VERSION)/$(BINPATH)/zodump
 	cp share/cpu/Z80 fake-$(VERSION)/$(SHAREPATH)/cpu/
 	cp share/LICENSE fake-$(VERSION)/share/
 
