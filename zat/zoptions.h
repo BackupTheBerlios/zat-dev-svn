@@ -7,6 +7,7 @@
 #define __zaa_zoptions_h
 
 #include <stdio.h>
+#include <string>
 
 class zoptions
 {

@@ -16,6 +16,9 @@ char *read_line(char *buf, size_t size, FILE *in)
 
 	str = NULL;
 
+	if (feof(in))
+		return NULL;
+
 	if (!feof(in) && (str = fgets(buf, size, in)) != NULL) {
 		if (buf[idx = strcspn(buf, "\r\n")])
 			buf[idx] = '\0';

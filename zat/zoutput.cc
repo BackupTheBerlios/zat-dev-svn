@@ -6,7 +6,8 @@
 #include "zoutput.h"
 #include "zmemblk.h"
 
-zoutput::zoutput()
+zoutput::zoutput(const char *fname) :
+	name(fname)
 {
 	blocks.push_back(new zmemblk());
 }

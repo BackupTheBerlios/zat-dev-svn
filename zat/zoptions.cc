@@ -12,7 +12,7 @@ zoptions opt;
 
 zoptions::zoptions()
 {
-	out = NULL;
+	out = "zat.bin";
 	cpu = "Z80";
 	sym = NULL;
 	fout = NULL;

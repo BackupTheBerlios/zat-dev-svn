@@ -44,7 +44,9 @@ zerror zcpu::init(const char *cpu_name)
 	debug("optimizing the translation table.\n");
 	zinst::optimize();
 
-	debug("translation table read ok.\n");
+	debug("creating a default output.\n");
+	output.push_back(new zoutput(opt.out));
+
 	return ret_ok;
 }
 
@@ -111,6 +113,8 @@ void zcpu::unuse(unsigned int /*N*/)
 // opened or no input files were specified, returns false.
 zerror zcpu::translate(int argc, char * const *argv)
 {
+	zerror rc = ret_ok;
+
 	while (argc != 0) {
 		input.push_back(zinput(*argv));
 		if (!input[input.size() - 1].open()) {
@@ -127,11 +131,11 @@ zerror zcpu::translate(int argc, char * const *argv)
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		debug("translating \"%s\".\n", i.name());
-		while (i.do_line(*output[iout]))
+		while ((rc = i.do_line(*output[iout])) == ret_ok)
 			;
 		input.pop_back();
 	}
 
-	debug("translation finished.\n");
-	return ret_ok;
+	debug("translation %s.\n", (rc == ret_ok) ? "succeeded" : "failed");
+	return rc;
 }

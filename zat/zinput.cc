@@ -17,6 +17,7 @@ using namespace std;
 zinput::meta_s::meta_s(const char *fname)
 {
 	name = fname;
+	line = 0;
 }
 
 zinput::zinput(const char *fname) : meta(fname)
@@ -88,8 +89,14 @@ zerror zinput::do_line(zoutput &out)
 	const char *str = line;
 	vector < pair<int, string> > args;
 
-	if ((tmp = read_line(line, sizeof(line), in)) == NULL)
+	if (in == NULL) {
+		debug("warning: reading from a closed file.\n");
+		return ret_inerr;
+	}
+
+	if ((tmp = read_line(line, sizeof(line), in)) == NULL) {
 		return ret_ok_nodata;
+	}
 
 	meta.line++;
 
@@ -98,7 +105,9 @@ zerror zinput::do_line(zoutput &out)
 
 	if ((rc = zinst::match(str, args)) == ret_ok) {
 		// inst->render(out);
+		return ret_ok;
+	} else {
+		debug("instruction: %s\n", str);
+		return ret_syntax;
 	}
-
-	return ret_syntax;
 }

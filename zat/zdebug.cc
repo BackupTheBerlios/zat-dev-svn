@@ -15,6 +15,7 @@ void debug(const char *format, ...)
 	if (opt.debug) {
 		va_list vl;
 		va_start(vl, format);
+		fprintf(stderr, "debug: ");
 		vfprintf(stderr, format, vl);
 		va_end(vl);
 	}
