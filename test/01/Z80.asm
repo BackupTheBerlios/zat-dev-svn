@@ -1,5 +1,6 @@
         ORG     2400h
 	INCLUDE "Z80.inc"
+	LD      BC,#1234
 INIT    LD      HL,#8000
         JP      INITROU
 	JP      INIT

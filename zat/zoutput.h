@@ -24,4 +24,5 @@ public:
 	const char & operator[](size_t idx) const { return block()[idx]; }
 	// Emits a byte.
 	void emit(char c) { block().emit(c); }
+	void emit(short s) { block().emit(s); }
 };

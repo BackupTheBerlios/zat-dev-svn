@@ -5,6 +5,7 @@
 
 #include "zat.h"
 #include "zinst.h"
+#include "zcpu.h"
 
 zinst::zinst(const zinst &src)
 {
@@ -70,6 +71,9 @@ bool zinst::compv(const zinst &source) const
 	char bracket = 0;
 	zstring::const_iterator src = text.begin();
 	zstring::const_iterator dst = source.text.begin();
+
+	if (!cpu.is_ready())
+		return false;
 
 	while (src != text.end() && dst != source.text.end()) {
 		if (*src == '@') {

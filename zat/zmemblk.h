@@ -26,7 +26,7 @@ class zmemblk
 		// Deallocates the block.
 		~data();
 		// Expands the block by the given number of bytes.
-		bool resize(unsigned int);
+		bool resize(size_t);
 	} code;
 public:
 	// Initialization.
@@ -38,5 +38,6 @@ public:
 	char & operator [] (size_t idx) { return code.code[idx]; }
 	const char & operator [] (size_t idx) const { return code.code[idx]; }
 	// Code emission.  Fails with memory allocations.
-	bool emit(char byte);
+	void emit(char byte);
+	void emit(short word);
 };

@@ -10,7 +10,7 @@
 
 zmemblk::data::data()
 {
-	code = NULL;
+	code = 0;
 	size = 0;
 	capacity = 0;
 }
@@ -21,11 +21,11 @@ zmemblk::data::~data()
 		free(code);
 }
 
-bool zmemblk::data::resize(unsigned int add)
+bool zmemblk::data::resize(size_t add)
 {
-	size += add;
+	size_t nsize = size + add;
 
-	if (add > capacity) {
+	if (nsize > capacity) {
 		unsigned int ncap = capacity + 1024;
 		void *ncode = realloc(code, ncap);
 
@@ -36,6 +36,7 @@ bool zmemblk::data::resize(unsigned int add)
 		capacity = ncap;
 	}
 
+	size = nsize;
 	return true;
 }
 
@@ -49,13 +50,23 @@ zmemblk::~zmemblk()
 {
 }
 
-bool zmemblk::emit(char c)
+void zmemblk::emit(char c)
 {
 	unsigned int offset = code.size;
 
-	if (!code.resize(sizeof(c)))
-		return false;
+	if (code.resize(sizeof(c)))
+		code.code[offset] = c;
+}
 
-	* (reinterpret_cast<char *>(code.code) + offset) = c;
-	return true;
+void zmemblk::emit(short s)
+{
+	union {
+		char c[2];
+		short s;
+	} u;
+
+	u.s = s;
+
+	emit(u.c[0]);
+	emit(u.c[1]);
 }

@@ -17,6 +17,7 @@ zcpu cpu;
 
 zcpu::zcpu()
 {
+	ready = false;
 }
 
 zcpu::~zcpu()
@@ -85,8 +86,12 @@ void zcpu::add_instr(const char *src)
 		mapa[zinst(mnemo)] = codes;
 		debug(3, "(a) installed instruction '%s'\n", zinst(mnemo).c_str());
 	} else {
-		mapv[zinst(mnemo)] = codes;
-		debug(3, "(v) installed instruction '%s'\n", zinst(mnemo).c_str());
+		std::vector<int> &x = mapv[zinst(mnemo)];
+		x = codes;
+		opt.fsym.print("; installed command: '%s' (%u):", zinst(mnemo).c_str(), codes.size());
+		for (size_t idx = 0; idx < x.size(); ++idx)
+			opt.fsym.print(" %02X", x[idx] & 0xFF);
+		opt.fsym.print("\n");
 	}
 }
 
@@ -105,67 +110,9 @@ void zcpu::init(const char *cpu_name)
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
 	for (zstring line; in.read(line); add_instr(line.c_str()));
+	ready = true;
 
 	output.push_back(new zoutput(opt.out));
-}
-
-/*
-zerror zcpu::emit_b(int data, unsigned int pc)
-{
-	if (data > 0xFF)
-		return ret_byte_overflow;
-	if (data < -0x80)
-		return ret_byte_overflow;
-	ramdata[pc] = data;
-	return ret_ok;
-}
-
-zerror zcpu::emit_b(int data)
-{
-	return emit_b(data, addr++);
-}
-
-zerror zcpu::emit_w(int data, unsigned int at)
-{
-	if (data > 0xFFFF)
-		return ret_word_overflow;
-	if (data < -0x8000)
-		return ret_word_overflow;
-	ramdata[at+0] = data & 0xFF;
-	ramdata[at+1] = (data >> 8) & 0xFF;
-	return ret_ok;
-}
-
-zerror zcpu::emit_w(int data)
-{
-	zerror rc = emit_w(data, addr);
-	addr += 2;
-	return rc;
-}
-*/
-
-
-void zcpu::initcom()
-{
-	/*
-	lastlabel = NULL;
-	caddr = addr;
-	usemap = ~0;
-	*/
-}
-
-
-void zcpu::unuse(unsigned int /*N*/)
-{
-	/*
-	unsigned int idx = addr - caddr - N;
-
-	while (idx < 32 && N != 0) {
-		usemap &= ~(1 << idx);
-		--N;
-		++idx;
-	}
-	*/
 }
 
 // Translates all specified input files.  If a file could not be
@@ -217,8 +164,7 @@ bool zcpu::parse(zinput &in, zoutput &out)
 			size_t lim = out.size();
 
 			do {
-				if (!pc_sent)
-					opt.fsym.print("; %04Xh ", offset);
+				opt.fsym.print("; %04Xh ", offset);
 
 				for (size_t idx = 0; idx < 8; ++idx, ++offset) {
 					if (offset >= lim)
@@ -270,15 +216,34 @@ bool zcpu::do_atomic(zinst &inst, zoutput &out)
 	return true;
 }
 
-bool zcpu::do_variable(zinst &inst, zoutput &)
+bool zcpu::do_variable(zinst &inst, zoutput &out)
 {
 	mapv_t::const_iterator it = mapv.find(inst);
 
-	if (it == mapv.end()) {
-		debug(1, " - '%s' not found in variables.\n", inst.c_str());
+	if (it == mapv.end())
 		return false;
+
+	if (it->second.size() != 0) {
+		const std::vector<int> &codes = it->second;
+
+		debug(1, "- : size=%u\n", codes.size());
+
+		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+			debug(1, "- : %d\n", *it);
+			if (*it >= 0) {
+				out.emit(static_cast<char>(*it));
+			} else {
+				switch (*it) {
+				case op_byte:
+					out.emit(static_cast<char>(0));
+					break;
+				case op_word:
+					out.emit(static_cast<short>(0));
+					break;
+				}
+			}
+		}
 	}
 
-	debug(1, " - found a variable command: '%s'\n", inst.c_str());
 	return true;
 }

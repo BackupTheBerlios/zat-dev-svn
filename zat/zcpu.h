@@ -43,6 +43,9 @@ class zcpu
 	bool do_atomic(zinst &i, zoutput &out);
 	// Translates a variable command, returns `true' on success.
 	bool do_variable(zinst &i, zoutput &out);
+	// Set when the instruction table is ready.  Used in zinst to
+	// fail comparing one instruction with another.
+	bool ready;
 public:
 	// The label on the current line.
 	zymbol *lastlabel;
@@ -61,10 +64,8 @@ public:
 	void init(const char *cpu_name);
 	// Translate the specified input files.
 	void translate(int argc, char * const *argv);
-	// Initializes temporary data.
-	void initcom();
-	// Marks last N bytes as unused.
-	void unuse(unsigned int N);
+	// Misc.
+	bool is_ready() const { return ready; }
 };
 
 // Special values for machine code.
