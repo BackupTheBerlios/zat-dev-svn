@@ -54,6 +54,7 @@ static void show_help()
 		"   a              : include address for instructions that emit data\n"
 		"   b              : include emitted machine code\n"
 		"   f              : include output file names\n"
+		"   l              : include labels\n"
 		"   s              : include source code\n"
 		"");
 }
@@ -133,6 +134,9 @@ static void do_symbols(const char *args)
 			break;
 		case 'f':
 			opt.symbols.fnames = sign;
+			break;
+		case 'l':
+			opt.symbols.labels = sign;
 			break;
 		case 's':
 			opt.symbols.source = sign;

@@ -11,7 +11,8 @@ zoutput::zoutput(const char *fname) :
 	name(fname)
 {
 	add();
-	if (opt.fsym.is_open())
+
+	if (opt.fsym.is_open() && opt.symbols.fnames)
 		opt.fsym.print("; output changed to \"%s\"\n", fname);
 }
 

@@ -53,12 +53,14 @@ public:
 		bool code; // machine code
 		bool source; // source code
 		bool fnames; // output file names
+		bool labels; // show labels and their addresses
 		symbol_s()
 		{
-			addr = true;
-			code = true;
-			source = true;
-			fnames = true;
+			addr = false;
+			code = false;
+			source = false;
+			fnames = false;
+			labels = true;
 		}
 	} symbols;
 public:

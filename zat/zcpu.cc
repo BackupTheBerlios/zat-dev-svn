@@ -213,30 +213,15 @@ void zcpu::resolve()
 
 		throw zemsg("not all expressions could be evaluated");
 	} else {
-		if (opt.fsym.is_open()) {
+		if (opt.fsym.is_open() && opt.symbols.labels) {
 			opt.fsym.print(";\n; Symbol table follows (%u elements)\n", symbols.size());
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 				if ((*it)->islabel()) {
-					bool lf = false;
-					
-					if (opt.symbols.addr) {
-						opt.fsym.print(";  %04Xh ", (*it)->get_value() & 0xFFFF);
-						lf = true;
-					}
-
-					if (opt.symbols.code) {
-						opt.fsym.print(";                         ");
-						lf = true;
-					}
-
-					if (opt.symbols.source) {
-						opt.fsym.print("; %s", (*it)->c_str());
-						lf = true;
-					}
-
-					if (lf)
-						opt.fsym.print("\n");
+					opt.fsym.print(";  %04Xh ", (*it)->get_value() & 0xFFFF);
+					opt.fsym.print(";                         ");
+					opt.fsym.print("; %s", (*it)->c_str());
+					opt.fsym.print("\n");
 				}
 			}
 		}
