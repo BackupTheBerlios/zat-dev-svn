@@ -25,10 +25,16 @@ zcpu::~zcpu()
 
 void zcpu::add_instr(const char *src)
 {
+	const char *sep;
 	vector<int> codes;
-	const char *sep = strchr(src, '|');
 
-	if (sep == NULL)
+	while (zstring::isws(*src))
+		++src;
+
+	if (*src == ';')
+		return;
+
+	if (( sep = strchr(src, '|')) == NULL)
 		throw zesyntax(src, "malformed instruction table");
 
 	debug("adding instruction: %s\n", std::string(src, sep - src).c_str());

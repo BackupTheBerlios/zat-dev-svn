@@ -59,7 +59,7 @@ void zinput::do_label(const char *&src, zoutput &out)
 		zstring name;
 		const char *tmp = src;
 
-		while (!IsWS(*tmp) && *tmp != '\0')
+		while (!zstring::isws(*tmp) && *tmp != '\0')
 			++tmp;
 
 		name = zstring(src, tmp - src);
@@ -67,7 +67,7 @@ void zinput::do_label(const char *&src, zoutput &out)
 		zymbol::install(name.c_str(), out.block());
 	}
 
-	while (IsWS(*src))
+	while (zstring::isws(*src))
 		++src;
 }
 
