@@ -50,7 +50,7 @@ public:
 	// Returns `true' if the origin is known.
 	bool has_origin() const { return basex == NULL; }
 	// Returns the base address.
-	size_t get_origin() const { return (basex == NULL) ? base : NULL; }
+	size_t get_origin() const { return (basex == NULL) ? base : 0; }
 };
 
 #endif
