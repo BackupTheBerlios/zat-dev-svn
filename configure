@@ -22,7 +22,7 @@ CONTACT=hex@faerion.oss
 PRODUCT=zat
 
 # Product version number, currently only used in help screens.
-VERSION=0.1-20050317
+VERSION=0.1
 
 # The path to common files (tables, etc).
 SHAREPATH=share/$PRODUCT-$VERSION
@@ -31,4 +31,4 @@ SHAREPATH=share/$PRODUCT-$VERSION
 BINPATH=bin
 
 out_include "configure.h" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT" "PREFIX" "CONTACT"
-out_makefile "Makedefs.faerion.include" "*" "VERSION"
+out_makefile "Makedefs.faerion.include" "*" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX"
