@@ -59,7 +59,7 @@ static bool do_file(const char *fname, bool dec)
 
 		for (zobject::segment::const_iterator cit = it->blocks.begin(); cit != it->blocks.end(); ++cit) {
 			if (dec)
-				fprintf(stdout, "%08X B %08X ; %u %u\n", cit->base, cit->size, cit->base, cit->size);
+				fprintf(stdout, "%08u B %08u\n", cit->base, cit->size);
 			else
 				fprintf(stdout, "%08X B %08X\n", cit->base, cit->size);
 		}
