@@ -2,6 +2,7 @@
 
 . "./configure.in"
 
+find_exe "MK" "gmake" "make"
 find_exe "CC" "cc" "gcc" "mingw32-gcc"
 find_exe "RC" "windres"
 find_exe "CPP" "cpp -E"
