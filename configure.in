@@ -151,7 +151,7 @@ fi
 # Most common defaults
 mdc_init()
 {
-  MDF_OSNAME=`uname`
+  MDF_OSNAME=`uname | tr [A-Z] [a-z]`
 
   case $MDF_OSNAME in
     Darwin)
