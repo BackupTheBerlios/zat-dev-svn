@@ -38,3 +38,15 @@ SRCPATH="`pwd`"
 
 out_include "configure.h" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT" "PREFIX" "CONTACT"
 out_makefile "Makedefs.faerion.include" "*" "SUDO" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX" "SRCPATH"
+
+cat << EOF
+
+All system-dependent information has been gathered, you can start
+compiling the toolchain now.  You can use the following commands:
+
+  $MK [all]     -- build everything; the "all" word is optional.
+  $MK clean     -- remove most temporary files.
+  $MK distclean -- remove all temporary files.
+  $MK fake      -- preview the installation process.
+  $MK install   -- install the toolchain.
+EOF
