@@ -4,9 +4,9 @@
 include Makedefs.faerion.include
 
 DIRS = zat
-LIST = configure configure.in GNUmakefile Makedefs.faerion \
+LIST = $(wildcard configure configure.in GNUmakefile Makedefs.faerion \
        docs/README.* share/LICENSE share/cpu/Z80 zat/GNUmakefile \
-       zat/*.cc zat/*.h zat/errors/*.h zat/errors/*.cc
+       zat/*.cc zat/*.h zat/errors/*.h zat/errors/*.cc)
 
 custom-cleandist = custom-cleandist
 
