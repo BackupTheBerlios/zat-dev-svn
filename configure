@@ -8,7 +8,6 @@ find_exe "CPP" "cpp -E"
 find_dir INCDIR "$PREFIX/include"
 find_dir LIBDIR "$PREFIX/lib"
 find_func getopt
-find_func strlcpy
 
 if [ "$MDF_OSNAME" = "NT" ]; then
   MDF_LIBARCH="nt"
