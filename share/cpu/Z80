@@ -708,6 +708,7 @@ rst 38h|ff
 equ @|.define
 org @|.origin
 include @|.include
+include @ namespace @|.include,.namespace
 insert @|.insert
 defb @@|.bytelist
 defw @@|.wordlist
