@@ -25,6 +25,9 @@ public:
 	zstring& operator = (const zstring &src);
 	// Formats a string.
 	zstring& format(const char *format, ...);
+	// Removes specified characters from the beginning and
+	// from the end of the string.
+	zstring& trim(char c = ' ');
 	// Checks whether a character is a white space.
 	static bool isws(char c) { return (c == ' ' || c == '\t'); }
 	// Checks whether a character is a quotation mark.

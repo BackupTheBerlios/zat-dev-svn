@@ -79,3 +79,22 @@ zstring& zstring::format(const char *format, ...)
 
 	return *this;
 }
+
+zstring& zstring::trim(char c)
+{
+	std::string::const_iterator src = begin();
+	std::string::iterator dst = begin();
+
+	while (src != end() && *src == ' ')
+		++src;
+
+	while (src != end())
+		*dst++ = *src++;
+
+	while (dst != begin() && *(dst - 1) == c)
+		--dst;
+
+	resize(dst - begin());
+
+	return *this;
+}
