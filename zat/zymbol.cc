@@ -81,7 +81,7 @@ void zymbol::dump()
 
 zymbol* zymbol::find(const char *expr)
 {
-	zname name(expr);
+	zstring name(expr);
 	name.capsize();
 
 	for (iterator it = list.begin(); it != list.end(); ++it) {
@@ -161,7 +161,7 @@ int& zymbol::get_value()
 }
 
 
-void zymbol::delay(const char *expr, unsigned int pc, int mode)
+void zymbol::delay(const char *expr, unsigned int /* pc */, int /* mode */)
 {
 	zymbol *lab = find(expr);
 
@@ -170,6 +170,7 @@ void zymbol::delay(const char *expr, unsigned int pc, int mode)
 		lab = &(*(list.end() - 1));
 	}
 
+	/*
 	switch (mode) {
 	case op_byte:
 		lab->bytes.push_back(pc);
@@ -184,6 +185,7 @@ void zymbol::delay(const char *expr, unsigned int pc, int mode)
 		// zerror(ret_bad_label_type).repin(expr);
 		;
 	}
+	*/
 }
 
 

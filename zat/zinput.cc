@@ -16,9 +16,9 @@
 
 using namespace std;
 
-zinput::meta_s::meta_s(const char *fname)
+zinput::meta_s::meta_s(const char *fname) :
+	name(fname)
 {
-	name = fname;
 	line = 0;
 }
 
@@ -42,12 +42,8 @@ bool zinput::open()
 		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
 			std::string path = *it + "/" + std::string(meta.name.c_str());
 
-			debug("looking for \"%s\"...", path.c_str());
 			if (in.open(path.c_str())) {
-				debug(" found!\n");
 				break;
-			} else {
-				debug(" none.\n");
 			}
 		}
 	}
@@ -86,7 +82,7 @@ bool zinput::do_line(zoutput & /* out */)
 	meta.line++;
 
 	// do_label(line.c_str(), out);
-	zinst::match(line.c_str(), args);
+	// zinst::match(line.c_str(), args);
 
 	return true;
 }

@@ -3,26 +3,20 @@
 //
 // $Id$
 
-#ifndef __zaa_zstring_h
-#define __zaa_zstring_h
-
+#pragma once
 #include <string>
 
-class zstring
+class zstring : public std::string
 {
-	char *data;
 public:
-	zstring();
-	zstring(const char *);
-	zstring(const char *, size_t);
-	zstring(const zstring &);
-	~zstring();
-	zstring& operator = (const zstring &);
-	char * c_str();
-	const char * c_str() const;
+	// Initializers.
+	zstring() { }
+	zstring(const char *src) : std::string(src) { }
+	zstring(const char *src, size_t sz) : std::string(src, sz) { }
+	// Capsize all characters.
 	void capsize();
-	unsigned int hint() const;
+	// Calculates a hash value for the string.
+	unsigned int hash() const;
+	// Checks whether the string contains a path name.
 	bool has_path() const;
 };
-
-#endif // __zaa_zstring_h

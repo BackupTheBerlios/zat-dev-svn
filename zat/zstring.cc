@@ -3,95 +3,34 @@
 //
 // $Id$
 
-#include <ctype.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "zat.h"
 #include "zstring.h"
-
-zstring::zstring()
-{
-	data = NULL;
-}
-
-
-zstring::zstring(const char *src)
-{
-	data = strdup(src);
-}
-
-
-zstring::zstring(const char *src, size_t size)
-{
-	data = reinterpret_cast<char *>(malloc(size + 1));
-	strncpy(data, src, size);
-	*(data + size) = '\0';
-}
-
-
-zstring::zstring(const zstring &src)
-{
-	data = NULL;
-	*this = src;
-}
-
-
-zstring::~zstring()
-{
-	if (data != NULL)
-		free(data);
-}
-
-
-zstring& zstring::operator = (const zstring &src)
-{
-	if (data != NULL)
-		free(data);
-	data = reinterpret_cast<char *>(strdup(src.data));
-	return *this;
-}
-
-
-char * zstring::c_str()
-{
-	return data;
-}
-
-
-const char * zstring::c_str() const
-{
-	return data;
-}
-
 
 void zstring::capsize()
 {
-	for (char *tmp = data; *tmp != '\0'; ++tmp)
-		*tmp = ::toupper(*tmp);
+	for (std::string::iterator it = begin(); it != end(); ++it)
+		*it = ::toupper(*it);
 }
 
-
-unsigned int zstring::hint() const
+unsigned int zstring::hash() const
 {
 	unsigned int value = 0;
 
-	if (data == NULL)
-		return value;
-
-	for (const char *src = data; *src != '\0'; ++src)
-		value = value * 31 + * reinterpret_cast<const unsigned char *>(src);
+	for (std::string::const_iterator it = begin(); it != end(); ++it)
+		value = value * 31 + static_cast<unsigned char>(*it);
 
 	return value;
 }
 
 bool zstring::has_path() const
 {
+	for (std::string::const_iterator it = begin(); it != end(); ++it) {
 #ifdef _WIN32
-	if (strchr(data, '\\') != NULL)
-		return true;
+		if (*it == '\\')
+			return true;
 #endif
-	if (strchr(data, '/') != NULL)
-		return true;
+		if (*it == '/')
+			return true;
+	}
+
 	return false;
 }

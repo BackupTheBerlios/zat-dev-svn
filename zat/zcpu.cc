@@ -7,11 +7,11 @@
 #include <stdlib.h>
 
 #include "zcpu.h"
-#include "zerror.h"
 #include "zinst.h"
 #include "zoptions.h"
 #include "zefile.h"
 #include "zstream.h"
+#include "zesyntax.h"
 
 zcpu cpu;
 
@@ -21,6 +21,17 @@ zcpu::zcpu()
 
 zcpu::~zcpu()
 {
+}
+
+void zcpu::add_instr(const char *src)
+{
+	vector<int> codes;
+	const char *sep = strchr(src, '|');
+
+	if (sep == NULL)
+		throw zesyntax(src, "malformed instruction table");
+
+	debug("adding instruction: %s\n", std::string(src, sep - src).c_str());
 }
 
 void zcpu::init(const char *cpu_name)
@@ -39,18 +50,8 @@ void zcpu::init(const char *cpu_name)
 	if (!in.is_open())
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
-	while (in.read(line)) {
-		zinst::feed(line.c_str());
-	}
+	for (std::string line; in.read(line); add_instr(line.c_str()));
 
-	/*
-	while ((src = read_line(buf, sizeof(buf), in)) != NULL)
-		zinst::feed(buf);
-
-	fclose(in);
-	*/
-
-	zinst::optimize();
 	output.push_back(new zoutput(opt.out));
 }
 

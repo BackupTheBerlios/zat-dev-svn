@@ -44,8 +44,8 @@
 
 #include <vector>
 
-#include "zname.h"
 #include "zerror.h"
+#include "zstring.h"
 
 // Defines a single label.  Maintains two lists of labels:
 // one for runtime use, one for later resolution.
@@ -56,7 +56,7 @@ class zymbol
 	// The list of all defined labels.
 	static std::vector<zymbol> list;
 	// The name of the label.
-	zname name;
+	zstring name;
 	// The value associated with the label.
 	int value;
 	// The list of addresses of byte arguments that refer to this

@@ -8,23 +8,30 @@
 #ifndef __zaa_zcpu_h
 #define __zaa_zcpu_h
 
+#include <ext/hash_map>
 #include <vector>
-#include <string>
-
 #include "zinput.h"
 #include "zoutput.h"
+#include "zinst.h"
 
 class zerror;
 class zymbol;
 
+using std::vector;
+using __gnu_cxx::hash_map;
+
 class zcpu
 {
 	// The queue of input files.  Most recent last.
-	std::vector<zinput> input;
+	vector<zinput> input;
 	// The list of output files.
-	std::vector<zoutput *> output;
+	vector<zoutput *> output;
 	// Index within the output vector.
 	unsigned int iout;
+	// Instructions with fixed machine code.
+	hash_map< int, int > fmap;
+	// Adds a cpu instruction.
+	void add_instr(const char *src);
 public:
 	// The label on the current line.
 	zymbol *lastlabel;
@@ -33,7 +40,7 @@ public:
 	// The map of used bytes.  For listing only.
 	unsigned int usemap;
 	// Search path for input files.
-	std::vector< std::string > incdir;
+	vector< std::string > incdir;
 public:
 	// Initialization.
 	zcpu();
