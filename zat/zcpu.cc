@@ -243,9 +243,6 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 	mapv_t::const_iterator it = mapv.find(inst);
 	int base = out.block().get_origin() + out.block().size();
 
-	if (!out.block().has_origin())
-		base = -1;
-
 	if (it == mapv.end())
 		return false;
 
@@ -319,6 +316,9 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 {
 	int value = 0;
 	zstring::const_iterator it = expr.begin();
+
+	if (!out.block().has_origin())
+		base = -1;
 
 	if (!evaluate(it, value, base)) {
 		value = 0;
