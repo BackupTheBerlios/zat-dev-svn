@@ -80,13 +80,13 @@ void zmemblk::set_origin(zorigin *value)
 	basex = value;
 }
 
-void zmemblk::write() const
+void zmemblk::write(zstream &fobj) const
 {
 	if (opt.fmap.is_open())
 		opt.fmap.print("  addr: %04Xh, size: %04Xh (%u)\n", base, code.size, code.size);
 
-	opt.fout << base;
-	opt.fout << code.size;
+	fobj << base;
+	fobj << code.size;
 
-	opt.fout.write(code.code, code.size);
+	fobj.write(code.code, code.size);
 }

@@ -9,6 +9,8 @@
 #include "zstring.h"
 #include "zmemblk.h"
 
+class zstream;
+
 class zoutput
 {
 	zstring name;
@@ -29,7 +31,7 @@ public:
 	// Starts a new block.
 	void add();
 	// Writes the content to the object file.
-	void write() const;
+	void write(zstream &fobj) const;
 };
 
 #endif

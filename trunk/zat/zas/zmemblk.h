@@ -5,9 +5,11 @@
 
 #ifndef __zas_zmemblk_h
 #define __zas_zmemblk_h
+
 #include "zstring.h"
 
 class zorigin;
+class zstream;
 
 class zmemblk
 {
@@ -52,7 +54,7 @@ public:
 	// Returns the base address.
 	size_t get_origin() const { return (basex == NULL) ? base : 0; }
 	// Writes the content to the object file.
-	void write() const;
+	void write(zstream &fobj) const;
 };
 
 #endif

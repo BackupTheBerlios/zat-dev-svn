@@ -28,14 +28,14 @@ void zoutput::add()
 	blocks.push_back(new zmemblk());
 }
 
-void zoutput::write() const
+void zoutput::write(zstream &fobj) const
 {
 	if (opt.fmap.is_open())
 		opt.fmap.print("Segment name: %s\n", name.c_str());
 
-	opt.fout << name;
-	opt.fout << blocks.size();
+	fobj << name;
+	fobj << blocks.size();
 
 	for (std::vector<zmemblk *>::const_iterator it = blocks.begin(); it != blocks.end(); ++it)
-		(*it)->write();
+		(*it)->write(fobj);
 }

@@ -27,9 +27,6 @@ void zoptions::open()
 	if (sym.size() != 0 && !fsym.open(sym, true))
 		throw zefile("could not open symbol file for writing", sym.c_str());
 
-	if (out.size() != 0 && !fout.open(out, true))
-		throw zefile("could not open output file for writing", out.c_str());
-
 	if (map.size() != 0 && !fmap.open(map, true))
 		throw zefile("could not open map file for writing", map.c_str());
 }

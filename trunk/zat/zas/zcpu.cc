@@ -154,8 +154,15 @@ void zcpu::translate()
 
 	stat.trantime = gettime() - stat.trantime;
 
-	for (std::vector<zoutput *>::const_iterator it = output.begin(); it != output.end(); ++it)
-		(*it)->write();
+	if (opt.out.size() != 0) {
+		zstream fobj;
+
+		if (!fobj.open(opt.out, true))
+			throw zefile("could not open output file for writing", opt.out.c_str());
+
+		for (std::vector<zoutput *>::const_iterator it = output.begin(); it != output.end(); ++it)
+			(*it)->write(fobj);
+	}
 }
 
 void zcpu::resolve()

@@ -19,7 +19,6 @@ public:
 	zstring map;
 	// File handles.
 	zstream fsym;
-	zstream fout;
 	zstream fmap;
 	// The point where errors start.  Defaults to ret_errors,
 	// but may be changed to ret_warnings by a command line switch.
