@@ -19,4 +19,6 @@ public:
 	unsigned int hash() const;
 	// Checks whether the string contains a path name.
 	bool has_path() const;
+	// Checks whether a character is a white space.
+	static bool isws(char c) { return (c == ' ' || c == '\t'); }
 };
