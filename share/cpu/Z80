@@ -216,8 +216,6 @@ ret|c9
 jp z,@|ca,.word
 rlc b|cb,00
 rlc c|cb,01
-rlc b|cb,00
-rlc c|cb,01
 rlc d|cb,02
 rlc e|cb,03
 rlc h|cb,04
