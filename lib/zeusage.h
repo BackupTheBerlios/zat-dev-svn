@@ -7,11 +7,11 @@
 #define __zat_zeusage_h
 #include "zerror.h"
 
-class zusage : public zerror
+class zeusage : public zerror
 {
 public:
-	zusage() { }
-	~zusage() { }
+	zeusage() { }
+	~zeusage() { }
 	const char * c_str() { return "invalid command line; for help, type: zat -h";  }
 	zseverity severity() const { return zsev_ok; }
 };

@@ -190,7 +190,7 @@ static void zmain(int argc, char * const * argv)
 			opt.errstart = zsev_warning;
 			break;
 		default:
-			throw zusage();
+			throw zeusage();
 		}
 	}
 
