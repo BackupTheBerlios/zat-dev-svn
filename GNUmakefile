@@ -24,13 +24,13 @@ fake: all
 	cp share/LICENSE fake-$(VERSION)/share/
 
 custom-cleandist:
-	rm -rf fake-$(VERSION)
+	rm -rf fake-$(VERSION) configure.h
 
 install: fake
   ifeq ($(PREFIX),)
 	@echo "The PREFIX envar is not defined."
   else
-	$(SUDO) cp -R fake-$(VERSION)/* $(PREFIX)/ && rm -rf fake-$(VERSION)
+	$(SUDO) cp -R $(wildcard fake-$(VERSION)/*) $(PREFIX)/ && rm -rf fake-$(VERSION)
   endif
 
 test: install
