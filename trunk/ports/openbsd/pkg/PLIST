@@ -1,6 +1,6 @@
-bin/zat-0.1
-bin/zat
+bin/zas-0.1
+bin/zas
 bin/zodump-0.1
 bin/zodump
-share/zat-0.1/cpu/Z80
-share/zat-0.1/LICENSE
+share/zat/0.1/cpu/Z80
+share/zat/0.1/LICENSE
