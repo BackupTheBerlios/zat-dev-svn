@@ -10,15 +10,13 @@
 #include "zat.h"
 #include "zoptions.h"
 
-void debug(int level, const char *format, ...)
+void debug(const char *format, ...)
 {
-	if (opt.debug >= level) {
-		va_list vl;
-		va_start(vl, format);
-		fprintf(stderr, "debug: ");
-		vfprintf(stderr, format, vl);
-		va_end(vl);
-	}
+	va_list vl;
+	va_start(vl, format);
+	fprintf(stderr, "debug: ");
+	vfprintf(stderr, format, vl);
+	va_end(vl);
 }
 
 #endif

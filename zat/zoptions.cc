@@ -15,7 +15,6 @@ zoptions::zoptions()
 	sym = 0;
 	fout = 0;
 	fsym = 0;
-	debug = 0;
 	errstart = zsev_error;
 	quiet = false;
 	timing = false;

@@ -139,7 +139,8 @@ void zcpu::translate(int argc, char * const *argv)
 
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
-		debug(1, "translating \"%s\".\n", i.name());
+		if (opt.debug.filerd)
+			debug("translating \"%s\".\n", i.name());
 		while (parse(i, *output[iout]));
 		input.pop_back();
 	}
@@ -182,7 +183,7 @@ void zcpu::resolve()
 
 			lock = false;
 
-			if (opt.debug) {
+			if (opt.debug.symtab) {
 				for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 					if (!(*it)->islabel() && !(*it)->isok()) {
 						if (!lock) {

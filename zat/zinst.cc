@@ -6,6 +6,7 @@
 #include "zat.h"
 #include "zinst.h"
 #include "zcpu.h"
+#include "zoptions.h"
 
 zinst::zinst(const zinst &src)
 {
@@ -116,10 +117,12 @@ bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 	}
 
 	if (si == slim && ti == tlim) {
-		debug(9, " - match: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
+		if (opt.debug.tplmatch)
+			debug(" - match: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
 		return true;
 	} else {
-		debug(9, " - mismatch: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
+		if (opt.debug.tplmatch)
+			debug(" - mismatch: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
 		return false;
 	}
 }
