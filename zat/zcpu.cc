@@ -84,14 +84,8 @@ void zcpu::add_instr(const char *src)
 
 	if (atomic) {
 		mapa[zinst(mnemo)] = codes;
-		debug(3, "(a) installed instruction '%s'\n", zinst(mnemo).c_str());
 	} else {
-		std::vector<int> &x = mapv[zinst(mnemo)];
-		x = codes;
-		opt.fsym.print("; installed command: '%s' (%u):", zinst(mnemo).c_str(), codes.size());
-		for (size_t idx = 0; idx < x.size(); ++idx)
-			opt.fsym.print(" %02X", x[idx] & 0xFF);
-		opt.fsym.print("\n");
+		mapv[zinst(mnemo)] = codes;
 	}
 }
 
@@ -226,20 +220,34 @@ bool zcpu::do_variable(zinst &inst, zoutput &out)
 	if (it->second.size() != 0) {
 		const std::vector<int> &codes = it->second;
 
-		debug(1, "- : size=%u\n", codes.size());
-
 		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
-			debug(1, "- : %d\n", *it);
 			if (*it >= 0) {
 				out.emit(static_cast<char>(*it));
 			} else {
 				switch (*it) {
 				case op_byte:
+				case op_boffset:
 					out.emit(static_cast<char>(0));
 					break;
 				case op_word:
 					out.emit(static_cast<short>(0));
 					break;
+				case op_zap:
+					break;
+				case op_define:
+					break;
+				case op_origin:
+					break;
+				case op_include:
+					break;
+				case op_insert:
+					break;
+				case op_blist:
+					break;
+				case op_wlist:
+					break;
+				default:
+					throw zesyntax(inst.c_str(), "unsupported parameter");
 				}
 			}
 		}

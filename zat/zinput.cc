@@ -51,26 +51,6 @@ bool zinput::open()
 	return in.is_open();
 }
 
-// Finds a label on the current line.  The pointer in the string
-// is adjusted to the first non-space character after the label.
-void zinput::do_label(const char *&src, zoutput &out)
-{
-	if (isalpha(*src) || *src == '_') {
-		zstring name;
-		const char *tmp = src;
-
-		while (!zstring::isws(*tmp) && *tmp != '\0')
-			++tmp;
-
-		name = zstring(src, tmp - src);
-
-		zymbol::install(name.c_str(), out.block());
-	}
-
-	while (zstring::isws(*src))
-		++src;
-}
-
 bool zinput::read(zstring &line)
 {
 	if (!in.read(line))

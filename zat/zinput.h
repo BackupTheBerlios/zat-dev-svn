@@ -23,8 +23,6 @@ class zinput
 	} meta;
 	// File source.
 	zstream in;
-	// Extracts the label, if any.
-	void do_label(const char *&src, zoutput &out);
 public:
 	// Sets the file name and initializes everything else.
 	zinput(const char *fname);
