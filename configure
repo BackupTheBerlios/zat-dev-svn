@@ -8,6 +8,7 @@ find_exe "CPP" "cpp -E"
 find_exe "SUDO" "sudo"
 find_dir INCDIR "$PREFIX/include"
 find_dir LIBDIR "$PREFIX/lib"
+find_lib m
 find_func getopt
 
 if [ "$MDF_OSNAME" = "NT" ]; then
