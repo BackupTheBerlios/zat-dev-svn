@@ -294,6 +294,11 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 				case op_insert:
 					break;
 				case op_blist:
+					for (const char *src = args[0].c_str(); *src != 0; ) {
+						zstring tok = zstring::gettok(src, ',');
+						emit(tok, op_byte, out, base);
+					}
+					args.erase(args.begin());
 					break;
 				case op_wlist:
 					for (const char *src = args[0].c_str(); *src != 0; ) {
