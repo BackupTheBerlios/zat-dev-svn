@@ -33,10 +33,4 @@ install: fake
 	$(SUDO) cp -R $(wildcard fake-$(VERSION)/*) $(PREFIX)/ && rm -rf fake-$(VERSION)
   endif
 
-test: install
-	cd test/01 && $(MAKE)
-
-debug: install
-	cd test/01 && $(MAKE) debug
-
 dist: dist-default
