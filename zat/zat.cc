@@ -29,23 +29,8 @@ static const char *version =
 static int usage()
 {
 	fprintf(stdout, "%s",
-		"zaa, the portable assembler, copyright (c) 2004 " CONTACT "\n"
-		"Usage: zat [OPTIONS] -o binary sources...\n"
-		"\n"
-		"Options:\n"
-		"  -c name         : change CPU type (defaults to Z80)\n"
-#ifdef _DEBUG
-		"  -d              : include debug output\n"
-#endif
-		"  -E              : only preprocess source files\n"
-		"  -f preprocessed : source files are already preprocessed\n"
-		"  -I path         : additional include directory\n"
-		"  -M              : gain dependency information\n"
-		"  -o filename     : output binary file name\n"
-		"  -q              : quiet, suppress unnecessary messages\n"
-		"  -s filename     : dump symbols to the file\n"
-		"  -v              : display version number and exit\n"
-		"  -W              : treat warnings as errors\n"
+		"zat: invalid command line.\n"
+		"For help, type: zat -h\n"
 		"");
 	return ret_syntax;
 }
@@ -120,7 +105,7 @@ int main(int argc, char * const argv[])
 	zerror rc = ret_ok;
 	std::vector<const char *> preargs;
 
-	for (char ch; (ch = getopt(argc, argv, "c:dEf:I:Mo:qs:vW")) > 0; ) {
+	for (char ch; (ch = getopt(argc, argv, "c:dhI:Mo:qs:vW")) > 0; ) {
 		switch (ch) {
 		case 'c':
 			opt.cpu = optarg;
@@ -128,10 +113,26 @@ int main(int argc, char * const argv[])
 		case 'd':
 			opt.debug++;
 			break;
-		case 'E':
-			break;
-		case 'f':
-			break;
+		case 'h':
+			fprintf(stdout, "%s",
+				"zat, the portable assembler, copyright (c) 2004-2005 " CONTACT "\n"
+				"Usage: zat [OPTIONS] sources...\n"
+				"\n"
+				"Options:\n"
+				"  -c name         : change CPU type (defaults to Z80)\n"
+#ifdef _DEBUG
+				"  -d              : include debug output\n"
+#endif 
+				"  -h              : this help screen\n"
+				"  -I path         : additional include directory\n"
+				"  -M              : gain dependency information\n"
+				"  -o filename     : default output file name\n"
+				"  -q              : quiet, suppress unnecessary messages\n"
+				"  -s filename     : dump symbols to the file\n"
+				"  -v              : display version number and exit\n"
+				"  -W              : treat warnings as errors\n"
+				"");
+			return ret_syntax;
 		case 'I':
 			preargs.push_back("-I");
 			preargs.push_back(optarg);
@@ -160,9 +161,6 @@ int main(int argc, char * const argv[])
 
 	argv += optind;
 	argc -= optind;
-
-	if (opt.out == NULL)
-		return usage();
 
 	if ((rc = setup_cpu()) != ret_ok) {
 		rc.repex();

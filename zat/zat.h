@@ -6,6 +6,10 @@
 #ifndef __zat_h_included__
 #define __zat_h_included__
 
+#if defined(HAVE_configure_h)
+# include "../configure.h"
+#endif
+
 #include <stdio.h>
 
 #include "zerror.h"
