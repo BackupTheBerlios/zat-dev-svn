@@ -29,6 +29,8 @@ public:
 	static bool isws(char c) { return (c == ' ' || c == '\t'); }
 	// Checks whether a character is a quotation mark.
 	static bool isquote(char c) { return (c == '"' || c == '\''); }
+	// Checks whether a character is an end of line.
+	static bool iseol(char c) { return (c == '\r' || c == '\n'); }
 	// Extracts a token from a string.
 	static zstring gettok(const char *&src, char sep);
 };

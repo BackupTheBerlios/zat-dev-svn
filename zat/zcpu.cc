@@ -36,6 +36,9 @@ void zcpu::add_instr(const char *src)
 	if (*src == ';')
 		return;
 
+	if (*src == '\0')
+		return;
+
 	if ((sep = strchr(src, '|')) == NULL)
 		throw zesyntax(src, "malformed instruction table");
 
@@ -77,7 +80,7 @@ void zcpu::add_instr(const char *src)
 void zcpu::init(const char *cpu_name)
 {
 	zstream in;
-	zstring fname, line;
+	zstring fname;
 
 	if (strchr(cpu_name, '/') == NULL) {
 		fname.format(PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
@@ -85,9 +88,7 @@ void zcpu::init(const char *cpu_name)
 		fname = cpu_name;
 	}
 
-	in.open(fname.c_str());
-
-	if (!in.is_open())
+	if (!in.open(fname.c_str()))
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
 	for (zstring line; in.read(line); add_instr(line.c_str()));

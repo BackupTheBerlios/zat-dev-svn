@@ -4,6 +4,7 @@
 // $Id$
 
 #include <stdio.h>
+#include "zat.h"
 #include "zstream.h"
 #include "zstring.h"
 
@@ -21,7 +22,7 @@ zstream::zstream(const char *fname, bool writable)
 bool zstream::open(const char *fname, bool writable)
 {
 	close();
-	return (fd = fopen(fname, writable ? "w" : "rb")) != NULL;
+	return (fd = fopen(fname, writable ? "w" : "r")) != NULL;
 }
 
 void zstream::close()
@@ -50,9 +51,10 @@ bool zstream::read(zstring &str)
 
 	flockfile(in);
 
-	for (int c; (c = getc_unlocked(in)) != EOF; ) {
-		if (c == '\r' || c == '\n') {
-			while (c == '\r' || c == '\n')
+	int c;
+	for (; (c = getc_unlocked(in)) != EOF; ) {
+		if (zstring::iseol(c)) {
+			while (zstring::iseol(c))
 				c = getc_unlocked(in);
 			if (c != EOF)
 				ungetc(c, in);

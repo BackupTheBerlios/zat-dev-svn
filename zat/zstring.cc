@@ -71,7 +71,7 @@ zstring& zstring::format(const char *format, ...)
 	va_list vl;
 
 	va_start(vl, format);
-	asprintf(&tmp, format, vl);
+	vasprintf(&tmp, format, vl);
 	va_end(vl);
 
 	*this = tmp;
