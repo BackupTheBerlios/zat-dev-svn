@@ -34,3 +34,18 @@ bool zstring::has_path() const
 
 	return false;
 }
+
+zstring zstring::gettok(const char *&src, char sep)
+{
+	const char *org = src, *end;
+
+	while (*src != '\0' && *src != sep)
+		++src;
+
+	end = src;
+
+	if (*src == sep)
+		++src;
+
+	return zstring(org, end - org);
+}

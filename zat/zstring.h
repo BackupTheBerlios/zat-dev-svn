@@ -21,4 +21,6 @@ public:
 	bool has_path() const;
 	// Checks whether a character is a white space.
 	static bool isws(char c) { return (c == ' ' || c == '\t'); }
+	// Extracts a token from a string.
+	static zstring gettok(const char *&src, char sep);
 };
