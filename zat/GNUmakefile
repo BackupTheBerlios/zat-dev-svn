@@ -25,4 +25,7 @@ custom-cleandist:
 	rm -f $(PROG)
 
 test: all
-	./$(PROG) -c ../share/cpu/Z80 -d +a-mt -I ../test/01 -s Z80.sym -o Z80.bin -t Z80.asm
+	./$(PROG) -c ../share/cpu/Z80 -d +a-mt -I ../test/01 -s Z80.sym -o Z80.bin Z80.asm
+
+benchmark: all
+	./$(PROG) -c ../share/cpu/Z80 -d +T -I ../test/01 -s Z80.sym -o Z80.bin Z80.asm

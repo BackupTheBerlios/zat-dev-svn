@@ -22,8 +22,6 @@ public:
 	int errstart;
 	// Set to suppress extraneous output.
 	bool quiet;
-	// Set to show timing.
-	bool timing;
 	// Debug options.
 	struct debug_s
 	{
@@ -35,6 +33,7 @@ public:
 		bool tplmiss; // non-matching templates
 		bool mcode; // machine code for each new instruction
 		bool lines; // show line numbers
+		bool timing; // collect timing info
 		debug_s()
 		{
 			symtab = false;
@@ -45,6 +44,7 @@ public:
 			tplmiss = false;
 			mcode = false;
 			lines = false;
+			timing = false;
 		}
 	} debug;
 public:

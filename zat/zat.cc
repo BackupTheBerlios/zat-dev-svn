@@ -34,7 +34,6 @@ static void show_help()
 		"  -o filename     : default output file name\n"
 		"  -q              : quiet, suppress unnecessary messages\n"
 		"  -s filename     : dump symbols to the file\n"
-		"  -t              : show process timing\n"
 		"  -v              : display version number and exit\n"
 		"  -W              : treat warnings as errors\n"
 		"\n"
@@ -46,6 +45,7 @@ static void show_help()
 		"   r              : files being read\n"
 		"   s              : show symbols as they are found\n"
 		"   t              : show the instruction table being processed\n"
+		"   T              : show timing information\n"
 		"   0              : show instruction probes as they don't match\n"
 		"   1              : show instruction probes as they match\n"
 		"");
@@ -71,6 +71,7 @@ static void do_debug(const char *args)
 			opt.debug.tplmatch = sign;
 			opt.debug.mcode = sign;
 			opt.debug.lines = sign;
+			opt.debug.timing = sign;
 			break;
 		case 'e':
 			opt.debug.symtab = sign;
@@ -90,6 +91,9 @@ static void do_debug(const char *args)
 		case 't':
 			opt.debug.instab = sign;
 			break;
+		case 'T':
+			opt.debug.timing = sign;
+			break;
 		case '0':
 			opt.debug.tplmiss = sign;
 			break;
@@ -106,7 +110,7 @@ static void zmain(int argc, char * const * argv)
 {
 	zerror rc;
 
-	for (char ch; (ch = getopt(argc, argv, "c:d:hI:Mo:qs:tvW")) > 0; ) {
+	for (char ch; (ch = getopt(argc, argv, "c:d:hI:Mo:qs:vW")) > 0; ) {
 		switch (ch) {
 		case 'c':
 			opt.cpu = optarg;
@@ -131,9 +135,6 @@ static void zmain(int argc, char * const * argv)
 		case 's':
 			opt.sym = optarg;
 			break;
-		case 't':
-			opt.timing = true;
-			break;
 		case 'v':
 			fprintf(stdout, "%s\n", version);
 			return;
@@ -150,10 +151,10 @@ static void zmain(int argc, char * const * argv)
 	cpu.translate(argc - optind, argv + optind);
 	cpu.resolve();
 
-	if (opt.timing) {
-		fprintf(stdout, "Table read in %u msec.\n", cpu.stat.tabtime);
-		fprintf(stdout, "Translation done in %u msec (%u lines processed).\n", cpu.stat.trantime, cpu.stat.lines);
-		fprintf(stdout, "Symbol table fixed in %u msec.\n", cpu.stat.fixtime);
+	if (opt.debug.timing) {
+		debug("Table read in %u msec.\n", cpu.stat.tabtime);
+		debug("Translation done in %u msec (%u lines processed).\n", cpu.stat.trantime, cpu.stat.lines);
+		debug("Symbol table fixed in %u msec.\n", cpu.stat.fixtime);
 	}
 }
 
