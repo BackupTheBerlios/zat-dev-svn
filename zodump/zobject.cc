@@ -7,50 +7,46 @@
 
 zobject::zobject()
 {
-	in = NULL;
 }
 
 zobject::~zobject()
 {
-	if (in != NULL)
-		fclose(in);
-}
-
-bool zobject::read(std::string &to)
-{
-	to.clear();
-
-	if (feof(in))
-		return false;
-
-	for (int c; (c = getc_unlocked(in)) != EOF; ) {
-		if (c == 0)
-			return true;
-		to.push_back(c);
-	}
-
-	return false;
 }
 
 bool zobject::open(const char *fname)
 {
-	if ((in = fopen(fname, "rb")) == NULL)
+	if (!in.open(fname, false))
 		return false;
-
-	flockfile(in);
 
 	while (true) {
 		segment seg;
 
 		if (!seg.read(in))
 			return false;
+
+		fprintf(stdout, "Segment read: %s\n", seg.name.c_str());
 	}
 }
 
-bool zobject::segment::read(FILE *in)
+bool zobject::segment::read(zstream &in)
 {
-	if (!zobject::read(name, in))
-		return false;
+	size_t count;
+
+	in >> name;
+	in >> count;
+
+	while (count != 0) {
+		block b;
+		b.read(in);
+	}
 
 	return true;
+}
+
+void zobject::segment::block::read(zstream &in)
+{
+	in >> base;
+	in >> size;
+	offset = in.tell();
+	in.seek(offset + size);
 }

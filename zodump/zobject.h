@@ -6,13 +6,13 @@
 #ifndef __zat_zobject_h
 #define __zat_zobject_h
 
-#include <stdio.h>
-#include <string>
 #include <vector>
+#include "zstream.h"
+#include "zstring.h"
 
 class zobject
 {
-	FILE *in;
+	zstream in;
 public:
 	// The list of segments.
 	struct segment;
@@ -24,19 +24,16 @@ public:
 	~zobject();
 	// Reads a file.
 	bool open(const char *fname);
-	// Reads a null-terminated string from the file.
-	bool read(std::string &to);
-	static bool read(std::string &to, FILE *in);
 };
 
 struct zobject::segment
 {
 	struct block;
-	std::string name;
+	zstring name;
 	std::vector<block> blocks;
 	typedef std::vector<block>::const_iterator const_iterator;
 	// Reads segment data from a file.
-	bool read(FILE *in);
+	bool read(zstream &in);
 };
 
 struct zobject::segment::block
@@ -44,6 +41,7 @@ struct zobject::segment::block
 	size_t base;
 	size_t size;
 	size_t offset;
+	void read(zstream &in);
 };
 
 #endif

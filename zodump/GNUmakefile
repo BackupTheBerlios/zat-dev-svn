@@ -4,9 +4,10 @@
 include ../Makedefs.faerion.include
 
 TARGET  = executable
-INCDIR += errors
+INCDIR += ../lib
 PROG    = zodump-$(VERSION)
 SRCS    = $(wildcard *.cc)
+ARCH   += ../lib/zalib.a
 LIBS   += stdc++
 
 ifeq ($(MDF_OSNAME),NT)
@@ -14,3 +15,6 @@ ifeq ($(MDF_OSNAME),NT)
 endif
 
 include ../Makedefs.faerion
+
+test: all
+	./$(PROG) ../zat/zat.obj

@@ -42,4 +42,12 @@ public:
 	const char * c_str() { return "writing to a closed file"; }
 };
 
+class zerdeof : public zerror
+{
+public:
+	zerdeof() { }
+	~zerdeof() { }
+	const char * c_str() { return "reading past end of file"; }
+};
+
 #endif

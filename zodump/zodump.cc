@@ -8,6 +8,8 @@
 #include <string>
 #include "../configure.h"
 #include "zobject.h"
+#include "zefile.h"
+#include "zeusage.h"
 
 static int usage()
 {
@@ -43,7 +45,7 @@ static bool do_file(const char *fname)
 	return true;
 }
 
-int main(int argc, char * const * argv)
+bool zmain(int argc, char * const * argv)
 {
 	bool dec = false;
 
@@ -55,25 +57,32 @@ int main(int argc, char * const * argv)
 		case 'h':
 			return usage();
 		default:
-			fprintf(stderr, "invalid command line; for help, type: zodump -h\n");
-			return 1;
+			throw zeusage();
 		}
 	}
 
 	argc -= optind;
 	argv += optind;
 
-	if (argc == 0) {
-		fprintf(stderr, "zodump: no input files\n");
-		return 1;
-	}
+	if (argc == 0)
+		throw zenofiles();
 
 	while (argc != 0) {
 		if (!do_file(*argv))
-			return 1;
+			return false;
 		--argc;
 		++argv;
 	}
 
-	return 0;
+	return true;
+}
+
+int main(int argc, char * const * argv)
+{
+	try {
+		zmain(argc, argv);
+		return 0;
+	} catch (zerror &e) {
+		fprintf(stderr, "zodump: %s\n", e.c_str());
+	}
 }

@@ -43,6 +43,12 @@ public:
 	// Serialization.
 	zstream& operator << (const zstring &);
 	zstream& operator << (size_t);
+	zstream& operator >> (zstring &);
+	zstream& operator >> (size_t &);
+	// Returns the value of the file position.
+	size_t tell();
+	// Moves file pointer.
+	void seek(size_t);
 };
 
 #endif
