@@ -1,10 +1,5 @@
-Zat is a portable, table driven, single pass assembler written in C++. It works
-with external syntax definition tables which makes it suitable (and easily
-configurable) for use with any assembly-style language and dialect. Zat is
-considerably fast, translating around 4500 lines of source code per second. When
-it comes to labels and expressions, zat imposes as little restrictions as
-possible: all symbols, including the ones that define the base address of a
-block of code (the origin) are evaluated after all source code has been
-processed and the machine code has been emitted.
+Zero Attitude Toolchain
 
-Zat does not support macros at this time.
+Zat is a portable, table driven, single pass assembler written in C++. The
+mission is to create a fast and flexible toolchain which would meet all ZX
+Spectrum (and other) cross-developers' needs.
