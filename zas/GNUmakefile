@@ -26,9 +26,9 @@ custom-cleandist:
 	rm -f $(PROG)
 
 test: all
-	./$(PROG) -c ../share/cpu/Z80 -d +T -I ../test/01 -s zas.sym -S +m -m zas.map Z80.asm
-	ls -ld zas.*
+	./$(PROG) -c ../share/cpu/Z80 -d +T -I ../share/tests/Z80 -s zas.sym -m zas.map 01.asm
+	ls -ld zas.obj zas.map zas.sym
 
 benchmark: all
-	./$(PROG) -c ../share/cpu/Z80 -d +T -I ../test/01 -s zas.sym -m zas.map Z80.asm
-	ls -ld zas.*
+	./$(PROG) -c ../share/cpu/Z80 -d +T -I ../share/tests/Z80 -s zas.sym -m zas.map 01.asm
+	ls -ld zas.obj zas.map zas.sym
