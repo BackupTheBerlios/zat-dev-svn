@@ -33,7 +33,7 @@ zcpu::~zcpu()
 {
 }
 
-void zcpu::add_instr(const char *src)
+void zcpu::add_instr(const char *src, const zinput &in)
 {
 	zstring mnemo;
 	const char *sep;
@@ -47,7 +47,7 @@ void zcpu::add_instr(const char *src)
 		return;
 
 	if ((sep = strchr(src, '|')) == NULL)
-		throw zetable(src, "no code separator");
+		throw zetable("no code separator", in);
 
 	mnemo = zstring(src, (sep++) - src);
 
@@ -80,7 +80,7 @@ void zcpu::add_instr(const char *src)
 			else if (tok == ".namespace")
 				code = op_namespace;
 			else
-				throw zetable(src, "unknown translation directive");
+				throw zetable("unknown translation directive", in);
 			atomic = false;
 		} else {
 			char *unused;
@@ -109,7 +109,6 @@ void zcpu::add_instr(const char *src)
 
 void zcpu::init(const zstring &cpu_name)
 {
-	zstream in;
 	zstring fname;
 
 	if (strchr(cpu_name.c_str(), '/') == NULL) {
@@ -121,11 +120,12 @@ void zcpu::init(const zstring &cpu_name)
 	if (opt.debug.filerd)
 		debug("Reading instruction table from \"%s\".\n", fname.c_str());
 
-	if (!in.open(fname.c_str()))
+	zinput in(fname.c_str());
+	if (!in.open())
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
 	stat.tabtime = gettime();
-	for (zstring line; in.read_uncommented(line); add_instr(line.c_str()));
+	for (zstring line; in.read(line); add_instr(line.c_str(), in));
 	stat.tabtime = gettime() - stat.tabtime;
 
 	ready = true;

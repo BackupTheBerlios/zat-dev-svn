@@ -36,7 +36,7 @@ class zcpu
 	// fail comparing one instruction with another.
 	bool ready;
 	// Adds a cpu instruction.
-	void add_instr(const char *src);
+	void add_instr(const char *src, const zinput &in);
 	// Translates one line of the source code.  Returns `false'
 	// when the file is over.
 	bool parse(zinput &in, zoutput &out);

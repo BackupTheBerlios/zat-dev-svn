@@ -7,9 +7,9 @@
 #include <stdlib.h>
 #include "zetable.h"
 
-zetable::zetable(const char *src, const char *kind)
+zetable::zetable(const char *text, const zinput &in)
 {
-	asprintf(&msg, "bad syntax table: %s: %s", kind, src);
+	asprintf(&msg, "bad syntax table: %s [%s:%u]", text, in.name(), in.line());
 }
 
 zetable::~zetable()

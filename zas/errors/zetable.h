@@ -13,7 +13,7 @@ class zetable : public zerror
 {
 	char *msg;
 public:
-	zetable(const char *src, const char *text);
+	zetable(const char *text, const zinput &in);
 	~zetable();
 	const char * c_str() { return msg; }
 };
