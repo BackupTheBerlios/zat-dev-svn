@@ -6,10 +6,12 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 #include "../configure.h"
 #include "zobject.h"
 #include "zefile.h"
 #include "zeusage.h"
+#include "zprofile.h"
 
 static const char *version =
 	"zodump " VERSION "\n"
@@ -18,6 +20,10 @@ static const char *version =
 	"This is free software; see the source for copying conditions. There is NO\n"
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 	;
+
+static std::vector<zstring> files;
+static bool dec = false;
+
 static void usage(int depth)
 {
 	fprintf(stdout, "%s",
@@ -43,7 +49,7 @@ static void usage(int depth)
 		"");
 }
 
-static bool do_file(const char *fname, bool dec)
+static bool do_file(const char *fname)
 {
 	zobject o;
 
@@ -68,10 +74,11 @@ static bool do_file(const char *fname, bool dec)
 	return true;
 }
 
-void zmain(int argc, char * const * argv)
+static bool do_cmdline(int argc, char * const * argv)
 {
 	int help = 0;
-	bool dec = false;
+
+	optind = 0;
 
 	for (char ch; (ch = getopt(argc, argv, "dhv")) > 0; ) {
 		switch (ch) {
@@ -83,7 +90,7 @@ void zmain(int argc, char * const * argv)
 			break;
 		case 'v':
 			fprintf(stdout, "%s", version);
-			return;
+			return false;
 		default:
 			throw zeusage();
 		}
@@ -91,26 +98,32 @@ void zmain(int argc, char * const * argv)
 
 	if (help != 0) {
 		usage(help);
-		return;
+		return false;
 	}
 
 	argc -= optind;
 	argv += optind;
 
-	if (argc == 0)
-		throw zenofiles();
-
 	while (argc != 0) {
-		do_file(*argv, dec);
+		files.push_back(zstring(*argv));
 		--argc;
 		++argv;
 	}
+
+	return true;
 }
 
 int main(int argc, char * const * argv)
 {
 	try {
-		zmain(argc, argv);
+		if (!zprofile("zodump", do_cmdline))
+			return 0;
+		if (!do_cmdline(argc - 1, argv + 1))
+			return 0;
+		if (files.size() == 0)
+			throw zenofiles();
+		for (std::vector<zstring>::const_iterator it = files.begin(); it != files.end(); ++it)
+			do_file(it->c_str());
 		return 0;
 	} catch (zerror &e) {
 		fprintf(stderr, "zodump: %s\n", e.c_str());
