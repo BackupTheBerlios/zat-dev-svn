@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "zefile.h"
 #include "zstream.h"
 #include "zstring.h"
@@ -155,4 +157,12 @@ void zstream::seek(size_t pos)
 	if (fd == NULL)
 		throw zeclosedfile();
 	fseek(FD, pos, SEEK_SET);
+}
+
+size_t zstream::size()
+{
+	struct stat s;
+	if (fstat(fileno(FD), &s))
+		return 0;
+	return s.st_size;
 }

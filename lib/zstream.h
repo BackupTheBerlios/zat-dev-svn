@@ -49,6 +49,8 @@ public:
 	size_t tell();
 	// Moves file pointer.
 	void seek(size_t);
+	// Returns the current size of the file.
+	size_t size();
 };
 
 #endif
