@@ -96,6 +96,42 @@ bool zstream::read(zstring &str)
 	return ok;
 }
 
+bool zstream::read_uncommented(zstring &str)
+{
+	if (!read(str))
+		return false;
+
+	for (zstring::const_iterator it = str.begin(); it != str.end(); ) {
+		if (*it == ';') {
+			for (zstring::const_iterator prev; it != str.begin(); it = prev) {
+				prev = it;
+				--prev;
+				if (prev != str.begin() && *prev != 0x20 && *prev != 0x09)
+					break;
+			}
+
+			str.resize(it - str.begin());
+			return true;
+		} else if (*it == '"' || *it == '\'') {
+			char c = *it++;
+
+			while (it != str.end() && *it != c)
+				++it;
+
+			// Fail to uncomment lines with mismatched quotes,
+			// but don't fail to read them.
+			if (it == str.end())
+				return true;
+
+			++it;
+		} else {
+			++it;
+		}
+	}
+
+	return true;
+}
+
 void zstream::write(const void *from, size_t sz)
 {
 	if (!is_open())

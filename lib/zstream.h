@@ -36,6 +36,8 @@ public:
 	void close();
 	// Reads a line from the file, returns `false' upon EOF.
 	bool read(zstring &str);
+	// Same as above, but strips comments.
+	bool read_uncommented(zstring &str);
 	// Raw output.
 	void write(const void *from, size_t size);
 	// Formatted output.

@@ -57,7 +57,7 @@ bool zinput::open()
 
 bool zinput::read(zstring &line)
 {
-	if (!in.read(line))
+	if (!in.read_uncommented(line))
 		return false;
 	meta.line++;
 	return true;

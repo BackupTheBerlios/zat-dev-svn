@@ -42,9 +42,6 @@ void zcpu::add_instr(const char *src)
 	while (zstring::isws(*src))
 		++src;
 
-	if (*src == ';')
-		return;
-
 	if (*src == '\0')
 		return;
 
@@ -127,7 +124,7 @@ void zcpu::init(const zstring &cpu_name)
 		throw zefile("could not open instruction table for reading", fname.c_str());
 
 	stat.tabtime = gettime();
-	for (zstring line; in.read(line); add_instr(line.c_str()));
+	for (zstring line; in.read_uncommented(line); add_instr(line.c_str()));
 	stat.tabtime = gettime() - stat.tabtime;
 
 	ready = true;
