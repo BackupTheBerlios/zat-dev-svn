@@ -6,8 +6,7 @@ include Makedefs.faerion.include
 DIRS = zat
 LIST = configure configure.in GNUmakefile Makedefs.faerion \
        docs/README.* share/LICENSE share/cpu/Z80 zat/GNUmakefile \
-       zat/*.cc zat/*.h zat/support/*.cc zat/errors/*.h \
-       zat/errors/*.cc
+       zat/*.cc zat/*.h zat/errors/*.h zat/errors/*.cc
 
 custom-cleandist = custom-cleandist
 
@@ -44,5 +43,5 @@ dist:
 	tar cf tmp.tar $(LIST)
 	cd zat-$(VERSION) && tar xf ../tmp.tar && cd ..
 	rm -f tmp.tar
-	tar cfz zat-$(VERSION).tar.gz zat-$(VERSION)
+	tar cfz zat-$(VERSION)-`date +'%Y%m%d'`.tar.gz zat-$(VERSION)
 	rm -rf zat-$(VERSION)
