@@ -28,8 +28,10 @@ class zcpu
 	vector<zoutput *> output;
 	// Index within the output vector.
 	unsigned int iout;
-	// Instructions with fixed machine code.
-	hash_map< int, int > fmap;
+	// Instructions with fixed machine code (atomic).
+	hash_map< zinst, vector<int>, zinst::mapa, zinst::mapa > mapa;
+	// Instructions with parameters (variable).
+	hash_map< zinst, vector<int>, zinst::mapv, zinst::mapv > mapv;
 	// Adds a cpu instruction.
 	void add_instr(const char *src);
 public:
@@ -55,6 +57,14 @@ public:
 	// Marks last N bytes as unused.
 	void unuse(unsigned int N);
 };
+
+// Special values for machine code.
+typedef enum opcode_e
+{
+	op_byte = -1,
+	op_word = -2,
+	op_boffset = -3,
+} opcode;
 
 
 extern zcpu cpu;

@@ -25,8 +25,10 @@ zcpu::~zcpu()
 
 void zcpu::add_instr(const char *src)
 {
+	zstring mnemo;
 	const char *sep;
 	vector<int> codes;
+	bool atomic = true;
 
 	while (zstring::isws(*src))
 		++src;
@@ -34,10 +36,40 @@ void zcpu::add_instr(const char *src)
 	if (*src == ';')
 		return;
 
-	if (( sep = strchr(src, '|')) == NULL)
+	if ((sep = strchr(src, '|')) == NULL)
 		throw zesyntax(src, "malformed instruction table");
 
-	debug("adding instruction: %s\n", std::string(src, sep - src).c_str());
+	mnemo = zstring(src, (sep++) - src);
+
+	// Extract machine code.
+	while (*sep != 0) {
+		int code;
+		zstring tok = zstring::gettok(sep, ',');
+
+		if (* tok.c_str() == '@') {
+			if (tok == "@byte")
+				code = op_byte;
+			else if (tok == "@word")
+				code = op_word;
+			else if (tok == "@boffset")
+				code = op_boffset;
+			else
+				throw zesyntax(src, "unknown machine code extension");
+			atomic = false;
+		} else {
+			char *unused;
+			code = strtol(tok.c_str(), &unused, 16);
+		}
+
+		codes.push_back(code);
+	}
+
+	if (atomic)
+		mapa[zinst(mnemo)] = codes;
+	else
+		mapv[zinst(mnemo)] = codes;
+
+	debug(" - installed(%c) '%s'\n", atomic ? 'a' : 'v', mnemo.c_str());
 }
 
 void zcpu::init(const char *cpu_name)

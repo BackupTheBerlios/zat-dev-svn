@@ -19,8 +19,12 @@ public:
 	unsigned int hash() const;
 	// Checks whether the string contains a path name.
 	bool has_path() const;
+	// Compares with a standard string.
+	bool operator == (const char *src) const;
 	// Checks whether a character is a white space.
 	static bool isws(char c) { return (c == ' ' || c == '\t'); }
+	// Checks whether a character is a quotation mark.
+	static bool isquote(char c) { return (c == '"' || c == '\''); }
 	// Extracts a token from a string.
 	static zstring gettok(const char *&src, char sep);
 };

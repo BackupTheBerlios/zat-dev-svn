@@ -49,3 +49,11 @@ zstring zstring::gettok(const char *&src, char sep)
 
 	return zstring(org, end - org);
 }
+
+bool zstring::operator == (const char *src) const
+{
+	for (std::string::const_iterator it = begin(); it != end() && *src != 0; ++it, ++src)
+		if (::toupper(*it) != ::toupper(*src))
+			break;
+	return (*src == 0);
+}
