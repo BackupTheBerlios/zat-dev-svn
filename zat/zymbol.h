@@ -36,6 +36,7 @@ protected:
 	static int get_hex(const char *&e);
 	static int get_bin(const char *&e);
 	static int get_dec(const char *&e);
+	static bool get_symbol(const char *&e, int &value, list &);
 public:
 	zymbol();
 	zymbol(const char *text);
@@ -48,6 +49,8 @@ public:
 	virtual const char * extra() const { return NULL; }
 	bool isok() const { return ready; }
 	virtual bool islabel() const { return false; }
+	// Returns the value.
+	int get_value() const { return value; }
 	// Evaluates the expression.  Upon success returns `true' and the
 	// pointer is moved to the next character after the expression.
 	// The `base' parameter holds the address of the currently

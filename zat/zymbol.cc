@@ -34,6 +34,7 @@ bool zymbol::evaluate(const char *&expr, int &value, int base, list &symbols)
 	while (*expr != '\0') {
 		if (*expr == '-' || *expr == '+' || *expr == '*' || *expr == '/') {
 			sign = *expr++;
+			continue;
 		}
 
 		else if (sign == 0) {
@@ -74,7 +75,8 @@ bool zymbol::evaluate(const char *&expr, int &value, int base, list &symbols)
 		}
 
 		else {
-			return false;
+			if (!get_symbol(expr, tval, symbols))
+				return false;
 		}
 
 		switch (sign) {
@@ -157,4 +159,25 @@ int zymbol::get_dec(const char *&e)
 	}
 
 	return value;
+}
+
+bool zymbol::get_symbol(const char *&e, int &value, list &symbols)
+{
+	const char *base = e;
+
+	while (*e != '\0' && (isalpha(*e) || isdigit(*e) || *e == '_'))
+		++e;
+
+	if (e != base) {
+		zstring sym(base, e - base);
+
+		for (list::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
+			if ((*it)->islabel() && (*it)->isok() && sym == (*it)->c_str()) {
+				value = (*it)->get_value();
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

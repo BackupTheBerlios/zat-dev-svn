@@ -142,10 +142,11 @@ void zcpu::resolve()
 		delayed = false;
 
 		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-			if (!(*it)->isok())
+			if (!(*it)->isok()) {
 				delayed = true;
-			if ((*it)->evaluate(symbols))
-				repeat = true;
+				if ((*it)->evaluate(symbols))
+					repeat = true;
+			}
 		}
 	} while (repeat);
 
@@ -154,7 +155,7 @@ void zcpu::resolve()
 			bool lock = false;
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-				if ((*it)->islabel()) {
+				if ((*it)->islabel() && !(*it)->isok()) {
 					if (!lock) {
 						opt.fsym.print(";\n; values of the following labels could not be evaluated:\n");
 						lock = true;
@@ -167,7 +168,7 @@ void zcpu::resolve()
 
 			if (opt.debug) {
 				for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-					if (!(*it)->islabel()) {
+					if (!(*it)->islabel() && !(*it)->isok()) {
 						if (!lock) {
 							opt.fsym.print(";\n; the following expressions could not be calculated:\n");
 							lock = true;
@@ -181,10 +182,11 @@ void zcpu::resolve()
 		throw zemsg("not all expressions could be evaluated");
 	} else {
 		if (opt.fsym.is_open()) {
-			opt.fsym.print("; symbol table follows (%u elements)\n", symbols.size());
+			opt.fsym.print(";\n; symbol table follows (%u elements)\n", symbols.size());
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-				opt.fsym.print("; %s = %s\n", (*it)->c_str(), (*it)->extra());
+				if ((*it)->islabel())
+					opt.fsym.print(";  %04Xh ;                         ; %s\n", (*it)->get_value(), (*it)->c_str());
 			}
 		}
 	}
