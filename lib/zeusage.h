@@ -12,7 +12,7 @@ class zeusage : public zerror
 public:
 	zeusage() { }
 	~zeusage() { }
-	const char * c_str() { return "invalid command line; for help, type: zat -h";  }
+	const char * c_str() { return "invalid command line; for help, use the -h switch";  }
 	zseverity severity() const { return zsev_ok; }
 };
 
