@@ -217,8 +217,27 @@ void zcpu::resolve()
 			opt.fsym.print(";\n; Symbol table follows (%u elements)\n", symbols.size());
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
-				if ((*it)->islabel())
-					opt.fsym.print(";  %04Xh ;                         ; %s\n", (*it)->get_value() & 0xFFFF, (*it)->c_str());
+				if ((*it)->islabel()) {
+					bool lf = false;
+					
+					if (opt.symbols.addr) {
+						opt.fsym.print(";  %04Xh ", (*it)->get_value() & 0xFFFF);
+						lf = true;
+					}
+
+					if (opt.symbols.code) {
+						opt.fsym.print(";                         ");
+						lf = true;
+					}
+
+					if (opt.symbols.source) {
+						opt.fsym.print("; %s", (*it)->c_str());
+						lf = true;
+					}
+
+					if (lf)
+						opt.fsym.print("\n");
+				}
 			}
 		}
 	}
@@ -238,8 +257,12 @@ bool zcpu::parse(zinput &in, zoutput &out)
 
 	stat.lines++;
 
-	if (get_label(label, line) && opt.fsym.is_open()) {
-		opt.fsym.print(";        ;                         ; ; %s\n", label.c_str());
+	if (get_label(label, line) && opt.fsym.is_open() && opt.symbols.source) {
+		if (opt.symbols.addr)
+			opt.fsym.print(";        ");
+		if (opt.symbols.code)
+			opt.fsym.print(";                         ");
+		opt.fsym.print("; ; %s\n", label.c_str());
 	}
 
 	if (line.size() != 0) {
@@ -262,26 +285,51 @@ bool zcpu::parse(zinput &in, zoutput &out)
 			size_t lim = out.size();
 
 			do {
-				if (offset >= lim)
-					opt.fsym.print(";        ; ");
-				else if (out.block().has_origin())
-					opt.fsym.print(";  %04Xh ; ", out.block().get_origin() + offset);
-				else
-					opt.fsym.print("; +%04Xh ; ", offset);
+				bool lf = false;
+				bool colon = false;
+
+				if (opt.symbols.addr) {
+					lf = true;
+
+					if (offset >= lim)
+						opt.fsym.print(";        ");
+					else if (out.block().has_origin())
+						opt.fsym.print(";  %04Xh ", out.block().get_origin() + offset);
+					else
+						opt.fsym.print("; +%04Xh ", offset);
+				}
 
 				for (size_t idx = 0; idx < 8; ++idx, ++offset) {
-					if (offset >= lim)
-						opt.fsym.print("   ");
-					else
-						opt.fsym.print("%02X ", static_cast<unsigned char>(out[offset]));
+					if (opt.symbols.code) {
+						lf = true;
+
+						if (!colon) {
+							opt.fsym.print("; ");
+							colon = true;
+						}
+
+						if (offset < lim)
+							opt.fsym.print("%02X ", static_cast<unsigned char>(out[offset]));
+						else if (opt.symbols.source)
+							opt.fsym.print("   ");
+					}
 				}
 
 				if (!pc_sent) {
-					opt.fsym.print("; %s\n", inst.c_str());
+					if (opt.symbols.source) {
+						lf = true;
+						opt.fsym.print("; %s", inst.c_str());
+					}
 					pc_sent = true;
 				} else {
-					opt.fsym.print(";\n");
+					if (opt.symbols.source) {
+						lf = true;
+						opt.fsym.print(";");
+					}
 				}
+
+				if (lf)
+					opt.fsym.print("\n");
 			} while (offset < lim);
 		}
 	}

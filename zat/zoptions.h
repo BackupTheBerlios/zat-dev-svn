@@ -47,6 +47,20 @@ public:
 			timing = false;
 		}
 	} debug;
+	struct symbol_s
+	{
+		bool addr; // addresses
+		bool code; // machine code
+		bool source; // source code
+		bool fnames; // output file names
+		symbol_s()
+		{
+			addr = true;
+			code = true;
+			source = true;
+			fnames = true;
+		}
+	} symbols;
 public:
 	// Initialization.
 	zoptions();

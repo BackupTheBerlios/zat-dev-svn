@@ -27,13 +27,14 @@ static void show_help()
 		"\n"
 		"Options:\n"
 		"  -c name         : change CPU type (defaults to Z80)\n"
-		"  -d options      : include debug output, see -hh for details\n"
+		"  -d options      : configures debug output verbosity\n"
 		"  -h              : this help screen; twice for more\n"
 		"  -I path         : additional include directory\n"
 		"  -M              : gain dependency information\n"
 		"  -o filename     : default output file name\n"
 		"  -q              : quiet, suppress unnecessary messages\n"
 		"  -s filename     : dump symbols to the file\n"
+		"  -S options      : configures symbol table format\n"
 		"  -v              : display version number and exit\n"
 		"  -W              : treat warnings as errors\n"
 		"\n"
@@ -42,12 +43,18 @@ static void show_help()
 		"   e              : show the symbol table being processed\n"
 		"   l              : show line numbers (useful with other options only)\n"
 		"   m              : show machine code for each instruction table item\n"
-		"   r              : files being read\n"
+		"   r              : show files being searched across the path (see -I)\n"
 		"   s              : show symbols as they are found\n"
 		"   t              : show the instruction table being processed\n"
 		"   T              : show timing information\n"
 		"   0              : show instruction probes as they don't match\n"
 		"   1              : show instruction probes as they do\n"
+		"\n"
+		"Symbol table options (same rules):\n"
+		"   a              : include address for instructions that emit data\n"
+		"   b              : include emitted machine code\n"
+		"   f              : include output file names\n"
+		"   s              : include source code\n"
 		"");
 }
 
@@ -106,11 +113,41 @@ static void do_debug(const char *args)
 	}
 }
 
+static void do_symbols(const char *args)
+{
+	bool sign = true;
+
+	while (*args) {
+		switch (*args) {
+		case '+':
+			sign = true;
+			break;
+		case '-':
+			sign = false;
+			break;
+		case 'a':
+			opt.symbols.addr = sign;
+			break;
+		case 'b':
+			opt.symbols.code = sign;
+			break;
+		case 'f':
+			opt.symbols.fnames = sign;
+			break;
+		case 's':
+			opt.symbols.source = sign;
+			break;
+		}
+
+		++args;
+	}
+}
+
 static void zmain(int argc, char * const * argv)
 {
 	zerror rc;
 
-	for (char ch; (ch = getopt(argc, argv, "c:d:hI:Mo:qs:vW")) > 0; ) {
+	for (char ch; (ch = getopt(argc, argv, "c:d:hI:Mo:qs:S:vW")) > 0; ) {
 		switch (ch) {
 		case 'c':
 			opt.cpu = optarg;
@@ -134,6 +171,9 @@ static void zmain(int argc, char * const * argv)
 			break;
 		case 's':
 			opt.sym = optarg;
+			break;
+		case 'S':
+			do_symbols(optarg);
 			break;
 		case 'v':
 			fprintf(stdout, "%s\n", version);
