@@ -87,7 +87,7 @@ bool zinst::compv(const zinst &pattern) const
 	}
 
 	if (src == pattern.text.end() && dst == text.end()) {
-		debug(" - match: '%s' vs. '%s'\n", pattern.text.c_str(), text.c_str());
+		debug(2, " - match: '%s' vs. '%s'\n", pattern.text.c_str(), text.c_str());
 		return true;
 	} else {
 		return false;

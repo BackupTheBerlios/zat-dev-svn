@@ -36,7 +36,7 @@ bool zinput::open()
 		throw zefile("trying to open an already open file", name());
 
 	if (meta.name.has_path()) {
-		debug("looking for \"%s\" using absolute path.\n", meta.name.c_str());
+		debug(1, "looking for \"%s\" using absolute path.\n", meta.name.c_str());
 		in.open(meta.name.c_str());
 	} else {
 		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {

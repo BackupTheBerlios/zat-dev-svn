@@ -69,7 +69,7 @@ void zcpu::add_instr(const char *src)
 	else
 		mapv[zinst(mnemo)] = codes;
 
-	debug(" - installed(%c) '%s'\n", atomic ? 'a' : 'v', mnemo.c_str());
+	debug(2, " - installed(%c) '%s'\n", atomic ? 'a' : 'v', mnemo.c_str());
 }
 
 void zcpu::init(const char *cpu_name)
@@ -168,7 +168,7 @@ void zcpu::translate(int argc, char * const *argv)
 
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
-		debug("translating \"%s\".\n", i.name());
+		debug(1, "translating \"%s\".\n", i.name());
 		while (i.do_line(*output[iout]));
 		input.pop_back();
 	}

@@ -19,7 +19,7 @@
 #endif
 
 #if defined(_DEBUG)
-void debug(const char *format, ...);
+void debug(int level, const char *format, ...);
 #else
-inline void debug(const char *, ...) { }
+inline void debug(int, const char *, ...) { }
 #endif

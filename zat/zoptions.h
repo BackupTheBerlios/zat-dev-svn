@@ -17,7 +17,7 @@ public:
 	zstream fsym;
 	zstream fout;
 	// Debug verbosity.
-	unsigned int debug;
+	int debug;
 	// The point where errors start.  Defaults to ret_errors,
 	// but may be changed to ret_warnings by a command line switch.
 	int errstart;
