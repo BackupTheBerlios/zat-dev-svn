@@ -137,13 +137,8 @@ void zcpu::init(const zstring &cpu_name)
 
 // Translates all specified input files.  If a file could not be
 // opened or no input files were specified, returns false.
-void zcpu::translate(int argc, char * const *argv)
+void zcpu::translate()
 {
-	while (argc != 0) {
-		input.push_back(zinput(*argv));
-		--argc, ++argv;
-	}
-
 	if (input.size() == 0)
 		throw zenofiles();
 
@@ -488,4 +483,9 @@ size_t zcpu::gettime(void)
 		base = sec;
 
 	return (sec - base) * 1000 + msec;
+}
+
+void zcpu::append(const char *fname)
+{
+	input.push_back(zinput(fname));
 }

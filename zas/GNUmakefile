@@ -9,7 +9,7 @@ PROG    = zas-$(VERSION)
 SRCS    = $(wildcard *.cc errors/*.cc)
 ARCH   += ../lib/zalib.a
 LIBS   += stdc++
-CMDLINE = -c ../share/cpu/Z80 -d T -I ../share/tests/Z80 -s zas.sym -m zas.map 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm
+CMDLINE = -c ../share/cpu/Z80 -I ../share/tests/Z80 -s zas.sym -m zas.map 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm 01.asm
 
 custom-clean = custom-clean
 custom-cleandist = custom-cleandist
@@ -27,7 +27,8 @@ custom-cleandist:
 	rm -f $(PROG)
 
 test: all
-	./$(PROG) $(CMDLINE) > zas.log 2>&1
+	./$(PROG) $(CMDLINE)
+#	./$(PROG) $(CMDLINE) > zas.log 2>&1
 	ls -ld zas.obj zas.map zas.sym zas.log
 
 debug: all

@@ -44,4 +44,14 @@ public:
 	const char * c_str();
 };
 
+// Bad profile string.
+class zeprofile : public zerror
+{
+	char *msg;
+public:
+	zeprofile(const char *);
+	~zeprofile();
+	const char * c_str() { return msg; }
+};
+
 #endif // __zat_zerror_h

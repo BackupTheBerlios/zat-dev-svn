@@ -8,8 +8,9 @@
 
 #include "zas.h"
 #include "zcpu.h"
-#include "zoptions.h"
 #include "zeusage.h"
+#include "zoptions.h"
+#include "zprofile.h"
 
 static const char *version =
 	"zas " VERSION "\n"
@@ -19,7 +20,7 @@ static const char *version =
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 	;
 
-static void show_help()
+static void show_help(bool more)
 {
 	fprintf(stdout, "%s",
 		"zas, the portable assembler, copyright (c) 2004-2005 " CONTACT "\n"
@@ -59,6 +60,18 @@ static void show_help()
 		"   f              : include output file names\n"
 		"   l              : include labels\n"
 		"   s              : include source code\n"
+		"");
+
+	if (!more)
+		return;
+
+	fprintf(stdout, "%s",
+		"\n"
+		"Before the command line is processed, zas reads the file ~/.zat.rc\n"
+		"line by line, processing each one that starts with word \"zas\" as\n"
+		"if it was added to the command line.  Each line may contain options\n"
+		"as well as file names; the latter will be added to the input list\n"
+		"and then processed in a bulk.\n"
 		"");
 }
 
@@ -162,9 +175,13 @@ static void do_symbols(const char *args)
 	}
 }
 
-static void zmain(int argc, char * const * argv)
+// Returns `true' if it's ok to continue.
+static bool do_cmdline(int argc, char * const * argv)
 {
 	zerror rc;
+	size_t help = 0;
+
+	optind = 0;
 
 	for (char ch; (ch = getopt(argc, argv, "c:d:hI:m:Mo:qs:S:vW")) > 0; ) {
 		switch (ch) {
@@ -175,8 +192,8 @@ static void zmain(int argc, char * const * argv)
 			do_debug(optarg);
 			break;
 		case 'h':
-			show_help();
-			return;
+			help++;
+			break;
 		case 'I':
 			cpu.incdir.push_back(optarg);
 			break;
@@ -199,7 +216,7 @@ static void zmain(int argc, char * const * argv)
 			break;
 		case 'v':
 			fprintf(stdout, "%s\n", version);
-			return;
+			return false;
 		case 'W':
 			opt.errstart = zsev_warning;
 			break;
@@ -208,9 +225,27 @@ static void zmain(int argc, char * const * argv)
 		}
 	}
 
+	if (help > 0) {
+		show_help(help > 1);
+		return false;
+	}
+
+	argc -= optind;
+	argv += optind;
+
+	while (argc != 0) {
+		cpu.append(*argv);
+		--argc, ++argv;
+	}
+
+	return true;
+}
+
+static void zmain()
+{
 	opt.open();
 	cpu.init(opt.cpu);
-	cpu.translate(argc - optind, argv + optind);
+	cpu.translate();
 	cpu.resolve();
 
 	if (opt.debug.timing) {
@@ -223,7 +258,11 @@ static void zmain(int argc, char * const * argv)
 int main(int argc, char * const * argv)
 {
 	try {
-		zmain(argc, argv);
+		if (!zprofile("zas", do_cmdline))
+			return 0;
+		if (!do_cmdline(argc - 1, argv + 1))
+			return 0;
+		zmain();
 		return 0;
 	} catch (zerror &e) {
 		fprintf(stderr, "zas: %s\n", e.c_str());

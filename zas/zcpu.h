@@ -78,8 +78,10 @@ public:
 	~zcpu();
 	// Initializes the CPU table.
 	void init(const zstring &cpu_name);
+	// Appends a file to the list.
+	void append(const char *fname);
 	// Translate the specified input files.
-	void translate(int argc, char * const *argv);
+	void translate();
 	// Resolves symbols.
 	void resolve();
 	// Misc.
