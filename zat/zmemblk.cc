@@ -7,6 +7,7 @@
 
 #include "zat.h"
 #include "zmemblk.h"
+#include "zoptions.h"
 
 zmemblk::data::data()
 {
@@ -74,4 +75,9 @@ void zmemblk::set_origin(zorigin *value)
 {
 	base = 0;
 	basex = value;
+}
+
+void zmemblk::show_map() const
+{
+	opt.fmap.print("    addr: %04Xh, size: %04Xh (%u)\n", base, code.size, code.size);
 }

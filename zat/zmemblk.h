@@ -51,6 +51,8 @@ public:
 	bool has_origin() const { return basex == NULL; }
 	// Returns the base address.
 	size_t get_origin() const { return (basex == NULL) ? base : 0; }
+	// Prints segment map to the symbol file.
+	void show_map() const;
 };
 
 #endif

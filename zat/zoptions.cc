@@ -10,11 +10,8 @@ zoptions opt;
 
 zoptions::zoptions()
 {
-	out = "zat.obj";
 	cpu = "Z80";
-	sym = 0;
-	fout = 0;
-	fsym = 0;
+	out = "zat.obj";
 	errstart = zsev_error;
 	quiet = false;
 }
@@ -27,9 +24,12 @@ zoptions::~zoptions()
 
 void zoptions::open()
 {
-	if (sym != 0 && !fsym.open(sym, true))
-		throw zefile("could not open symbol file for writing", sym);
+	if (sym.size() != 0 && !fsym.open(sym, true))
+		throw zefile("could not open symbol file for writing", sym.c_str());
 
-	if (out != 0 && !fout.open(out, true))
-		throw zefile("could not open output file for writing", out);
+	if (out.size() != 0 && !fout.open(out, true))
+		throw zefile("could not open output file for writing", out.c_str());
+
+	if (map.size() != 0 && !fmap.open(map, true))
+		throw zefile("could not open map file for writing", map.c_str());
 }

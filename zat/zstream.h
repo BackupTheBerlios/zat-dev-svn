@@ -10,12 +10,18 @@
 #ifndef __zat_zstream_h
 #define __zat_zstream_h
 
-class zstring;
+#include "zstring.h"
 
 class zstream
 {
 	// Opaque file hande (internally cast to FILE).
 	void *fd;
+	// Set when anything is written to the file.
+	bool clean;
+	// Set to remove() the file when it's closed.
+	bool prune;
+	// File name, stored primarily to remove() later.
+	zstring name;
 public:
 	// Initializers.
 	zstream();
@@ -25,7 +31,7 @@ public:
 	bool is_open() const { return fd != 0; }
 	bool is_eof();
 	// Opens a file.
-	bool open(const char *fname, bool writable = false);
+	bool open(const zstring &fname, bool writable = false);
 	// Closes the file.
 	void close();
 	// Reads a line from the file, returns `false' upon EOF.

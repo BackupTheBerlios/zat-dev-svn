@@ -5,18 +5,22 @@
 
 #ifndef __zat_zoptions_h
 #define __zat_zoptions_h
+
 #include "zstream.h"
+#include "zstring.h"
 
 class zoptions
 {
 public:
 	// File names.
-	const char *out;
-	const char *cpu;
-	const char *sym;
+	zstring cpu;
+	zstring sym;
+	zstring out;
+	zstring map;
 	// File handles.
 	zstream fsym;
 	zstream fout;
+	zstream fmap;
 	// The point where errors start.  Defaults to ret_errors,
 	// but may be changed to ret_warnings by a command line switch.
 	int errstart;

@@ -14,7 +14,7 @@ class zoutput
 	zstring name;
 	std::vector<zmemblk *> blocks;
 public:
-	zoutput(const char *fname);
+	zoutput(const zstring &fname);
 	~zoutput();
 	zmemblk & block() { return * blocks[blocks.size() - 1]; }
 	const zmemblk & block() const { return * blocks[blocks.size() - 1]; }
@@ -28,6 +28,8 @@ public:
 	void emit(short s) { block().emit(s); }
 	// Starts a new block.
 	void add();
+	// Prints segment map to the symbol file.
+	void show_map() const;
 };
 
 #endif

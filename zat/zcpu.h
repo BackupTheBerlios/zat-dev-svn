@@ -79,7 +79,7 @@ public:
 	// Memory and file handle clean-up.
 	~zcpu();
 	// Initializes the CPU table.
-	void init(const char *cpu_name);
+	void init(const zstring &cpu_name);
 	// Translate the specified input files.
 	void translate(int argc, char * const *argv);
 	// Resolves symbols.

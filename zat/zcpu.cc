@@ -109,13 +109,13 @@ void zcpu::add_instr(const char *src)
 	}
 }
 
-void zcpu::init(const char *cpu_name)
+void zcpu::init(const zstring &cpu_name)
 {
 	zstream in;
 	zstring fname;
 
-	if (strchr(cpu_name, '/') == NULL) {
-		fname.format(PREFIX "/" SHAREPATH "/cpu/%s", cpu_name);
+	if (strchr(cpu_name.c_str(), '/') == NULL) {
+		fname.format(PREFIX "/" SHAREPATH "/cpu/%s", cpu_name.c_str());
 	} else {
 		fname = cpu_name;
 	}
@@ -132,7 +132,7 @@ void zcpu::init(const char *cpu_name)
 
 	ready = true;
 
-	output.push_back(new zoutput(opt.out));
+	output.push_back(new zoutput("default"));
 }
 
 // Translates all specified input files.  If a file could not be
@@ -160,6 +160,12 @@ void zcpu::translate(int argc, char * const *argv)
 	}
 
 	stat.trantime = gettime() - stat.trantime;
+
+	if (opt.fmap.is_open()) {
+		opt.fmap.print("Memory layour follows.\n");
+		for (std::vector<zoutput *>::const_iterator it = output.begin(); it != output.end(); ++it)
+			(*it)->show_map();
+	}
 }
 
 void zcpu::resolve()
@@ -214,7 +220,7 @@ void zcpu::resolve()
 		throw zemsg("not all expressions could be evaluated");
 	} else {
 		if (opt.fsym.is_open() && opt.symbols.labels) {
-			opt.fsym.print(";\n; Symbol table follows (%u elements)\n", symbols.size());
+			opt.fsym.print("; Symbol table follows (%u elements)\n", symbols.size());
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 				if ((*it)->islabel()) {
@@ -224,6 +230,8 @@ void zcpu::resolve()
 					opt.fsym.print("\n");
 				}
 			}
+
+			opt.fsym.print(";\n");
 		}
 	}
 

@@ -30,6 +30,7 @@ static void show_help()
 		"  -d options      : configures debug output verbosity\n"
 		"  -h              : this help screen; twice for more\n"
 		"  -I path         : additional include directory\n"
+		"  -m fname        : write segment map to this file\n"
 		"  -M              : gain dependency information\n"
 		"  -o filename     : change the output file name (defaults to zat.obj)\n"
 		"  -q              : quiet, suppress unnecessary messages\n"
@@ -38,7 +39,7 @@ static void show_help()
 		"  -v              : display version number and exit\n"
 		"  -W              : treat warnings as errors\n"
 		"\n"
-		"Debug options (mix all the necessary ones in a string):\n"
+		"Debug options (mix them along with +/- signs):\n"
 		"   a              : include all possible output\n"
 		"   e              : show the symbol table being processed\n"
 		"   l              : show line numbers (useful with other options only)\n"
@@ -151,7 +152,7 @@ static void zmain(int argc, char * const * argv)
 {
 	zerror rc;
 
-	for (char ch; (ch = getopt(argc, argv, "c:d:hI:Mo:qs:S:vW")) > 0; ) {
+	for (char ch; (ch = getopt(argc, argv, "c:d:hI:m:Mo:qs:S:vW")) > 0; ) {
 		switch (ch) {
 		case 'c':
 			opt.cpu = optarg;
@@ -164,6 +165,9 @@ static void zmain(int argc, char * const * argv)
 			return;
 		case 'I':
 			cpu.incdir.push_back(optarg);
+			break;
+		case 'm':
+			opt.map = optarg;
 			break;
 		case 'M':
 			break;

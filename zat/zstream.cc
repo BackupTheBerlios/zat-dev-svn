@@ -12,19 +12,25 @@
 zstream::zstream()
 {
 	fd = NULL;
+	clean = true;
+	prune = false;
 }
 
 zstream::zstream(const char *fname, bool writable)
 {
 	fd = NULL;
+	clean = true;
+	prune = false;
 	open(fname, writable);
 }
 
-bool zstream::open(const char *fname, bool writable)
+bool zstream::open(const zstring &fname, bool writable)
 {
 	close();
 
-	if ((fd = fopen(fname, writable ? "w" : "r")) != NULL) {
+	if ((fd = fopen(fname.c_str(), writable ? "w" : "r")) != NULL) {
+		name = fname;
+		prune = writable;
 		flockfile(reinterpret_cast<FILE *>(fd));
 		return true;
 	}
@@ -37,8 +43,13 @@ void zstream::close()
 	if (fd != NULL) {
 		funlockfile(reinterpret_cast<FILE *>(fd));
 		fclose(reinterpret_cast<FILE *>(fd));
+		if (clean && prune)
+			remove(name.c_str());
 		fd = NULL;
 	}
+
+	clean = true;
+	prune = false;
 }
 
 bool zstream::is_eof()
@@ -85,5 +96,6 @@ void zstream::print(const char *format, ...)
 		va_start (vl, format);
 		vfprintf(reinterpret_cast<FILE *>(fd), format, vl);
 		va_end(vl);
+		clean = false;
 	}
 }
