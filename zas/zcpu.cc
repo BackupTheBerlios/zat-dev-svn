@@ -201,7 +201,7 @@ void zcpu::resolve()
 		throw zemsg("not all expressions could be evaluated");
 	} else {
 		if (opt.fsym.is_open() && opt.symbols.labels) {
-			opt.fsym.print("; Symbol table follows (%u elements)\n", symbols.size());
+			opt.fsym.print("; Symbol table follows.\n");
 
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 				if ((*it)->islabel()) {
@@ -222,6 +222,7 @@ void zcpu::resolve()
 bool zcpu::parse(zinput &in, zoutput &out)
 {
 	zstring label, line;
+	size_t offset = out.size();
 
 	if (!in.read(line))
 		return false;
@@ -241,16 +242,9 @@ bool zcpu::parse(zinput &in, zoutput &out)
 
 	if (line.size() != 0) {
 		zinst inst(line);
-		size_t offset = out.size();
 
 		if (!do_atomic(inst.str(), out) && !do_variable(inst.str(), out, label)) {
 			throw zesyntax(line.c_str(), "unknown instruction", &in);
-		}
-
-		if (label.size() > 0) {
-			symbols.push_back(new zlabel(label.c_str(), "$", &out.block(), offset));
-			if (opt.debug.newsym)
-				debug("New label: %s.\n", label.c_str());
 		}
 
 		// Dump the code.
@@ -306,6 +300,12 @@ bool zcpu::parse(zinput &in, zoutput &out)
 					opt.fsym.print("\n");
 			} while (offset < lim);
 		}
+	}
+
+	if (label.size() > 0) {
+		symbols.push_back(new zlabel(label.c_str(), "$", &out.block(), offset));
+		if (opt.debug.newsym)
+			debug("New label: %s.\n", label.c_str());
 	}
 
 	return true;
@@ -373,6 +373,8 @@ bool zcpu::do_variable(const zstring &line, zoutput &out, zstring &label)
 					args.erase(args.begin());
 					break;
 				case op_define:
+					if (opt.debug.newsym)
+						debug("Constant \"%s\" with value \"%s\".\n", label.c_str(), args.begin()->c_str());
 					symbols.push_back(new zlabel(label.c_str(), args.begin()->c_str(), &out.block(), base));
 					label.erase();
 					break;
