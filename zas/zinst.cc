@@ -108,7 +108,7 @@ bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 				bracket = ']';
 			else if (*ti == '(')
 				bracket = ')';
-			else
+			else if (*ti == ']' || *ti == ')')
 				bracket = 0;
 
 			if (*si != *ti)

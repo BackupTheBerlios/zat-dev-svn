@@ -1,16 +1,7 @@
-; Za language definition table.
+; Zat syntax definition table.
 ; Copyright (c) 2004, The Faerion Team <team.faerion.oss>
 ;
 ; $Id$
-;
-; Fields: mnemonic|machine code.  Mnemonic can contain the '@' signs
-; which a expression place holders.  Machine code is a sequence of
-; bytes in hexadecimal form, or:
-;
-;  .byte -- insert the corresponding expression (@) as a single byte,
-;  .word -- insert a word (two bytes),
-;  .boffset -- insert an offset between the expression's value and the
-;        current translation address.
 ;
 nop|00
 ld bc,@|01,.word
@@ -487,62 +478,62 @@ inc ix|dd,23
 add ix,ix|dd,29
 ld ix,(@)|dd,2a,.word
 dec ix|dd,2b
-inc (ix+@)|dd,34,.byte
-dec (ix+@)|dd,35,.byte
-ld (ix+@),@|dd,36,.byte,.byte
+inc (ix@)|dd,34,.byte
+dec (ix@)|dd,35,.byte
+ld (ix@),@|dd,36,.byte,.byte
 add ix,sp|dd,39
-ld b,(ix+@)|dd,46,.byte
-ld c,(ix+@)|dd,4e,.byte
-ld d,(ix+@)|dd,56,.byte
-ld e,(ix+@)|dd,5e,.byte
-ld h,(ix+@)|dd,66,.byte
-ld l,(ix+@)|dd,6e,.byte
-ld (ix+@),b|dd,70,.byte
-ld (ix+@),c|dd,71,.byte
-ld (ix+@),d|dd,72,.byte
-ld (ix+@),e|dd,73,.byte
-ld (ix+@),h|dd,74,.byte
-ld (ix+@),l|dd,75,.byte
-ld (ix+@),a|dd,77,.byte
-ld a,(ix+@)|dd,7e,.byte
-add a,(ix+@)|dd,86,.byte
-adc a,(ix+@)|dd,8e,.byte
-sub (ix+@)|dd,96,.byte
-sbc a,(ix+@)|dd,9e,.byte
-and (ix+@)|dd,a6,.byte
-xor (ix+@)|dd,ae,.byte
-or (ix+@)|dd,b6,.byte
-cp (ix+@)|dd,be,.byte
-rlc (ix+@)|dd,cb,.byte,06
-rrc (ix+@)|dd,cb,.byte,0e
-rl (ix+@)|dd,cb,.byte,16
-rr (ix+@)|dd,cb,.byte,1e
-sla (ix+@)|dd,cb,.byte,26
-sra (ix+@)|dd,cb,.byte,2e
-bit 0,(ix+@)|dd,cb,.byte,46
-bit 1,(ix+@)|dd,cb,.byte,4e
-bit 2,(ix+@)|dd,cb,.byte,56
-bit 3,(ix+@)|dd,cb,.byte,5e
-bit 4,(ix+@)|dd,cb,.byte,66
-bit 5,(ix+@)|dd,cb,.byte,6e
-bit 6,(ix+@)|dd,cb,.byte,76
-bit 7,(ix+@)|dd,cb,.byte,7e
-res 0,(ix+@)|dd,cb,.byte,86
-res 1,(ix+@)|dd,cb,.byte,8e
-res 2,(ix+@)|dd,cb,.byte,96
-res 3,(ix+@)|dd,cb,.byte,9e
-res 4,(ix+@)|dd,cb,.byte,a6
-res 5,(ix+@)|dd,cb,.byte,ae
-res 6,(ix+@)|dd,cb,.byte,b6
-res 7,(ix+@)|dd,cb,.byte,be
-set 0,(ix+@)|dd,cb,.byte,c6
-set 1,(ix+@)|dd,cb,.byte,ce
-set 2,(ix+@)|dd,cb,.byte,d6
-set 3,(ix+@)|dd,cb,.byte,de
-set 4,(ix+@)|dd,cb,.byte,e6
-set 5,(ix+@)|dd,cb,.byte,ee
-set 6,(ix+@)|dd,cb,.byte,f6
-set 7,(ix+@)|dd,cb,.byte,fe
+ld b,(ix@)|dd,46,.byte
+ld c,(ix@)|dd,4e,.byte
+ld d,(ix@)|dd,56,.byte
+ld e,(ix@)|dd,5e,.byte
+ld h,(ix@)|dd,66,.byte
+ld l,(ix@)|dd,6e,.byte
+ld (ix@),b|dd,70,.byte
+ld (ix@),c|dd,71,.byte
+ld (ix@),d|dd,72,.byte
+ld (ix@),e|dd,73,.byte
+ld (ix@),h|dd,74,.byte
+ld (ix@),l|dd,75,.byte
+ld (ix@),a|dd,77,.byte
+ld a,(ix@)|dd,7e,.byte
+add a,(ix@)|dd,86,.byte
+adc a,(ix@)|dd,8e,.byte
+sub (ix@)|dd,96,.byte
+sbc a,(ix@)|dd,9e,.byte
+and (ix@)|dd,a6,.byte
+xor (ix@)|dd,ae,.byte
+or (ix@)|dd,b6,.byte
+cp (ix@)|dd,be,.byte
+rlc (ix@)|dd,cb,.byte,06
+rrc (ix@)|dd,cb,.byte,0e
+rl (ix@)|dd,cb,.byte,16
+rr (ix@)|dd,cb,.byte,1e
+sla (ix@)|dd,cb,.byte,26
+sra (ix@)|dd,cb,.byte,2e
+bit 0,(ix@)|dd,cb,.byte,46
+bit 1,(ix@)|dd,cb,.byte,4e
+bit 2,(ix@)|dd,cb,.byte,56
+bit 3,(ix@)|dd,cb,.byte,5e
+bit 4,(ix@)|dd,cb,.byte,66
+bit 5,(ix@)|dd,cb,.byte,6e
+bit 6,(ix@)|dd,cb,.byte,76
+bit 7,(ix@)|dd,cb,.byte,7e
+res 0,(ix@)|dd,cb,.byte,86
+res 1,(ix@)|dd,cb,.byte,8e
+res 2,(ix@)|dd,cb,.byte,96
+res 3,(ix@)|dd,cb,.byte,9e
+res 4,(ix@)|dd,cb,.byte,a6
+res 5,(ix@)|dd,cb,.byte,ae
+res 6,(ix@)|dd,cb,.byte,b6
+res 7,(ix@)|dd,cb,.byte,be
+set 0,(ix@)|dd,cb,.byte,c6
+set 1,(ix@)|dd,cb,.byte,ce
+set 2,(ix@)|dd,cb,.byte,d6
+set 3,(ix@)|dd,cb,.byte,de
+set 4,(ix@)|dd,cb,.byte,e6
+set 5,(ix@)|dd,cb,.byte,ee
+set 6,(ix@)|dd,cb,.byte,f6
+set 7,(ix@)|dd,cb,.byte,fe
 pop ix|dd,e1
 ex (sp),ix|dd,e3
 push ix|dd,e5
