@@ -47,9 +47,6 @@ void zcpu::add_instr(const char *src)
 	if (*src == '\0')
 		return;
 
-	if (opt.debug.instab)
-		debug("Parsing the table: %s\n", src);
-
 	if ((sep = strchr(src, '|')) == NULL)
 		throw zesyntax(src, "malformed instruction table");
 
@@ -100,9 +97,13 @@ void zcpu::add_instr(const char *src)
 		mapv.add(zinst(mnemo), codes);
 	}
 
-	if (opt.debug.mcode && codes.size() != 0) {
-		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
-			debug("  data: %c%02X\n", *it >= 0 ? ' ' : '-', abs(*it));
+	if (opt.debug.instab) {
+		debug("Installed instruction: %s\n", zinst(mnemo).c_str());
+
+		if (opt.debug.mcode && codes.size() != 0) {
+			for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+				debug("  data: %c%02X\n", *it >= 0 ? ' ' : '-', abs(*it));
+			}
 		}
 	}
 }
@@ -152,7 +153,7 @@ void zcpu::translate(int argc, char * const *argv)
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		if (opt.debug.filerd)
-			debug("translating \"%s\".\n", i.name());
+			debug("Translating \"%s\".\n", i.name());
 		while (parse(i, *output[iout]));
 		input.pop_back();
 	}
