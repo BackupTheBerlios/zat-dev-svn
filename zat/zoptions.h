@@ -32,12 +32,15 @@ public:
 		bool instab; // instruction table processing
 		bool filerd; // files being read
 		bool tplmatch; // templates being matched
+		bool mcode; // machine code for each new instruction
 		debug_s()
 		{
 			symtab = false;
 			newsym = false;
 			instab = false;
 			filerd = false;
+			tplmatch = false;
+			mcode = false;
 		}
 	} debug;
 public:

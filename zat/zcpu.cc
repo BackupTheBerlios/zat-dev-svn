@@ -47,6 +47,9 @@ void zcpu::add_instr(const char *src)
 	if (*src == '\0')
 		return;
 
+	if (opt.debug.instab)
+		debug("Parsing the table: %s\n", src);
+
 	if ((sep = strchr(src, '|')) == NULL)
 		throw zesyntax(src, "malformed instruction table");
 
@@ -96,6 +99,12 @@ void zcpu::add_instr(const char *src)
 	} else {
 		mapv.add(zinst(mnemo), codes);
 	}
+
+	if (opt.debug.mcode && codes.size() != 0) {
+		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
+			debug("  data: %c%02X\n", *it >= 0 ? ' ' : '-', abs(*it));
+		}
+	}
 }
 
 void zcpu::init(const char *cpu_name)
@@ -108,6 +117,9 @@ void zcpu::init(const char *cpu_name)
 	} else {
 		fname = cpu_name;
 	}
+
+	if (opt.debug.filerd)
+		debug("Reading instruction table from \"%s\".\n", fname.c_str());
 
 	if (!in.open(fname.c_str()))
 		throw zefile("could not open instruction table for reading", fname.c_str());

@@ -41,6 +41,7 @@ static void show_help()
 		"Debug options (mix all the necessary ones in a string):\n"
 		"   a              : include all possible output\n"
 		"   e              : show the symbol table being processed\n"
+		"   m              : show machine code for each instruction table item\n"
 		"   r              : files being read\n"
 		"   s              : show symbols as they are found\n"
 		"   t              : show the instruction table being processed\n"
@@ -58,9 +59,13 @@ static void do_debug(const char *args)
 			opt.debug.instab = true;
 			opt.debug.filerd = true;
 			opt.debug.tplmatch = true;
+			opt.debug.mcode = true;
 			break;
 		case 'e':
 			opt.debug.symtab = true;
+			break;
+		case 'm':
+			opt.debug.mcode = true;
 			break;
 		case 'r':
 			opt.debug.filerd = true;
