@@ -23,12 +23,19 @@ zstream::zstream(const char *fname, bool writable)
 bool zstream::open(const char *fname, bool writable)
 {
 	close();
-	return (fd = fopen(fname, writable ? "w" : "r")) != NULL;
+
+	if ((fd = fopen(fname, writable ? "w" : "r")) != NULL) {
+		flockfile(reinterpret_cast<FILE *>(fd));
+		return true;
+	}
+
+	return false;
 }
 
 void zstream::close()
 {
 	if (fd != NULL) {
+		funlockfile(reinterpret_cast<FILE *>(fd));
 		fclose(reinterpret_cast<FILE *>(fd));
 		fd = NULL;
 	}
@@ -50,7 +57,7 @@ bool zstream::read(zstring &str)
 	if (is_eof())
 		return false;
 
-	flockfile(in);
+	// flockfile(in);
 
 	int c;
 	for (; (c = getc_unlocked(in)) != EOF; ) {
@@ -66,7 +73,7 @@ bool zstream::read(zstring &str)
 		str.push_back(c);
 	}
 
-	funlockfile(in);
+	// funlockfile(in);
 
 	return true;
 }
