@@ -61,17 +61,21 @@ bool zstream::is_eof()
 {
 	if (!is_open())
 		return true;
-	return feof(FD);
+	return feof_unlocked(FD);
 }
 
 bool zstream::read(zstring &str)
 {
+	bool ok = false;
+
 	str.erase();
 
 	if (is_eof())
 		return false;
 
 	for (int c; (c = getc_unlocked(FD)) != EOF; ) {
+		ok = true;
+
 		if (c == '\r') {
 			while (c == '\r')
 				c = getc_unlocked(FD);
@@ -84,7 +88,7 @@ bool zstream::read(zstring &str)
 		str.push_back(c);
 	}
 
-	return true;
+	return ok;
 }
 
 void zstream::write(const void *from, size_t sz)
