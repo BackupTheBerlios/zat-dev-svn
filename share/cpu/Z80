@@ -709,3 +709,5 @@ equ @|.define
 org @|.origin
 include @|.include
 insert @|.insert
+defb @@|.bytelist
+defw @@|.wordlist
