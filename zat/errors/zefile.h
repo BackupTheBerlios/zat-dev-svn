@@ -34,4 +34,12 @@ public:
 	const char * c_str() { return "reading from a closed file"; }
 };
 
+class zeclosedfilew : public zerror
+{
+public:
+	zeclosedfilew() { }
+	~zeclosedfilew() { }
+	const char * c_str() { return "writing to a closed file"; }
+};
+
 #endif
