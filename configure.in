@@ -1,6 +1,8 @@
 # Configuration Script Template.  Public domain.
 # $makedefs: configure.in 9 2005-01-15 23:02:14Z hex $
 #
+# vim:ts=2:ss=2:sw=2:nocindent
+#
 # The purpose of this script is to perform basic automatic configuration
 # of the environment in which an application is going to be built.  The
 # result of this script's execution is written to a file named
@@ -435,6 +437,8 @@ out_include()
   fname=$1
   cmdline=`head -1 configure.log`
   seed=`date +'%Y%m%dT%H%M%S'`
+
+	shift
   
   if [ -z "$cmdline" ]; then cmdline="unknown"; fi
   cat > $fname.tmp << _EOF_
@@ -449,6 +453,12 @@ _EOF_
   for i in $DEFS; do
     echo "# define $i" >> $fname.tmp
   done
+
+	while [ -n "$1" ]; do
+		eval val=\$$1
+		echo "# define $1 \"$val\"" >> $fname.tmp
+		shift
+	done
 
   echo "#endif /* __makedefs_configure_output_h_$seed */" >> $fname.tmp
 
