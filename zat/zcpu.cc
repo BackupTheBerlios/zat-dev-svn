@@ -135,7 +135,7 @@ void zcpu::translate(int argc, char * const *argv)
 	if (input.size() == 0)
 		throw zenofiles();
 
-	stat.trantime - gettime();
+	stat.trantime = gettime();
 
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
@@ -330,7 +330,7 @@ bool zcpu::do_variable(const zstring &line, zoutput &out, zstring &label)
 					break;
 				case op_define:
 					symbols.push_back(new zlabel(label.c_str(), args.begin()->c_str(), &out.block(), base));
-					label.clear();
+					label.erase();
 					break;
 				case op_origin:
 					if (out.block().size() != 0)
