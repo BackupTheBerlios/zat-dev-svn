@@ -3,18 +3,18 @@
 //
 // $Id$
 
-#ifndef __zat_zesyntax_h
-#define __zat_zesyntax_h
+#ifndef __zat_zetable_h
+#define __zat_zetable_h
 
 #include "zerror.h"
 #include "../zinput.h"
 
-class zesyntax : public zerror
+class zetable : public zerror
 {
 	char *msg;
 public:
-	zesyntax(const char *src, const char *kind, zinput *input = NULL);
-	~zesyntax();
+	zetable(const char *src, const char *text);
+	~zetable();
 	const char * c_str() { return msg; }
 };
 

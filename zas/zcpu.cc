@@ -16,6 +16,7 @@
 #include "zoptions.h"
 #include "zefile.h"
 #include "zstream.h"
+#include "zetable.h"
 #include "zesyntax.h"
 
 using std::vector;
@@ -46,7 +47,7 @@ void zcpu::add_instr(const char *src)
 		return;
 
 	if ((sep = strchr(src, '|')) == NULL)
-		throw zesyntax(src, "malformed instruction table");
+		throw zetable(src, "no code separator");
 
 	mnemo = zstring(src, (sep++) - src);
 
@@ -79,7 +80,7 @@ void zcpu::add_instr(const char *src)
 			else if (tok == ".namespace")
 				code = op_namespace;
 			else
-				throw zesyntax(src, "unknown translation directive");
+				throw zetable(src, "unknown translation directive");
 			atomic = false;
 		} else {
 			char *unused;
@@ -142,7 +143,7 @@ void zcpu::translate()
 	stat.trantime = gettime();
 
 	while (input.size() != 0) {
-		zinput &i = input[input.size() - 1];
+		zinput &i = current();
 		if (!i.is_open() && !i.open())
 			throw zefile("could not open file for reading", i.name());
 		if (opt.debug.filerd)
@@ -252,7 +253,7 @@ bool zcpu::parse(zinput &in, zoutput &out)
 		size_t offset = out.size();
 
 		if (!do_atomic(inst.str(), out) && !do_variable(inst.str(), out, label)) {
-			throw zesyntax(line.c_str(), "unknown instruction");
+			throw zesyntax(line.c_str(), "unknown instruction", &in);
 		}
 
 		if (label.size() > 0) {
@@ -419,7 +420,7 @@ bool zcpu::do_variable(const zstring &line, zoutput &out, zstring &label)
 					args.erase(args.begin());
 					break;
 				default:
-					throw zesyntax(line.c_str(), "unsupported parameter");
+					throw zesyntax(line.c_str(), "unsupported parameter", &current());
 				}
 			}
 		}
@@ -445,16 +446,16 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 	switch (op) {
 	case op_byte:
 		if (value < -128 || value > 255)
-			throw zesyntax(expr.c_str(), "byte overflow");
+			throw zesyntax(expr.c_str(), "byte overflow", &current());
 		out.emit(static_cast<char>(value));
 		break;
 	case op_word:
 		if (value < -32768 || value > 65535)
-			throw zesyntax(expr.c_str(), "word overflow");
+			throw zesyntax(expr.c_str(), "word overflow", &current());
 		out.emit(static_cast<short>(value));
 		break;
 	default:
-		throw zesyntax(expr.c_str(), "unknown data type (internal error)");
+		throw zesyntax(expr.c_str(), "unknown data type (internal error)", &current());
 	}
 }
 
@@ -480,6 +481,11 @@ size_t zcpu::gettime(void)
 		base = sec;
 
 	return (sec - base) * 1000 + msec;
+}
+
+zinput& zcpu::current()
+{
+	return input[input.size() - 1];
 }
 
 void zcpu::append(const char *fname)

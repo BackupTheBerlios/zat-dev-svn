@@ -86,6 +86,8 @@ public:
 	void resolve();
 	// Misc.
 	bool is_ready() const { return ready; }
+	// Returns the active source file.
+	zinput& current();
 	// Returns time offset in msec.
 	static size_t gettime(void);
 };

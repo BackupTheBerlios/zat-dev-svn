@@ -7,12 +7,13 @@
 #include <stdlib.h>
 #include "zesyntax.h"
 
-zesyntax::zesyntax(const char *src, const char *kind)
+zesyntax::zesyntax(const char *src, const char *kind, zinput *input)
 {
-	if (kind)
+	if (input != NULL) {
+		asprintf(&msg, "%s: %s [%s:%u]", kind, src, input->name(), input->line());
+	} else {
 		asprintf(&msg, "%s: %s", kind, src);
-	else
-		asprintf(&msg, "%s", src);
+	}
 }
 
 zesyntax::~zesyntax()
