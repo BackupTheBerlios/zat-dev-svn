@@ -21,8 +21,3 @@ zoutput::~zoutput()
 		delete *it;
 	}
 }
-
-zmemblk & zoutput::block()
-{
-	return * blocks[blocks.size() - 1];
-}

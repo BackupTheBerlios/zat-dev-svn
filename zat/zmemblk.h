@@ -15,12 +15,12 @@ class zmemblk
 	struct data
 	{
 		// The machine code.
-		void *code;
+		char *code;
 		// The size of the code.
-		unsigned int size;
+		size_t size;
 		// The amount of allocated data (we use paged
 		// allocations to optimize performance).
-		unsigned int capacity;
+		size_t capacity;
 		// Initializes the structure.
 		data();
 		// Deallocates the block.
@@ -33,8 +33,10 @@ public:
 	zmemblk();
 	~zmemblk();
 	// Statistics.
-	unsigned int size() const;
-	void * data() const;
+	size_t size() const { return code.size; }
+	const char * data() const { return code.code; }
+	char & operator [] (size_t idx) { return code.code[idx]; }
+	const char & operator [] (size_t idx) const { return code.code[idx]; }
 	// Code emission.  Fails with memory allocations.
 	bool emit(char byte);
 };

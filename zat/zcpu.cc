@@ -49,7 +49,7 @@ void zcpu::add_instr(const char *src)
 		int code;
 		zstring tok = zstring::gettok(sep, ',');
 
-		if (* tok.c_str() == '@') {
+		if (* tok.c_str() == '.') {
 			if (tok == ".byte")
 				code = op_byte;
 			else if (tok == ".word")
@@ -66,6 +66,10 @@ void zcpu::add_instr(const char *src)
 				code = op_include;
 			else if (tok == ".insert")
 				code = op_insert;
+			else if (tok == ".bytelist")
+				code = op_blist;
+			else if (tok == ".wordlist")
+				code = op_wlist;
 			else
 				throw zesyntax(src, "unknown machine code extension");
 			atomic = false;
@@ -77,10 +81,13 @@ void zcpu::add_instr(const char *src)
 		codes.push_back(code);
 	}
 
-	if (atomic)
+	if (atomic) {
 		mapa[zinst(mnemo)] = codes;
-	else
+		debug(3, "(a) installed instruction '%s'\n", zinst(mnemo).c_str());
+	} else {
 		mapv[zinst(mnemo)] = codes;
+		debug(3, "(v) installed instruction '%s'\n", zinst(mnemo).c_str());
+	}
 }
 
 void zcpu::init(const char *cpu_name)
@@ -191,14 +198,42 @@ bool zcpu::parse(zinput &in, zoutput &out)
 		return false;
 
 	if (get_label(label, line)) {
-		debug(2, " - label: %s\n", label.c_str());
+		if (opt.fsym.is_open())
+			opt.fsym.print("; label: %s\n", label.c_str());
 	}
 
 	if (line.size() != 0) {
 		zinst inst(line);
+		size_t offset = out.size();
+
 		if (!do_atomic(inst, out) && !do_variable(inst, out)) {
 			debug(1, " -- hashes: a=%u, v=%u.\n", inst.hinta, inst.hintv);
 			throw zesyntax(line.c_str(), "unknown instruction");
+		}
+
+		// Dump the code.
+		if (opt.fsym.is_open()) {
+			bool pc_sent = false;
+			size_t lim = out.size();
+
+			do {
+				if (!pc_sent)
+					opt.fsym.print("; %04Xh ", offset);
+
+				for (size_t idx = 0; idx < 8; ++idx, ++offset) {
+					if (offset >= lim)
+						opt.fsym.print("   ");
+					else
+						opt.fsym.print("%02X ", static_cast<unsigned char>(out[offset]));
+				}
+
+				if (!pc_sent) {
+					opt.fsym.print("; %s\n", inst.c_str());
+					pc_sent = true;
+				} else {
+					opt.fsym.print(";\n");
+				}
+			} while (offset < lim);
 		}
 	}
 
@@ -222,16 +257,16 @@ bool zcpu::get_label(zstring &label, zstring &line)
 	return label.size() != 0;
 }
 
-bool zcpu::do_atomic(zinst &inst, zoutput &)
+bool zcpu::do_atomic(zinst &inst, zoutput &out)
 {
 	mapa_t::const_iterator it = mapa.find(inst);
 
-	if (it == mapa.end()) {
-		debug(1, " - '%s' not found in atomics.\n", inst.c_str());
+	if (it == mapa.end())
 		return false;
-	}
 
-	debug(1, " - found an atomic command: '%s'\n", inst.c_str());
+	for (std::vector<int>::const_iterator bit = it->second.begin(); bit != it->second.end(); ++bit)
+		out.emit(static_cast<char>(*bit));
+
 	return true;
 }
 

@@ -53,7 +53,6 @@ void zinst::fixup()
 
 bool zinst::compa(const zinst &with) const
 {
-	debug(1, " --- comparing '%s' with '%s'\n", text.c_str(), with.text.c_str());
 	return (text == with.text);
 }
 
@@ -75,6 +74,10 @@ bool zinst::compv(const zinst &source) const
 	while (src != text.end() && dst != source.text.end()) {
 		if (*src == '@') {
 			++src;
+
+			// Double '@' matches everything.
+			if (src != text.end() && *src == '@')
+				return true;
 
 			if (zstring::isquote(*dst)) {
 				char q = *dst++;
@@ -106,10 +109,10 @@ bool zinst::compv(const zinst &source) const
 	}
 
 	if (src == text.end() && dst == source.text.end()) {
-		debug(2, " - match: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
+		debug(9, " - match: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
 		return true;
 	} else {
-		debug(2, " - mismatch: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
+		debug(9, " - mismatch: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
 		return false;
 	}
 }

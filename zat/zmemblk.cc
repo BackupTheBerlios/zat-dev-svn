@@ -32,7 +32,7 @@ bool zmemblk::data::resize(unsigned int add)
 		if (ncode == NULL)
 			return false;
 
-		code = ncode;
+		code = reinterpret_cast<char *>(ncode);
 		capacity = ncap;
 	}
 
@@ -47,16 +47,6 @@ zmemblk::zmemblk()
 
 zmemblk::~zmemblk()
 {
-}
-
-unsigned int zmemblk::size() const
-{
-	return code.size;
-}
-
-void * zmemblk::data() const
-{
-	return code.code;
 }
 
 bool zmemblk::emit(char c)

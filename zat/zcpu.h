@@ -78,6 +78,8 @@ typedef enum opcode_e
 	op_origin = -6,
 	op_include = -7,
 	op_insert = -8,
+	op_blist = -9,
+	op_wlist = -10,
 } opcode;
 
 
