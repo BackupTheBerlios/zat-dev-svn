@@ -33,6 +33,9 @@ bool zmemblk::data::resize(size_t add)
 		if (ncode == NULL)
 			return false;
 
+		if (opt.debug.memory)
+			debug("memory block %p extended from %u to %u bytes\n", this, capacity, ncap);
+
 		code = reinterpret_cast<char *>(ncode);
 		capacity = ncap;
 	}

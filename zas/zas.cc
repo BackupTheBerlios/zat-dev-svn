@@ -42,11 +42,13 @@ static void show_help()
 		"Debug options (mix them along with +/- signs):\n"
 		"   a              : include all possible output\n"
 		"   e              : show the symbol table being processed\n"
+		"   i              : show the instruction table being processed\n"
 		"   l              : show line numbers (useful with other options only)\n"
 		"   m              : show machine code for each instruction table item\n"
+		"   M              : show some memory related operations\n"
 		"   r              : show files being searched across the path (see -I)\n"
 		"   s              : show symbols as they are found\n"
-		"   t              : show the instruction table being processed\n"
+		"   t              : timestamp debug messages\n"
 		"   T              : show timing information\n"
 		"   0              : show instruction probes as they don't match\n"
 		"   1              : show instruction probes as they do\n"
@@ -73,6 +75,7 @@ static void do_debug(const char *args)
 			sign = false;
 			break;
 		case 'a':
+			opt.debug.time = sign;
 			opt.debug.symtab = sign;
 			opt.debug.newsym = sign;
 			opt.debug.instab = sign;
@@ -81,15 +84,22 @@ static void do_debug(const char *args)
 			opt.debug.mcode = sign;
 			opt.debug.lines = sign;
 			opt.debug.timing = sign;
+			opt.debug.memory = sign;
 			break;
 		case 'e':
 			opt.debug.symtab = sign;
+			break;
+		case 'i':
+			opt.debug.instab = sign;
 			break;
 		case 'l':
 			opt.debug.lines = sign;
 			break;
 		case 'm':
 			opt.debug.mcode = sign;
+			break;
+		case 'M':
+			opt.debug.memory = sign;
 			break;
 		case 'r':
 			opt.debug.filerd = sign;
@@ -98,7 +108,7 @@ static void do_debug(const char *args)
 			opt.debug.newsym = sign;
 			break;
 		case 't':
-			opt.debug.instab = sign;
+			opt.debug.time = sign;
 			break;
 		case 'T':
 			opt.debug.timing = sign;

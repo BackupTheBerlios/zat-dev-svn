@@ -17,6 +17,6 @@ endif
 include ../Makedefs.faerion
 
 test: all
-	ls -ld ../zat/zat.obj
-	./$(PROG) ../zat/zat.obj
-	./$(PROG) -d ../zat/zat.obj
+	ls -ld ../zas/zas.obj
+	./$(PROG) ../zas/zas.obj
+	./$(PROG) -d ../zas/zas.obj

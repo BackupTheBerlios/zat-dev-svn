@@ -29,6 +29,7 @@ public:
 	// Debug options.
 	struct debug_s
 	{
+		bool time; // timestamp messages
 		bool symtab; // symbol table post-processing
 		bool newsym; // symbols as they are added to the table
 		bool instab; // instruction table processing
@@ -38,8 +39,10 @@ public:
 		bool mcode; // machine code for each new instruction
 		bool lines; // show line numbers
 		bool timing; // collect timing info
+		bool memory; // some memory allocations
 		debug_s()
 		{
+			time = false;
 			symtab = false;
 			newsym = false;
 			instab = false;
@@ -49,6 +52,7 @@ public:
 			mcode = false;
 			lines = false;
 			timing = false;
+			memory = false;
 		}
 	} debug;
 	struct symbol_s
