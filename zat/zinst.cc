@@ -117,11 +117,11 @@ bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 	}
 
 	if (si == slim && ti == tlim) {
-		if (opt.debug.tplmatch)
+		if (opt.debug.tplmatch && args == NULL)
 			debug("Template (+): '%s', source: '%s' (match).\n", text.c_str(), src.c_str());
 		return true;
 	} else {
-		if (opt.debug.tplmatch)
+		if (opt.debug.tplmatch && args == NULL)
 			debug("Template (-): '%s', source: '%s' (mismatch).\n", text.c_str(), src.c_str());
 		return false;
 	}
