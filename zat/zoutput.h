@@ -3,9 +3,7 @@
 //
 // $Id$
 
-#ifndef __zaa_zoutput_h
-#define __zaa_zoutput_h
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -20,5 +18,3 @@ public:
 	~zoutput();
 	zmemblk & block();
 };
-
-#endif // __zaa_zoutput_h

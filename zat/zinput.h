@@ -5,9 +5,7 @@
 //
 // Describes a single input file.
 
-#ifndef __zaa_zinput_h
-#define __zaa_zinput_h
-
+#pragma once
 #include "zat.h"
 #include "zstring.h"
 #include "zstream.h"
@@ -41,5 +39,3 @@ public:
 	// Returns the name of the file.
 	inline const char * name() const { return meta.name.c_str(); }
 };
-
-#endif // __zaa_zinput_h

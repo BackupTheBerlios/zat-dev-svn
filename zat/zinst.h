@@ -3,9 +3,7 @@
 //
 // $Id$
 
-#ifndef __zat_zinst_h
-#define __zat_zinst_h
-
+#pragma once
 #include <vector>
 #include "zstring.h"
 
@@ -46,5 +44,3 @@ public:
 			{ return (a.hintv == b.hintv) ? a.compv(b) : false; }
 	};
 };
-
-#endif // __zat_zinst_h

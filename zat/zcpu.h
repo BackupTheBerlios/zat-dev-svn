@@ -5,9 +5,7 @@
 //
 // Describes a virtual machine.
 
-#ifndef __zaa_zcpu_h
-#define __zaa_zcpu_h
-
+#pragma once
 #include <ext/hash_map>
 #include <vector>
 #include "zinput.h"
@@ -68,5 +66,3 @@ typedef enum opcode_e
 
 
 extern zcpu cpu;
-
-#endif // __zaa_zcpu_h

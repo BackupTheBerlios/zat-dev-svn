@@ -39,11 +39,8 @@
 //    expressions after the first unsuccessful iteration, it should
 //    work.
 
-#ifndef __zaa_zymbol_h
-#define __zaa_zymbol_h
-
+#pragma once
 #include <vector>
-
 #include "zerror.h"
 #include "zstring.h"
 
@@ -105,5 +102,3 @@ public:
 	// returns an error, otherwise ret_ok.
 	static void rescan();
 };
-
-#endif // __zaa_zymbol_h

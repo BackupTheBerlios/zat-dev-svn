@@ -3,8 +3,7 @@
 //
 // $Id$
 
-#ifndef __zat_h_included__
-#define __zat_h_included__
+#pragma once
 
 #if defined(HAVE_configure_h)
 # include "../configure.h"
@@ -24,5 +23,3 @@ void debug(const char *format, ...);
 #else
 inline void debug(const char *, ...) { }
 #endif
-
-#endif // __zat_h_included__

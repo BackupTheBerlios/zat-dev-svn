@@ -3,8 +3,7 @@
 //
 // $Id$
 
-#ifndef __zaa_zsupport_h
-#define __zaa_zsupport_h
+#pragma once
 
 extern void strtoupper(char *src);
 extern unsigned int crc32(const void *src, size_t size);
@@ -18,5 +17,3 @@ static inline int htoi(char value)
 		return value - 'A' + 10;
 	return 0;
 }
-
-#endif // __zaa_zsupport_h

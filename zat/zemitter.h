@@ -5,8 +5,7 @@
 //
 // A base for classes that emit code.
 
-#ifndef __zaa_zemitter_h
-#define __zaa_zemitter_h
+#pragma once
 
 class zerror;
 
@@ -19,5 +18,3 @@ public:
 	zerror emit_w(int);
 	zerror emit_w(int, unsigned int at);
 };
-
-#endif // __zaa_zemitter_h

@@ -3,8 +3,7 @@
 //
 // $Id$
 
-#ifndef __zaa_zmemblk_h
-#define __zaa_zmemblk_h
+#pragma once
 
 class zmemblk
 {
@@ -39,5 +38,3 @@ public:
 	// Code emission.  Fails with memory allocations.
 	bool emit(char byte);
 };
-
-#endif // __zaa_zmemblk_h
