@@ -58,6 +58,8 @@ void zcpu::add_instr(const char *src)
 				code = op_boffset;
 			else if (tok == "@zap")
 				code = op_zap;
+			else if (tok == "@equ")
+				code = op_equ;
 			else
 				throw zesyntax(src, "unknown machine code extension");
 			atomic = false;
@@ -172,7 +174,43 @@ void zcpu::translate(int argc, char * const *argv)
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
 		debug(1, "translating \"%s\".\n", i.name());
-		while (i.do_line(*output[iout]));
+		while (parse(i));
 		input.pop_back();
 	}
+}
+
+bool zcpu::parse(zinput &in)
+{
+	zstring label, line;
+
+	if (!in.read(line))
+		return false;
+
+	if (get_label(label, line)) {
+		debug(1, " - label: %s\n", label.c_str());
+	}
+
+	if (line.size() != 0) {
+		zinst inst(line);
+		debug(1, " - line: %s\n", inst.c_str());
+	}
+
+	return true;
+}
+
+bool zcpu::get_label(zstring &label, zstring &line)
+{
+	zstring::const_iterator src = line.begin();
+
+	while (src != line.end() && !zstring::isws(*src))
+		++src;
+
+	label = zstring(line.c_str(), src - line.begin());
+
+	while (src != line.end() && zstring::isws(*src))
+		++src;
+
+	line.erase(0, src - line.begin());
+
+	return label.size() != 0;
 }

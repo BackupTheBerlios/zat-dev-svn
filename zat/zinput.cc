@@ -71,18 +71,10 @@ void zinput::do_label(const char *&src, zoutput &out)
 		++src;
 }
 
-bool zinput::do_line(zoutput & /* out */)
+bool zinput::read(zstring &line)
 {
-	zstring line;
-	vector < pair<int, string> > args;
-
 	if (!in.read(line))
 		return false;
-
 	meta.line++;
-
-	// do_label(line.c_str(), out);
-	// zinst::match(line.c_str(), args);
-
 	return true;
 }

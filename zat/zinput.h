@@ -33,9 +33,9 @@ public:
 	// Opens the current file.  Fails if the file could not
 	// be opened for reading.
 	bool open();
-	// Processes one line and moves the pointer to the next
-	// one.  Returns false if the file is over.
-	bool do_line(zoutput &out);
+	// Reads a line from the current file, returns `false'
+	// when the file is over.
+	bool read(zstring &);
 	// Returns the name of the file.
 	inline const char * name() const { return meta.name.c_str(); }
 };

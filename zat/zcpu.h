@@ -32,6 +32,11 @@ class zcpu
 	hash_map< zinst, vector<int>, zinst::mapv, zinst::mapv > mapv;
 	// Adds a cpu instruction.
 	void add_instr(const char *src);
+	// Translates one line of the source code.  Returns `false'
+	// when the file is over.
+	bool parse(zinput &in);
+	// Installs a label.
+	bool get_label(zstring &label, zstring &line);
 public:
 	// The label on the current line.
 	zymbol *lastlabel;
@@ -63,6 +68,7 @@ typedef enum opcode_e
 	op_word = -2,
 	op_boffset = -3,
 	op_zap = -4,
+	op_equ = -5,
 } opcode;
 
 
