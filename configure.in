@@ -1,5 +1,5 @@
 # Configuration Script Template.  Public domain.
-# $makedefs: configure.in 9 2005-01-15 23:02:14Z hex $
+# $Id$
 #
 # vim:ts=2:ss=2:sw=2:nocindent
 #
@@ -77,16 +77,13 @@ while [ -n "$1" ]; do
       ;;
     --debug)
       MF_DEBUG=1
-      MF_X=1
       ;;
     --profile)
       MF_DEBUG=1
       MF_PROFILE=1
-      MF_X=1
       ;;
     --static)
       MF_STATIC=1
-      MF_X=1
       ;;
     --define)
       shift
@@ -151,10 +148,10 @@ fi
 # Most common defaults
 mdc_init()
 {
-  MDF_OSNAME=`uname | tr [A-Z] [a-z]`
+  OSNAME=`uname | tr [A-Z] [a-z]`
 
-  case $MDF_OSNAME in
-    Darwin)
+  case $OSNAME in
+    darwin)
       MDF_LIBCMD="\$(CC) -dynamiclib -Wl,-Sn -o \$(PROG) \$(LIBDIR:%=-L%) \$(OBJS) \$(ARCH) \$(LIBS:%=-l%) \$(FRAMEWORKS:%=-framework %) \$(EXPS:%=-exported_symbols_list %)"
       MDF_SOEXT="dylib"
       INCDIR="/sw/include"
@@ -166,8 +163,8 @@ mdc_init()
         CFLAGS="$CFLAGS -fPIC"
       fi
       ;;
-    MINGW*NT*)
-      MDF_OSNAME="NT"
+    mingw*nt*)
+      OSNAME="nt"
       MDF_SOEXT="dll"
       MDF_SYSLIBS="KERNEL32 MSVCRT"
       DEFS="$DEFS WIN32_LEAN_AND_MEAN"
@@ -175,37 +172,35 @@ mdc_init()
     *)
       ;;
   esac
-  
-  echo "You are using $MDF_OSNAME."
-  DEFS="$DEFS OSNAME=$MDF_OSNAME"
 
-  if [ -z "$MF_Y" ]; then
-    echo -n "Configuration options:"
-  
-    if [ "$MF_STATIC" = "1" ]; then
-      echo -n " static"
-      CFLAGS="$CFLAGS -static"
-      OPTIONS="$OPTIONS static"
-    fi
-  
-    if [ "$MF_DEBUG" = "1" ]; then
-      echo -n " debug"
-      DEFS="$DEFS _DEBUG"
-      CFLAGS="$CFLAGS -O0 -g -pipe"
-      OPTIONS="$OPTIONS debug"
-    else
-		  echo -n " release"
-      CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -finline-functions"
-    fi
-  
-    if [ "$MF_PROFILE" = "1" ]; then
-      echo -n " profile"
-      CFLAGS="$CFLAGS -pg"
-      OPTIONS="$OPTIONS profile"
-    fi
-  
-    echo "."
+  echo "You are using $OSNAME."
+  DEFS="$DEFS OSNAME=$OSNAME"
+
+  echo -n "Configuration options:"
+
+  if [ "$MF_STATIC" = "1" ]; then
+    echo -n " static"
+    CFLAGS="$CFLAGS -static"
+    OPTIONS="$OPTIONS static"
   fi
+
+  if [ "$MF_DEBUG" = "1" ]; then
+    echo -n " debug"
+    DEFS="$DEFS _DEBUG"
+    CFLAGS="$CFLAGS -O0 -g -pipe"
+    OPTIONS="$OPTIONS debug"
+  else
+	  echo -n " release"
+    CFLAGS="$CFLAGS -O3 -fomit-frame-pointer -finline-functions"
+  fi
+
+  if [ "$MF_PROFILE" = "1" ]; then
+    echo -n " profile"
+    CFLAGS="$CFLAGS -pg"
+    OPTIONS="$OPTIONS profile"
+  fi
+
+  echo "."
 }
 
 
@@ -328,7 +323,7 @@ find_lib()
 # Syntax: find_framework name
 find_framework()
 {
-  if [ "$MDF_OSNAME" != "Darwin" ]; then
+  if [ "$OSNAME" != "darwin" ]; then
     return
   fi
 
@@ -384,23 +379,24 @@ add_out()
 {
   if [ "$2" = "*" ]; then
     add_out $1 CC
-    add_out $1 RC
-    add_out $1 CPP
-    add_out $1 DEFS
-    add_out $1 LIBS
-    add_out $1 FRAMEWORKS
     add_out $1 CFLAGS
+    add_out $1 CPP
     add_out $1 CXXFLAGS
-    add_out $1 OPTIONS
+    add_out $1 DEFS
+    add_out $1 FRAMEWORKS
     add_out $1 INCDIR
     add_out $1 LIBDIR
-    add_out $1 PREFIX
+    add_out $1 LIBS
     add_out $1 MDF_7Z
     add_out $1 MDF_GNUPG
     add_out $1 MDF_LIBCMD
-    add_out $1 MDF_OSNAME
     add_out $1 MDF_SOEXT
     add_out $1 MDF_XSLTPROC
+		add_out $1 MK
+    add_out $1 OSNAME
+    add_out $1 OPTIONS
+    add_out $1 PREFIX
+    add_out $1 RC
   else
     eval tmp=\$$2
     if [ -n "$tmp" ]; then
@@ -440,7 +436,7 @@ out_include()
   seed=`date +'%Y%m%dT%H%M%S'`
 
 	shift
-  
+
   if [ -z "$cmdline" ]; then cmdline="unknown"; fi
   cat > $fname.tmp << _EOF_
 /*
