@@ -5,6 +5,7 @@
 find_exe "CC" "cc" "gcc" "mingw32-gcc"
 find_exe "RC" "windres"
 find_exe "CPP" "cpp -E"
+find_exe "SUDO" "sudo"
 find_dir INCDIR "$PREFIX/include"
 find_dir LIBDIR "$PREFIX/lib"
 find_func getopt
@@ -31,4 +32,4 @@ SHAREPATH=share/$PRODUCT-$VERSION
 BINPATH=bin
 
 out_include "configure.h" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT" "PREFIX" "CONTACT"
-out_makefile "Makedefs.faerion.include" "*" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX"
+out_makefile "Makedefs.faerion.include" "*" "SUDO" "VERSION" "SHAREPATH" "BINPATH" "PRODUCT" "PREFIX"

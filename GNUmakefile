@@ -44,7 +44,7 @@ install: fake
   ifeq ($(PREFIX),)
 	@echo "The PREFIX envar is not defined."
   else
-	cp -R fake-$(VERSION)/* $(PREFIX)/ && rm -rf fake-$(VERSION)
+	$(SUDO) cp -R fake-$(VERSION)/* $(PREFIX)/ && rm -rf fake-$(VERSION)
   endif
 
 test: install
