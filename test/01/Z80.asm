@@ -1,5 +1,6 @@
         ORG     2400h
 	INCLUDE "Z80.inc"
+TEST    EQU     INTSP-$
 	LD      BC,#1234
 INIT    LD      HL,#8000
         JP      INITROU
@@ -12,6 +13,7 @@ PLAY    SUB     A
         DEC     (HL)
         JP      NZ,SDRIVE
 
+SETREG0 EQU     SETREG2+ENSAVE
 HEX     equ     1
 GLOBSPD         LD      (HL),0
         LD      B,A
