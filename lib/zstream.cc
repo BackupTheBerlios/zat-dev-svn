@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include "../configure.h"
 #include "zefile.h"
 #include "zstream.h"
 #include "zstring.h"
