@@ -4,7 +4,7 @@
 // $Id$
 
 #include "../configure.h"
-#ifdef _DEBUG
+#if defined(_DEBUG) || 1
 #include <stdio.h>
 #include <stdarg.h>
 #include "zas.h"

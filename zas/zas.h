@@ -16,7 +16,7 @@
 # define dimof(arr) (sizeof(arr) / sizeof(arr[0]))
 #endif
 
-#if defined(_DEBUG)
+#if defined(_DEBUG) || 1
 void debug(const char *format, ...);
 #else
 inline void debug(const char *, ...) { }

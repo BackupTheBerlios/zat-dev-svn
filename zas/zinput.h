@@ -35,6 +35,8 @@ public:
 	// Reads a line from the current file, returns `false'
 	// when the file is over.
 	bool read(zstring &);
+	// Returns true if the file is open.
+	bool is_open() const { return in.is_open(); }
 	// Returns the name of the file.
 	inline const char * name() const { return meta.name.c_str(); }
 	// Returns current line number.

@@ -141,8 +141,6 @@ void zcpu::translate(int argc, char * const *argv)
 {
 	while (argc != 0) {
 		input.push_back(zinput(*argv));
-		if (!input[input.size() - 1].open())
-			throw zefile("could not open file for reading", *argv);
 		--argc, ++argv;
 	}
 
@@ -153,6 +151,8 @@ void zcpu::translate(int argc, char * const *argv)
 
 	while (input.size() != 0) {
 		zinput &i = input[input.size() - 1];
+		if (!i.is_open() && !i.open())
+			throw zefile("could not open file for reading", i.name());
 		if (opt.debug.filerd)
 			debug("Translating \"%s\".\n", i.name());
 		while (parse(i, *output[iout]));
