@@ -34,6 +34,7 @@ public:
 	virtual zseverity severity() const { return zsev_error; }
 };
 
+// Simple exception with a simple message.
 class zemsg : public zerror
 {
 	char *msg;
