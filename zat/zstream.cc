@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include "zat.h"
+#include "zefile.h"
 #include "zstream.h"
 #include "zstring.h"
 
@@ -87,6 +88,15 @@ bool zstream::read(zstring &str)
 	// funlockfile(in);
 
 	return true;
+}
+
+void zstream::write(const void *from, size_t sz)
+{
+	if (!is_open())
+		throw zeclosedfilew();
+
+	fwrite(from, 1, sz, reinterpret_cast<FILE *>(fd));
+	clean = false;
 }
 
 void zstream::print(const char *format, ...)
