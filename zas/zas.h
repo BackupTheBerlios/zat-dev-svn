@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zat_h
-#define __zat_zat_h
+#ifndef __zas_zas_h
+#define __zas_zas_h
 
 #if defined(HAVE_configure_h)
 # include "../configure.h"

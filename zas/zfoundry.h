@@ -6,8 +6,8 @@
 // The zfoundry class stores instructions with corresponding machine
 // code and provides quick lookups.
 
-#ifndef __zat_zfoundry_h
-#define __zat_zfoundry_h
+#ifndef __zas_zfoundry_h
+#define __zas_zfoundry_h
 
 #include <vector>
 #include "zinst.h"

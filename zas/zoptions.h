@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zoptions_h
-#define __zat_zoptions_h
+#ifndef __zas_zoptions_h
+#define __zas_zoptions_h
 
 #include "zstream.h"
 #include "zstring.h"

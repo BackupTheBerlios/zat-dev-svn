@@ -5,9 +5,9 @@
 //
 // Describes a single input file.
 
-#ifndef __zat_zinput_h
-#define __zat_zinput_h
-#include "zat.h"
+#ifndef __zas_zinput_h
+#define __zas_zinput_h
+#include "zas.h"
 #include "zstring.h"
 #include "zstream.h"
 

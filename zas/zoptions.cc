@@ -11,7 +11,7 @@ zoptions opt;
 zoptions::zoptions()
 {
 	cpu = "Z80";
-	out = "zat.obj";
+	out = "zas.obj";
 	errstart = zsev_error;
 	quiet = false;
 }

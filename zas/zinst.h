@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zinst_h
-#define __zat_zinst_h
+#ifndef __zas_zinst_h
+#define __zas_zinst_h
 #include <vector>
 #include "zstring.h"
 

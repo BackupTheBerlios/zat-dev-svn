@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#include "zat.h"
+#include "zas.h"
 #include "zmemblk.h"
 #include "zoptions.h"
 

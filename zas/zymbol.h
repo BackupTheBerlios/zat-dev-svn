@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zymbol_h
-#define __zat_zymbol_h
+#ifndef __zas_zymbol_h
+#define __zas_zymbol_h
 #include <vector>
 #include "zstring.h"
 #include "zconst.h"

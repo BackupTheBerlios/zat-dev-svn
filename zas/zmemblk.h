@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zmemblk_h
-#define __zat_zmemblk_h
+#ifndef __zas_zmemblk_h
+#define __zas_zmemblk_h
 #include "zstring.h"
 
 class zorigin;

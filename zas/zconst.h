@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zconst_h
-#define __zat_zconst_h
+#ifndef __zas_zconst_h
+#define __zas_zconst_h
 
 // Special values for machine code.
 typedef enum opcode_e

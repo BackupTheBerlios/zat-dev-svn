@@ -7,7 +7,7 @@
 #ifdef _DEBUG
 #include <stdio.h>
 #include <stdarg.h>
-#include "zat.h"
+#include "zas.h"
 #include "zoptions.h"
 
 void debug(const char *format, ...)

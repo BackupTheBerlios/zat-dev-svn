@@ -3,8 +3,8 @@
 //
 // $Id$
 
-#ifndef __zat_zoutput_h
-#define __zat_zoutput_h
+#ifndef __zas_zoutput_h
+#define __zas_zoutput_h
 #include <vector>
 #include "zstring.h"
 #include "zmemblk.h"

@@ -6,13 +6,13 @@
 #include <getopt.h>
 #include <stdio.h>
 
-#include "zat.h"
+#include "zas.h"
 #include "zcpu.h"
 #include "zoptions.h"
 #include "zeusage.h"
 
 static const char *version =
-	"zat " VERSION "\n"
+	"zas " VERSION "\n"
 	"\n"
 	"Copyright 2004-2005 " CONTACT ".\n"
 	"This is free software; see the source for copying conditions. There is NO\n"
@@ -22,8 +22,8 @@ static const char *version =
 static void show_help()
 {
 	fprintf(stdout, "%s",
-		"zat, the portable assembler, copyright (c) 2004-2005 " CONTACT "\n"
-		"Usage: zat [options] sources...\n"
+		"zas, the portable assembler, copyright (c) 2004-2005 " CONTACT "\n"
+		"Usage: zas [options] sources...\n"
 		"\n"
 		"Options:\n"
 		"  -c name         : change CPU type (defaults to Z80)\n"
@@ -32,7 +32,7 @@ static void show_help()
 		"  -I path         : additional include directory\n"
 		"  -m fname        : write segment map to this file\n"
 		"  -M              : gain dependency information\n"
-		"  -o filename     : change the output file name (defaults to zat.obj)\n"
+		"  -o filename     : change the output file name (defaults to zas.obj)\n"
 		"  -q              : quiet, suppress unnecessary messages\n"
 		"  -s filename     : dump symbols to the file\n"
 		"  -S options      : configures symbol table format\n"
@@ -216,7 +216,7 @@ int main(int argc, char * const * argv)
 		zmain(argc, argv);
 		return 0;
 	} catch (zerror &e) {
-		fprintf(stderr, "zat: %s\n", e.c_str());
+		fprintf(stderr, "zas: %s\n", e.c_str());
 		return 1;
 	}
 }

@@ -5,8 +5,8 @@
 //
 // Describes a virtual machine.
 
-#ifndef __zat_zcpu_h
-#define __zat_zcpu_h
+#ifndef __zas_zcpu_h
+#define __zas_zcpu_h
 #include <vector>
 #include "zconst.h"
 #include "zfoundry.h"
