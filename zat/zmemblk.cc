@@ -60,13 +60,6 @@ void zmemblk::emit(char c)
 
 void zmemblk::emit(short s)
 {
-	union {
-		char c[2];
-		short s;
-	} u;
-
-	u.s = s;
-
-	emit(u.c[0]);
-	emit(u.c[1]);
+	emit(static_cast<char>(s & 255));
+	emit(static_cast<char>((s >> 8) & 255));
 }
