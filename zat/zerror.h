@@ -6,6 +6,8 @@
 #ifndef __zaa_zerror_h
 #define __zaa_zerror_h
 
+#include <string>
+
 // Available error codes.
 typedef enum retc_e
 {
@@ -41,18 +43,20 @@ typedef enum retc_e
 class zerror
 {
 	enum retc_e code;
+	std::string data;
+	std::string temp;
 	const char *prefix() const;
 public:
-	zerror(enum retc_e code = ret_ok) { this->code = code; }
-	zerror(const zerror &src) { this->code = src.code; }
+	zerror(enum retc_e code = ret_ok, const char *msg = 0);
+	zerror(const zerror &src);
 	operator const enum retc_e & () const { return code; }
-	const char * c_str() const;
+	const char * c_str();
 	int c_int() const { return this->code; }
 	bool is_ok() const;
 	bool is_warning() const;
 	bool is_error() const;
 	// Reports a generic error.
-	void report() const;
+	void report();
 };
 
 #endif // __zaa_zerror_h

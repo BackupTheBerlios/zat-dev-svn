@@ -4,52 +4,69 @@
 // $Id$
 
 #include <stdio.h>
-
 #include "zcpu.h"
 #include "zerror.h"
 
-const char * zerror::c_str() const
+zerror::zerror(enum retc_e code, const char *data)
+{
+	this->code = code;
+	if (data != NULL)
+		this->data = data;
+}
+
+zerror::zerror(const zerror &src)
+{
+	this->code = src.code;
+	this->data = src.data;
+}
+
+const char * zerror::c_str()
 {
 	switch (code) {
 	case ret_ok:
-		return "all clear";
+		temp = "all clear";
 	case ret_ok_nodata:
-		return "the command emitted nothing";
+		temp = "the command emitted nothing";
 	case ret_no_input_files:
-		return "no input files";
+		temp = "no input files";
 	case ret_syntax:
-		return "syntax error";
+		temp = "syntax error";
 	case ret_inerr:
-		return "read error";
+		temp = "read error";
 	case ret_outerr:
-		return "write error";
+		temp = "write error";
 	case ret_bad_cpu_table:
-		return "bad instruction description table";
+		temp = "bad instruction description table";
 	case ret_bad_mnemo:
-		return "bad mnemonic";
+		temp = "bad mnemonic";
 	case ret_bad_label:
-		return "invalid label";
+		temp = "invalid label";
 	case ret_bad_label_type:
-		return "bad label type";
+		temp = "bad label type";
 	case ret_dup_label:
-		return "duplicate label";
+		temp = "duplicate label";
 	case ret_bad_constant:
-		return "invalid constant";
+		temp = "invalid constant";
 	case ret_undefined_label:
-		return "undefined label";
+		temp = "undefined label";
 	case ret_bad_expression:
-		return "bad expression syntax";
+		temp = "bad expression syntax";
 	case ret_undefined_symbols:
-		return "one or more undefined symbols remain";
+		temp = "one or more undefined symbols remain";
 	case ret_no_label:
-		return "the line does not contain a label (but it must)";
+		temp = "the line does not contain a label (but it must)";
 	case ret_byte_overflow:
-		return "byte sized value overflow";
+		temp = "byte sized value overflow";
 	case ret_word_overflow:
-		return "word sized value overflow";
+		temp = "word sized value overflow";
 	default:
-		return "unknown error";
+		temp = "unknown error";
 	}
+
+	if (data.length())
+		temp += ": " + data;
+
+	return temp.c_str();
 }
 
 
@@ -81,7 +98,7 @@ bool zerror::is_error() const
 	return (code >= ret_errors);
 }
 
-void zerror::report() const
+void zerror::report()
 {
 	fprintf(stderr, "%s%s.\n", prefix(), c_str());
 }

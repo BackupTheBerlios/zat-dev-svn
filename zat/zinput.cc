@@ -11,6 +11,7 @@
 #include "zinst.h"
 #include "zmemblk.h"
 #include "zymbol.h"
+#include "zoptions.h"
 
 using namespace std;
 
@@ -84,14 +85,13 @@ zerror zinput::do_label(const char *&src, zoutput &out)
 
 zerror zinput::do_line(zoutput &out)
 {
-	zerror rc = ret_ok;
+	zerror rc;
 	char line[1024], *tmp;
 	const char *str = line;
 	vector < pair<int, string> > args;
 
 	if (in == NULL) {
-		debug("warning: reading from a closed file.\n");
-		return ret_inerr;
+		return zerror(ret_inerr, "reading from a closed file");
 	}
 
 	if ((tmp = read_line(line, sizeof(line), in)) == NULL) {
@@ -107,7 +107,6 @@ zerror zinput::do_line(zoutput &out)
 		// inst->render(out);
 		return ret_ok;
 	} else {
-		debug("instruction: %s\n", str);
-		return ret_syntax;
+		return zerror(ret_syntax, str);
 	}
 }
