@@ -48,6 +48,8 @@ static bool zprofile_line(const zstring &line, const char *prefix, zprofile_func
 	if (args.size() < 2)
 		return true;
 
+	opts.push_back(prefix);
+
 	for (std::vector<zstring>::const_iterator it = args.begin() + 1; it != args.end(); ++it)
 		opts.push_back(it->c_str());
 

@@ -233,7 +233,7 @@ static bool do_cmdline(int argc, char * const * argv)
 	argc -= optind;
 	argv += optind;
 
-	while (argc != 0) {
+	while (argc) {
 		cpu.append(*argv);
 		--argc, ++argv;
 	}
@@ -260,7 +260,7 @@ int main(int argc, char * const * argv)
 	try {
 		if (!zprofile("zas", do_cmdline))
 			return 0;
-		if (!do_cmdline(argc - 1, argv + 1))
+		if (!do_cmdline(argc, argv))
 			return 0;
 		zmain();
 		return 0;
