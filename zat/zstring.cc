@@ -4,6 +4,7 @@
 // $Id$
 
 #include <stdarg.h>
+#include <stdio.h>
 #include "zstring.h"
 
 void zstring::capsize()

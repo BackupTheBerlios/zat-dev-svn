@@ -3,6 +3,7 @@
 //
 // $Id$
 
+#include <stdarg.h>
 #include <stdio.h>
 #include "zat.h"
 #include "zstream.h"
@@ -44,7 +45,7 @@ bool zstream::read(zstring &str)
 {
 	FILE *in = reinterpret_cast<FILE *>(fd);
 	
-	str.clear();
+	str.erase();
 
 	if (is_eof())
 		return false;

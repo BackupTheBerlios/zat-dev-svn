@@ -72,6 +72,6 @@ void zmemblk::set_origin(int value)
 
 void zmemblk::set_origin(zorigin *value)
 {
-	base = NULL;
+	base = 0;
 	basex = value;
 }
