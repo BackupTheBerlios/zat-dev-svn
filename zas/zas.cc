@@ -215,7 +215,7 @@ static void zmain(int argc, char * const * argv)
 
 	if (opt.debug.timing) {
 		debug("Table read in %u msec.\n", cpu.stat.tabtime);
-		debug("Translation done in %u msec (%u lines processed).\n", cpu.stat.trantime, cpu.stat.lines);
+		debug("Translation done in %u msec (%u lines processed, %u lps).\n", cpu.stat.trantime, cpu.stat.lines, (unsigned int)((double)cpu.stat.lines / (double)cpu.stat.trantime * 1000));
 		debug("Symbol table fixed in %u msec.\n", cpu.stat.fixtime);
 	}
 }
