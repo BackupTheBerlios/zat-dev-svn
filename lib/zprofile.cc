@@ -54,24 +54,34 @@ static bool zprofile_line(const zstring &line, const char *prefix, zprofile_func
 	return func(opts.size(), const_cast<char * const *>(&opts[0]));
 }
 
-bool zprofile(const char *prefix, zprofile_func func)
+static bool zprofile_file(const char *fname, const char *prefix, zprofile_func func)
 {
 	zstream rc;
-	zstring path;
-	const char *home = getenv("HOME");
 
-	if (home == NULL)
-		return true;
-
-	path.format("%s/.zat.rc", home);
-
-	if (!rc.open(path))
+	if (!rc.open(fname))
 		return true;
 
 	for (zstring line; rc.read(line); ) {
 		if (!zprofile_line(line, prefix, func))
 			return false;
 	}
+
+	return true;
+}
+
+bool zprofile(const char *prefix, zprofile_func func)
+{
+	const char *home = getenv("HOME");
+
+	if (home != NULL) {
+		zstring path;
+		path.format("%s/.zat.rc", home);
+		if (!zprofile_file(path.c_str(), prefix, func))
+			return false;
+	}
+
+	if (!zprofile_file("./.zat.rc", prefix, func))
+		return false;
 
 	return true;
 }
