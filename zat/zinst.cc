@@ -68,7 +68,7 @@ bool zinst::compa(const zinst &with) const
 // end of the line.
 bool zinst::compv(const zinst &source) const
 {
-	char bracket = 0;
+	std::vector<int> brackets;
 	zstring::const_iterator src = text.begin();
 	zstring::const_iterator dst = source.text.begin();
 
@@ -91,7 +91,7 @@ bool zinst::compv(const zinst &source) const
 					return false;
 				++dst;
 			} else {
-				while (*dst != ',' && (bracket != *dst) && dst != source.text.end())
+				while (*dst != ',' && dst != source.text.end() && (brackets.size() == 0 || *(brackets.end()--) != *dst))
 					++dst;
 			}
 
@@ -101,11 +101,9 @@ bool zinst::compv(const zinst &source) const
 				++dst;
 		} else {
 			if (*src == '[')
-				bracket = ']';
+				brackets.push_back(']');
 			else if (*src == '(')
-				bracket = ')';
-			else
-				bracket = 0;
+				brackets.push_back(')');
 
 			if (*src++ != *dst++)
 				break;
