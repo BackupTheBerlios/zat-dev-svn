@@ -20,6 +20,7 @@ Table of Contents
          7. Origin.
          8. Word.
          9. WordList.
+      5. Configuration.
    3. Developer information.
       1. Translation.
    A. Distribution.
@@ -226,6 +227,29 @@ Table of Contents
    Syntax: .zap
 
    Ignores the expression spanned by the corresponding wildcard.
+
+
+2.5. Configuration.
+
+   Default behaviour of every zat tool can be overruled by the
+   so-called user and directory profiles.  These are text files
+   named ".zat.rc" located in the user's home directory and the
+   directory from which the tool is launched, respectively.
+
+   Every line of such file begins with the name of the tool,
+   as a single word, followed by additional command line
+   arguments.  When the tool is launched, it first reads and
+   applies the user profile, then the directory profile, then
+   the command line itself.
+
+   For example, if the assembler tool is named "zas" and you want
+   to add a directory to the generic source code search path, you
+   add the following line to the ~/.zat.rc file, strip the quotes:
+
+   "zas -I /usr/local/share/zas/include"
+
+   There can be multiple lines with the same prefix.  There can
+   also be lines related to a different tool; they will be ignored.
 
 
 3. Developer documentation.
