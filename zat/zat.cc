@@ -14,7 +14,7 @@
 static const char *version =
 	"zat " VERSION "\n"
 	"\n"
-	"Copyright 2004 hex@mirkforce.net.\n"
+	"Copyright 2004-2005 " CONTACT ".\n"
 	"This is free software; see the source for copying conditions. There is NO\n"
 	"warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n"
 	;
