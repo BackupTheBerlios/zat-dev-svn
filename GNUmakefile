@@ -3,24 +3,10 @@
 
 include Makedefs.faerion.include
 
-DIRS = lib zat zodump
-LIST = $(wildcard \
-       configure \
-       configure.in \
-       GNUmakefile \
-       Makedefs.faerion \
-       docs/README.* \
-       share/LICENSE \
-       share/cpu/Z80 \
-       zat/GNUmakefile \
-       zat/*.cc \
-       zat/*.h \
-       zat/errors/*.h \
-       zat/errors/*.cc \
-       lib/*.h \
-       lib/*.cc \
-       zodump/*.h \
-       zodump/*.cc)
+DIRS     = lib zat zodump
+PACK     = zat
+DISTLIST = share/LICENSE share/cpu/Z80
+DISTMASK = *.cc *.h GNUmakefile
 
 custom-cleandist = custom-cleandist
 
@@ -53,11 +39,4 @@ test: install
 debug: install
 	cd test/01 && $(MAKE) debug
 
-dist:
-	rm -rf zat-$(VERSION)
-	mkdir zat-$(VERSION)
-	tar cf tmp.tar $(LIST)
-	cd zat-$(VERSION) && tar xf ../tmp.tar && cd ..
-	rm -f tmp.tar
-	tar cfz zat-$(VERSION)-`date +'%Y%m%d'`.tar.gz zat-$(VERSION)
-	rm -rf zat-$(VERSION)
+dist: dist-default
