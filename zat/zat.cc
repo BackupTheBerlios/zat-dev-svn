@@ -51,33 +51,41 @@ static void show_help()
 
 static void do_debug(const char *args)
 {
+	bool sign = true;
+
 	while (*args != '\0') {
 		switch (*args) {
+		case '+':
+			sign = true;
+			break;
+		case '-':
+			sign = false;
+			break;
 		case 'a':
-			opt.debug.symtab = true;
-			opt.debug.newsym = true;
-			opt.debug.instab = true;
-			opt.debug.filerd = true;
-			opt.debug.tplmatch = true;
-			opt.debug.mcode = true;
+			opt.debug.symtab = sign;
+			opt.debug.newsym = sign;
+			opt.debug.instab = sign;
+			opt.debug.filerd = sign;
+			opt.debug.tplmatch = sign;
+			opt.debug.mcode = sign;
 			break;
 		case 'e':
-			opt.debug.symtab = true;
+			opt.debug.symtab = sign;
 			break;
 		case 'm':
-			opt.debug.mcode = true;
+			opt.debug.mcode = sign;
 			break;
 		case 'r':
-			opt.debug.filerd = true;
+			opt.debug.filerd = sign;
 			break;
 		case 's':
-			opt.debug.newsym = true;
+			opt.debug.newsym = sign;
 			break;
 		case 't':
-			opt.debug.instab = true;
+			opt.debug.instab = sign;
 			break;
 		case 'T':
-			opt.debug.tplmatch = true;
+			opt.debug.tplmatch = sign;
 			break;
 		}
 
