@@ -1,13 +1,12 @@
---- GNUmakefile.orig	Fri Mar 25 15:55:44 2005
-+++ GNUmakefile	Fri Mar 25 15:59:16 2005
-@@ -1,5 +1,5 @@
+--- GNUmakefile.orig	Sun Mar 27 01:20:37 2005
++++ GNUmakefile	Tue Mar 29 11:07:12 2005
+@@ -1,5 +1,4 @@
  # Makefile for GNU Make.
--# $Id: GNUmakefile 111 2005-03-24 02:12:59Z hex $
-+# $Id: GNUmakefile 111 2005-03-25 15:56:51 hangy $
+-# $Id: GNUmakefile 149 2005-03-26 22:18:22Z vhex $
  
  include Makedefs.faerion.include
  
-@@ -7,31 +7,25 @@
+@@ -7,35 +6,24 @@
  PACK     = zat
  DISTLIST = share/LICENSE share/cpu/Z80
  DISTMASK = *.cc *.h GNUmakefile
@@ -21,29 +20,33 @@
 -	rm -rf fake-$(VERSION)
 -	mkdir -p fake-$(VERSION)/$(BINPATH)
 -	mkdir -p fake-$(VERSION)/$(SHAREPATH)/cpu
--	cp zat/zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/
--	ln -s zat-$(VERSION) fake-$(VERSION)/$(BINPATH)/zat
+-	cp zas/zas-$(VERSION) fake-$(VERSION)/$(BINPATH)/
+-	ln -s zas-$(VERSION) fake-$(VERSION)/$(BINPATH)/zas
 -	cp zodump/zodump-$(VERSION) fake-$(VERSION)/$(BINPATH)/
 -	ln -s zodump-$(VERSION) fake-$(VERSION)/$(BINPATH)/zodump
 -	cp share/cpu/Z80 fake-$(VERSION)/$(SHAREPATH)/cpu/
--	cp share/LICENSE fake-$(VERSION)/share/
-+	cp zat/zat-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/
-+	ln -s zat-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/zat
+-	cp share/LICENSE fake-$(VERSION)/$(SHAREPATH)/
++	cp zas/zas-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/
++	ln -s zas-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/zas
 +	cp zodump/zodump-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/
 +	ln -s zodump-$(VERSION) ../fake-$(ARCH)$(PREFIX)/$(BINPATH)/zodump
-+	mkdir -p ../fake-$(ARCH)/usr/local/share/zat-0.1/cpu/
++	mkdir -p ../fake-$(ARCH)$(PREFIX)/$(SHAREPATH)/cpu
 +	cp share/cpu/Z80 ../fake-$(ARCH)$(PREFIX)/$(SHAREPATH)/cpu/
 +	cp share/LICENSE ../fake-$(ARCH)$(PREFIX)/$(SHAREPATH)/
  
  custom-cleandist:
- 	rm -rf fake-$(VERSION)
+ 	rm -rf fake-$(VERSION) configure.h
  
+-ifeq ($(MDF_OSNAME),openbsd)
+-install: dist
+-	cd dist/openbsd && CDROM_SITE="$(SRCPATH)" make
+-else
  install: fake
 -  ifeq ($(PREFIX),)
 -	@echo "The PREFIX envar is not defined."
 -  else
--	$(SUDO) cp -R fake-$(VERSION)/* $(PREFIX)/ && rm -rf fake-$(VERSION)
+-	$(SUDO) cp -R $(wildcard fake-$(VERSION)/*) $(PREFIX)/ && rm -rf fake-$(VERSION)
 -  endif
+-endif
  
- test: install
- 	cd test/01 && $(MAKE)
+ dist: dist-default
