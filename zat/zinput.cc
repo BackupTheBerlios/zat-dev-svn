@@ -37,14 +37,20 @@ bool zinput::open()
 		return true;
 	}
 
-	if (meta.name.has_path())
+	if (meta.name.has_path()) {
+		debug("looking for \"%s\" using absolute path.\n", meta.name.c_str());
 		in = fopen(meta.name.c_str(), "rb");
-	else {
+	} else {
 		for (std::vector< std::string >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
-			std::string path = *it + "." + std::string(meta.name.c_str());
+			std::string path = *it + "/" + std::string(meta.name.c_str());
 
-			if ((in = fopen(path.c_str(), "rb")) != NULL)
+			debug("looking for \"%s\"...", path.c_str());
+			if ((in = fopen(path.c_str(), "rb")) != NULL) {
+				debug(" found!\n");
 				break;
+			} else {
+				debug(" none.\n");
+			}
 		}
 	}
 
