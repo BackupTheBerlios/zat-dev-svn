@@ -4,9 +4,10 @@
 include ../Makedefs.faerion.include
 
 TARGET  = executable
-INCDIR += errors
+INCDIR += errors ../lib
 PROG    = zat-$(VERSION)
 SRCS    = $(wildcard *.cc errors/*.cc)
+ARCH   += ../lib/zalib.a
 LIBS   += stdc++
 
 custom-clean = custom-clean
@@ -19,7 +20,7 @@ endif
 include ../Makedefs.faerion
 
 custom-clean:
-	rm -f z80.out z80.sym
+	rm -f zat.obj zat.sym zat.map
 
 custom-cleandist:
 	rm -f $(PROG)

@@ -23,7 +23,7 @@ static void show_help()
 {
 	fprintf(stdout, "%s",
 		"zat, the portable assembler, copyright (c) 2004-2005 " CONTACT "\n"
-		"Usage: zat [OPTIONS] sources...\n"
+		"Usage: zat [options] sources...\n"
 		"\n"
 		"Options:\n"
 		"  -c name         : change CPU type (defaults to Z80)\n"

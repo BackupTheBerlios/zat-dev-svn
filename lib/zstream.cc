@@ -5,7 +5,6 @@
 
 #include <stdarg.h>
 #include <stdio.h>
-#include "zat.h"
 #include "zefile.h"
 #include "zstream.h"
 #include "zstring.h"
