@@ -1,0 +1,259 @@
+The ZX Spectrum Community                                  Justin Forest
+Public Documentation                                          March 2005
+
+                          Zat Assembler Toolkit
+
+Table of Contents
+
+   1. Introduction.
+   2. User information.
+      1. Syntax.
+      2. Output.
+      3. Memory management.
+      4. Translation instructions.
+         1. Origin.
+         2. Output.
+         3. DefB.
+         4. DefW.
+         5. Include.
+         6. Insert.
+   3. Developer information.
+      1. Translation.
+   A. Distribution.
+   B. Contact information.
+
+
+1. Introduction.
+
+   Zat is a table driven assembly language to binary file translator.
+   The table of possible mnemonics, corresponding machine code and
+   translation directive mapping is read from an external text file,
+   easy to read and edit (this makes it easy to quickly fix bugs or
+   adapt the translator to your favourite asm dialect).
+
+   The current design deals with 16 bit machine words only.  It is
+   expected to work with all 16-bit architectures.
+
+
+2. User information.
+
+2.1. Syntax.
+
+   The source file can contain assembly mnemonics, directives and
+   comments.  Mnemonics and directives consist of a one word
+   instruction and, optionally, one or more arguments, as defined
+   in the CPU definition table.  Comments begin with a semicolon
+   sign and continue until the end of the line.
+
+   Each line of the source file can contain one or many of the
+   following optional components: a label, an assembly mnemonic
+   or a translation instruction (including parameters defined
+   by the current translation table), a comment.  Mnemonics and
+   corresponding parameters can not be to multiple lines.
+
+   Source files must follow the following rules:
+
+   o Only one label can be specified within a single line of the
+     source code.  If more labels must be applied to a single
+     instruction, they can be stacked in lines above the one with
+     the corresponding instruction.
+
+   o Mnemonics and translation instructions must be followed by
+     a space and all necessary parameters.  The list of parameters
+     consists of fixed values, such as register names, or variable
+     values, such as: constants, symbols, offset values.
+
+     Because zat does not know anything about a particular instriction
+     set, it also does not support instruction unrolling.  Never will
+     "PUSH R1, R2" be treated as "PUSH R1" followed by "PUSH R2" by
+     zat itself.  The only way to add support for such constructions
+     is to add all possible combinations of registers to the
+     translation table; keep in mind that this approach significantly
+     increases the size of the translation table (which, in turn,
+     degrades performance), obfuscates the source code and gives little
+     in return.  Stay conservative.
+
+   o Parameters that expect a variable value can be defined by
+     expressions consisting of a mixture of numeric constants and
+     references to labels, each pair separated by one of the following
+     arithmetic signs: +, -, / or *.  Brackets are not supported
+     at this time.
+
+     Numeric values can be specified in different ways.  Hexadecimal
+     values can be prefixed with "0x", "$" or "#", or suffixed with
+     "h".  Binary values can be prefixed with "%" or suffixed with
+     "b".  Decimal values have neither a prefix nor a suffix.  Values
+     in other bases are not supported.
+
+     Referenced labels may well be undefined by the time of reference.
+     The actual value is calculated after all the source code is
+     processed and all symbols are collected.  This applies to the
+     special symbol "$" (corresponds to the translation address of the
+     current line), too.
+
+     Byte sequences can be specified either as an expression that
+     evaluates to a one byte value (-128..255), or as a string in
+     either single or double quotation marks.
+
+   o Comments begin with a semicolon and span the rest of the line.
+
+   o Mnemonics, instructionsand symbols are case insensitive.  String
+     values are case sensitive and file names can also be case
+     sensitive, depending on the file system being used.
+
+
+2.2. Output.
+
+   Zat only supports output to raw binary files.  These files can
+   then be linked to binaries of different formats using specific
+   tools.  Zat does not contain such tools currently.
+
+
+2.3. Memory management.
+
+   Zat only supports flat memory.  The only limitation is the
+   translation address, which must be under 65536 (0x10000h).
+
+
+2.4. Translation instructions.
+
+   There are several instructions supported by zat directly, without
+   using the translation table.  These instructions can either be
+   used in their native form (prefixed with dots), or mapped to a
+   different form by the translation table.
+
+
+2.4.1. Origin.
+
+   Syntax: .origin <host> [, <exec>]
+
+   This instruction begins a new binary block.  Machine code will
+   be placed in the specified host address.  The optional phase
+   parameter specifies the address at which the machine code is
+   expected to execute (if not specified, defaults to the host
+   address).
+
+   Currently, this instruction is only used when rendering a flat
+   image of multiple memory blocks being saved to a single file.
+
+
+2.4.2. Output.
+
+   Syntax: .output <filename>
+
+   Tells the translator that from this point the machine code
+   must be written to the specified file.
+   
+   The translation address is set to the first byte after the last
+   binary block already assigned to that file.  The following code
+   will generate two files with flat code starting at address zero:
+
+      .output "1.bin"
+      ; source code.. starts at address zero (1)
+      .output "2.bin"
+      ; source code.. starts at address zero (2)
+      .output "1.bin"
+      ; source code.. continues at where (1) left off
+      .output "2.bin"
+      ; source code.. continues at where (2) left off
+
+   This approach can be used to write code and data segments to
+   different files while still having them mixed up within a single
+   source file.
+
+   The file specified for output will be written when the whole source
+   code is successfully translated.  It will contain a flat image of
+   all memory blocks with gaps between them filled with bytes
+   containing zero.
+
+
+2.4.3. DefB.
+
+   Syntax: .defb <expression> [, <expression> [, ...]]
+
+   This instruction emits bytes of data.  Each expression must
+   evaluate to a one byte value (-128..255) or a string.
+
+
+2.4.3. DefW.
+
+   Syntax: .defw <expression> [, <expression> [, ...]]
+
+   This instruction emits words of data.  Each expression must
+   evaluate to a one word value (-32768..65535) or a string,
+   which will be translated to a sequence of zero words plus
+   the code of a particular character.
+
+
+2.4.4. Equ.
+
+   Syntax: EQU <value>
+
+   Assigns a label to the specified value.  Normally, labels are
+   assigned to the current translation address.  With this instruction
+   a label can be assigned to a different value.
+
+   The value can be a mixture of constant numeric values and other
+   symbols, each pair separated by one of the following signs: -,
+   +, /, *.
+
+   The values are evaluated after the code generation is finished and
+   all sources are processed; it may refer to undefined symbols as
+   well.
+
+
+2.4.5. Include.
+
+   Syntax: .include <filename>
+
+   Reads and processes the specified file.  When the file is over,
+   translation returns to where it left off.  Nesting is allowed.
+
+
+2.4.6. Insert.
+
+   Syntax: .insert <filename>
+
+   Inserts the specified binary file at the current position in
+   resulting machine code.
+
+
+3. Developer documentation.
+
+   This chapter is for developers interested in modifying zat.  It
+   gives a brief idea of how the translator works internally.
+
+
+3.1. Translation.
+
+   The translation is performed in three passes.
+
+   First, the source code is validated and position independent
+   machine code is generated.  The code is stored in memory blocks
+   of arbitrary size, identified by the output file name and start
+   address.  Referenced symbols, along with the symbols themselves
+   are stored for later resolution.  Syntax errors abort the process.
+
+   Next, references to undefined labels are fixed according to the
+   symbol table.  This operation is performed recursively, until
+   there are no such references or until nothing could be fixed.
+   Undefined references produce errors, uless a command line switch
+   is used to redefine this behaviour.
+
+   Finally, memory blocks are written to files specified during
+   translation.  Overlapping memory blocks produce warnings.
+
+
+A. Distribution.
+
+   Zat is a free software distributed under the terms of the
+   GNU GPL license.
+
+
+B. Contact information.
+
+   Authors of the toolkit can be found at irc.zx.ru, channel #z80.rus.
+
+
+; $Id$
+; vim:ts=3:ss=3:sw=3:et:nocindent
