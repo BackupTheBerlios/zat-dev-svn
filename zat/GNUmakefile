@@ -6,7 +6,7 @@ include ../Makedefs.faerion.include
 TARGET  = executable
 INCDIR += errors
 PROG    = zat-$(VERSION)
-SRCS    = $(wildcard *.cc errors/*.cc support/*.cc)
+SRCS    = $(wildcard *.cc errors/*.cc)
 LIBS   += stdc++
 
 custom-clean = custom-clean
