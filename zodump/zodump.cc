@@ -22,7 +22,7 @@ static const char *version =
 	;
 
 static std::vector<zstring> files;
-static bool dec = false;
+static bool show_dec = false;
 
 static void usage(int depth)
 {
@@ -64,7 +64,7 @@ static bool do_file(const char *fname)
 		fprintf(stdout, "         S %s\n", it->name.c_str());
 
 		for (zobject::segment::const_iterator cit = it->blocks.begin(); cit != it->blocks.end(); ++cit) {
-			if (dec)
+			if (show_dec)
 				fprintf(stdout, "%08u B %08u\n", cit->base, cit->size);
 			else
 				fprintf(stdout, "%08X B %08X\n", cit->base, cit->size);
@@ -83,7 +83,7 @@ static bool do_cmdline(int argc, char * const * argv)
 	for (char ch; (ch = getopt(argc, argv, "dhv")) > 0; ) {
 		switch (ch) {
 		case 'd':
-			dec = true;
+			show_dec = true;
 			break;
 		case 'h':
 			++help;
