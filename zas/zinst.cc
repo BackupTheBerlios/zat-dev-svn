@@ -69,6 +69,18 @@ unsigned int zinst::calc_hash(const zstring &src, bool atomic)
 	return hval;
 }
 
+size_t zinst::get_weight() const
+{
+	size_t rc = 0;
+
+	for (zstring::const_iterator it = text.begin(); it != text.end(); ++it) {
+		if (*it == '@')
+			++rc;
+	}
+
+	return rc;
+}
+
 bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
 {
 	int bracket = 0;

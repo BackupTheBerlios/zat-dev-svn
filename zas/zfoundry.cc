@@ -3,6 +3,7 @@
 //
 // $Id$
 
+#include "zas.h"
 #include "zfoundry.h"
 
 zfoundry::zfoundry(size_t nsize)
@@ -19,7 +20,14 @@ zfoundry::~zfoundry()
 
 void zfoundry::add(const zinst &key, const data &val)
 {
-	lines[key.hash() % size].push_back(element(key, val));
+	size_t weight = key.get_weight();
+	line &l = lines[key.hash() % size];
+	line::iterator pos = l.begin();
+
+	while (pos != l.end() && weight > pos->first.get_weight())
+		++pos;
+
+	l.insert(pos, element(key, val));
 }
 
 bool zfoundry::find(const zstring &src, const data **d, const zinst **i, bool atomic)

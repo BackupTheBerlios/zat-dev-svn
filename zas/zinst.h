@@ -29,6 +29,9 @@ public:
 	unsigned int hash() const { return hint; }
 	// Extracts strings that correspond to parameters.
 	bool get_args(const zstring &src, std::vector<zstring> *args) const;
+	// Calculates the weight of an instruction.  Currently
+	// this is the number of wildcards in the pattern.
+	size_t get_weight() const;
 	// Optimizes the string (removes extra spaces, capitalizes,
 	// etc).  This makes the process of matching straightforward.
 	static void optimize(zstring &text);
