@@ -36,14 +36,18 @@ bool zinput::open()
 
 	if (meta.name.has_path()) {
 		if (opt.debug.filerd)
-			debug("looking for \"%s\" using absolute path.\n", meta.name.c_str());
+			debug("Looking for \"%s\" using absolute path.\n", meta.name.c_str());
 		in.open(meta.name.c_str());
 	} else {
 		for (std::vector< zstring >::iterator it = cpu.incdir.begin(); it != cpu.incdir.end(); ++it) {
 			zstring path = zstring().format("%s/%s", it->c_str(), meta.name.c_str());
 
 			if (in.open(path.c_str())) {
+				if (opt.debug.filerd)
+					debug("Looking for \"%s\".. found.\n", path.c_str());
 				break;
+			} else if (opt.debug.filerd) {
+				debug("Looking for \"%s\".. none.\n", path.c_str());
 			}
 		}
 	}

@@ -31,8 +31,10 @@ public:
 		bool newsym; // symbols as they are added to the table
 		bool instab; // instruction table processing
 		bool filerd; // files being read
-		bool tplmatch; // templates being matched
+		bool tplmatch; // matching templates
+		bool tplmiss; // non-matching templates
 		bool mcode; // machine code for each new instruction
+		bool lines; // show line numbers
 		debug_s()
 		{
 			symtab = false;
@@ -40,7 +42,9 @@ public:
 			instab = false;
 			filerd = false;
 			tplmatch = false;
+			tplmiss = false;
 			mcode = false;
+			lines = false;
 		}
 	} debug;
 public:

@@ -25,6 +25,7 @@ zcpu cpu;
 zcpu::zcpu() : mapa(31), mapv(13)
 {
 	ready = false;
+	incdir.push_back(".");
 }
 
 zcpu::~zcpu()
@@ -174,8 +175,11 @@ void zcpu::resolve()
 		for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 			if (!(*it)->isok()) {
 				delayed = true;
-				if ((*it)->evaluate(symbols))
+				if ((*it)->evaluate(symbols)) {
+					if (opt.debug.symtab)
+						debug("Symbol \"%s\" resolved.\n", (*it)->c_str());
 					repeat = true;
+				}
 			}
 		}
 	} while (repeat);
@@ -187,10 +191,10 @@ void zcpu::resolve()
 			for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 				if ((*it)->islabel() && !(*it)->isok()) {
 					if (!lock) {
-						opt.fsym.print(";\n; values of the following labels could not be evaluated:\n");
+						fprintf(stderr, "Values of the following labels could not be evaluated:\n");
 						lock = true;
 					}
-					opt.fsym.print("; %s (%s)\n", (*it)->c_str(), (*it)->extra());
+					fprintf(stderr, " - %s (%s)\n", (*it)->c_str(), (*it)->extra());
 				}
 			}
 
@@ -200,10 +204,10 @@ void zcpu::resolve()
 				for (vector<zymbol *>::const_iterator it = symbols.begin(); it != symbols.end(); ++it) {
 					if (!(*it)->islabel() && !(*it)->isok()) {
 						if (!lock) {
-							opt.fsym.print(";\n; the following expressions could not be calculated:\n");
+							fprintf(stderr, "The following expressions could not be calculated:\n");
 							lock = true;
 						}
-						opt.fsym.print("; %s\n", (*it)->c_str());
+						fprintf(stderr, " - %s\n", (*it)->c_str());
 					}
 				}
 			}
@@ -231,6 +235,9 @@ bool zcpu::parse(zinput &in, zoutput &out)
 	if (!in.read(line))
 		return false;
 
+	if (opt.debug.lines)
+		debug("#line %s:%u\n", in.name(), in.line());
+
 	stat.lines++;
 
 	if (get_label(label, line) && opt.fsym.is_open()) {
@@ -245,8 +252,11 @@ bool zcpu::parse(zinput &in, zoutput &out)
 			throw zesyntax(line.c_str(), "unknown instruction");
 		}
 
-		if (label.size() > 0)
+		if (label.size() > 0) {
 			symbols.push_back(new zlabel(label.c_str(), "$", &out.block(), offset));
+			if (opt.debug.newsym)
+				debug("New label: %s.\n", label.c_str());
+		}
 
 		// Dump the code.
 		if (opt.fsym.is_open()) {
@@ -398,6 +408,10 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 	if (!zymbol::evaluate(it, value, out.block().has_origin() ? base : -1, symbols)) {
 		value = 0;
 		symbols.push_back(new zexpression(expr.c_str(), &out.block(), base, out.block().size(), op));
+		if (opt.debug.newsym)
+			debug("Expression \"%s\" stored for later evaluation.\n", expr.c_str());
+	} else if (opt.debug.newsym) {
+		debug("Expression \"%s\" emits data.\n", expr.c_str());
 	}
 
 	switch (op) {

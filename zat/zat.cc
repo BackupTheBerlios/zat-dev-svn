@@ -41,11 +41,13 @@ static void show_help()
 		"Debug options (mix all the necessary ones in a string):\n"
 		"   a              : include all possible output\n"
 		"   e              : show the symbol table being processed\n"
+		"   l              : show line numbers (useful with other options only)\n"
 		"   m              : show machine code for each instruction table item\n"
 		"   r              : files being read\n"
 		"   s              : show symbols as they are found\n"
 		"   t              : show the instruction table being processed\n"
-		"   T              : show instruction templates being matched\n"
+		"   0              : show instruction probes as they don't match\n"
+		"   1              : show instruction probes as they match\n"
 		"");
 }
 
@@ -68,9 +70,13 @@ static void do_debug(const char *args)
 			opt.debug.filerd = sign;
 			opt.debug.tplmatch = sign;
 			opt.debug.mcode = sign;
+			opt.debug.lines = sign;
 			break;
 		case 'e':
 			opt.debug.symtab = sign;
+			break;
+		case 'l':
+			opt.debug.lines = sign;
 			break;
 		case 'm':
 			opt.debug.mcode = sign;
@@ -84,7 +90,10 @@ static void do_debug(const char *args)
 		case 't':
 			opt.debug.instab = sign;
 			break;
-		case 'T':
+		case '0':
+			opt.debug.tplmiss = sign;
+			break;
+		case '1':
 			opt.debug.tplmatch = sign;
 			break;
 		}

@@ -37,6 +37,8 @@ public:
 	bool read(zstring &);
 	// Returns the name of the file.
 	inline const char * name() const { return meta.name.c_str(); }
+	// Returns current line number.
+	inline unsigned int line() const { return meta.line; }
 };
 
 #endif
