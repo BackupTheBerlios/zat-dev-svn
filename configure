@@ -1,0 +1,36 @@
+#!/bin/sh
+
+. "./configure.in"
+
+find_exe "CC" "cc" "gcc" "mingw32-gcc"
+find_exe "RC" "windres"
+find_exe "CPP" "cpp -E"
+find_dir INCDIR "$PREFIX/include"
+find_dir LIBDIR "$PREFIX/lib"
+find_func getopt
+find_func strlcpy
+
+if [ "$MDF_OSNAME" = "NT" ]; then
+  MDF_LIBARCH="nt"
+else
+  MDF_LIBARCH="bsd"
+fi
+
+# The address displayed in copyright and contact messages.
+CONTACT="hex@faerion.oss"
+
+# Product name.
+PRODUCT="zat"
+
+# Product version number, currently only used in help screens.
+VERSION="1.0"
+
+# The path to common files (tables, etc).
+SHAREPATH=share/$PRODUCT-$VERSION
+
+# The path to the binaries.
+BINPATH=bin
+
+DEFS="$DEFS VERSION=\\\"$VERSION\\\" PREFIX=\\\"$PREFIX\\\" SHAREPATH=\\\"$SHAREPATH\\\" BINPATH=\\\"$BINPATH\\\" CONTACT=\\\"$CONTACT\\\""
+
+out_makefile "Makedefs.faerion.include" "*" "SHAREPATH" "BINPATH" "VERSION" "PRODUCT"
