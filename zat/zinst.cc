@@ -68,55 +68,61 @@ bool zinst::compa(const zinst &with) const
 // end of the line.
 bool zinst::compv(const zinst &source) const
 {
+	return cpu.is_ready() ? get_args(source.text, NULL) : false;
+}
+
+bool zinst::get_args(const zstring &src, std::vector<zstring> *args) const
+{
 	int bracket = 0;
-	zstring::const_iterator src = text.begin();
-	zstring::const_iterator dst = source.text.begin();
+	zstring::const_iterator ti = text.begin(), tlim = text.end();
+	zstring::const_iterator si = src.begin(), slim = src.end();
 
-	if (!cpu.is_ready())
-		return false;
+	if (args != NULL)
+		args->clear();
 
-	while (src != text.end() && dst != source.text.end()) {
-		if (*src == '@') {
-			++src;
+	while (si != slim && ti != tlim) {
+		if (*ti == '@') {
+			zstring::const_iterator beg = si;
 
 			// Double '@' matches everything.
-			if (src != text.end() && *src == '@')
+			if (++ti != tlim && *ti == '@') {
+				if (args != NULL)
+					args->push_back(zstring(&*si, slim - si));
 				return true;
-
-			if (zstring::isquote(*dst)) {
-				char q = *dst++;
-				while (dst != source.text.end() && *dst != q)
-					++dst;
-				if (dst == source.text.end())
-					return false;
-				++dst;
-			} else {
-				while (*dst != ',' && dst != source.text.end() && *dst != bracket)
-					++dst;
 			}
 
-			// Now `dst' must point to the end of line or
-			// a comma.  Skip one, if so.
-			if (dst != source.text.end() && *dst == ',')
-				++dst;
+			if (zstring::isquote(*si)) {
+				char q = *si++;
+				while (si != slim && *si != q)
+					++si;
+				if (si == slim)
+					return false;
+				++si;
+			} else {
+				while (si != slim && *si != ',' && *si != bracket)
+					++si;
+			}
+
+			if (args != NULL)
+				args->push_back(zstring(&*beg, si - beg));
 		} else {
-			if (*src == '[')
+			if (*ti == '[')
 				bracket = ']';
-			else if (*src == '(')
+			else if (*ti == '(')
 				bracket = ')';
 			else
 				bracket = 0;
 
-			if (*src++ != *dst++)
+			if (*si++ != *ti++)
 				break;
 		}
 	}
 
-	if (src == text.end() && dst == source.text.end()) {
-		debug(9, " - match: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
+	if (si == slim && ti == tlim) {
+		debug(9, " - match: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
 		return true;
 	} else {
-		debug(9, " - mismatch: '%s' vs. '%s'\n", text.c_str(), source.text.c_str());
+		debug(9, " - mismatch: this='%s' vs. src='%s'\n", text.c_str(), src.c_str());
 		return false;
 	}
 }

@@ -218,7 +218,17 @@ bool zcpu::do_variable(zinst &inst, zoutput &out, zstring &label)
 		return false;
 
 	if (it->second.size() != 0) {
+		std::vector<zstring> args;
 		const std::vector<int> &codes = it->second;
+
+		if (it->first.get_args(inst.str(), &args)) {
+			if (opt.debug >= 4) {
+				opt.fsym.print(";       the next instruction has %u parameters:\n", args.size());
+				for (std::vector<zstring>::const_iterator it = args.begin(); it != args.end(); ++it) {
+					opt.fsym.print(";       %u. %s\n", it - args.begin() + 1, it->c_str());
+				}
+			}
+		}
 
 		for (std::vector<int>::const_iterator it = codes.begin(); it != codes.end(); ++it) {
 			if (*it >= 0) {

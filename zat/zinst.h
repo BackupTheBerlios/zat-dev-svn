@@ -25,6 +25,7 @@ public:
 	zinst(const zstring &src) : text(src) { fixup(); }
 	// Statistics.
 	const char *c_str() const { return text.c_str(); }
+	const zstring & str() const { return text; }
 	// Comparators.
 	bool compa(const zinst &) const;
 	bool compv(const zinst &) const;
@@ -44,4 +45,6 @@ public:
 		bool operator()(const zinst &a, const zinst &b) const
 			{ return (a.hintv == b.hintv) ? a.compv(b) : false; }
 	};
+	// Extracts strings that correspond to parameters.
+	bool get_args(const zstring &src, std::vector<zstring> *args) const;
 };
