@@ -1,13 +1,7 @@
 $Id$
---- GNUmakefile.orig	Sun Mar 27 01:20:37 2005
-+++ GNUmakefile	Tue Mar 29 11:07:12 2005
-@@ -1,5 +1,4 @@
- # Makefile for GNU Make.
--# $Id$
- 
- include Makedefs.faerion.include
- 
-@@ -7,35 +6,24 @@
+--- GNUmakefile.orig	Mon Apr  4 14:12:55 2005
++++ GNUmakefile	Mon Apr  4 14:18:41 2005
+@@ -7,35 +7,24 @@
  PACK     = zat
  DISTLIST = share/LICENSE share/cpu/Z80
  DISTMASK = *.cc *.h GNUmakefile
