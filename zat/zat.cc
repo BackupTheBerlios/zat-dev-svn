@@ -31,7 +31,7 @@ static void show_help()
 		"  -h              : this help screen; twice for more\n"
 		"  -I path         : additional include directory\n"
 		"  -M              : gain dependency information\n"
-		"  -o filename     : default output file name\n"
+		"  -o filename     : change the output file name (defaults to zat.obj)\n"
 		"  -q              : quiet, suppress unnecessary messages\n"
 		"  -s filename     : dump symbols to the file\n"
 		"  -S options      : configures symbol table format\n"
