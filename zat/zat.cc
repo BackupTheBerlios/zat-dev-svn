@@ -162,6 +162,9 @@ int main(int argc, char * const argv[])
 	argv += optind;
 	argc -= optind;
 
+	if (argc == 0)
+		return usage();
+
 	if ((rc = setup_cpu()) != ret_ok) {
 		rc.repex();
 		return rc;
@@ -172,8 +175,6 @@ int main(int argc, char * const argv[])
 	if (!opt.open())
 		return ret_outerr;
 
-	cpu.ts_begin.update();
-
 	while (argc != 0) {
 		if ((rc = do_file(*argv)) != ret_ok) {
 			rc.repin();
@@ -183,23 +184,16 @@ int main(int argc, char * const argv[])
 		++argv, --argc;
 	}
 
-	cpu.ts_translation.update();
-
 	if ((rc = zymbol::rescan()) != ret_ok) {
 		rc.repex();
 		return rc;
 	}
-
-	cpu.ts_symbols.update();
 
 	if (opt.fsym != NULL) {
 		if (opt.debug)
 			zinst::dump();
 		zymbol::dump();
 	}
-
-	if (!opt.quiet)
-		fprintf(stdout, "Translation time: %u msec.\nSymbol table fix-up: %u msec.\nTotal timing: %u msec.\n", (cpu.ts_translation - cpu.ts_begin).mseconds(), (cpu.ts_symbols - cpu.ts_translation).mseconds(), (cpu.ts_symbols - cpu.ts_begin).mseconds());
 
 	return rc;
 }

@@ -6,8 +6,6 @@
 #ifndef __zaa_zcpu_h
 #define __zaa_zcpu_h
 
-#include "support/timespec.h"
-
 class zerror;
 
 class zcpu
@@ -24,13 +22,6 @@ public:
 	unsigned int ramsize;
 	// Emulated memory data.
 	unsigned char *ramdata;
-public:
-	// The time when processing started.
-	faeutil::timespec ts_begin;
-	// The time when translation stopped.
-	faeutil::timespec ts_translation;
-	// The time when symbol processing stopped.
-	faeutil::timespec ts_symbols;
 public:
 	// The label on the current line.
 	class zymbol *lastlabel;
