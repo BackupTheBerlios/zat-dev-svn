@@ -1,11 +1,11 @@
 ; Za language definition table.
 ; Copyright (c) 2004, The Faerion Team <team@faerion.oss>
 ;
-; $Id: Z80,v 1.1.1.1 2004/09/13 21:16:32 vhex Exp $
+; $Id$
 ;
 ; Fields: mnemonic|machine code.  Mnemonic can contain the '@' signs
-; which a expression place holders.  Machine code is a serie of bytes
-; in hexadecimal form, or:
+; which a expression place holders.  Machine code is a sequence of
+; bytes in hexadecimal form, or:
 ;
 ;  \1 -- insert the corresponding expression (@) as a single byte,
 ;  \2 -- insert a word (two bytes),
