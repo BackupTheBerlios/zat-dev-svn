@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zinst_h
+#define __zat_zinst_h
 #include <vector>
 #include "zstring.h"
 
@@ -48,3 +49,5 @@ public:
 	// Extracts strings that correspond to parameters.
 	bool get_args(const zstring &src, std::vector<zstring> *args) const;
 };
+
+#endif

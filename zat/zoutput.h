@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zoutput_h
+#define __zat_zoutput_h
 #include <vector>
 #include "zstring.h"
 #include "zmemblk.h"
@@ -28,3 +29,5 @@ public:
 	// Starts a new block.
 	void add();
 };
+
+#endif

@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zconst_h
+#define __zat_zconst_h
 
 // Special values for machine code.
 typedef enum opcode_e
@@ -20,3 +21,5 @@ typedef enum opcode_e
 	op_wlist = -10,
 	op_namespace = -11,
 } opcode;
+
+#endif

@@ -7,7 +7,8 @@
 // a wrapper around fgets(), which the std::fstream class apparently
 // lacks.
 
-#pragma once
+#ifndef __zat_zstream_h
+#define __zat_zstream_h
 
 class zstring;
 
@@ -32,3 +33,5 @@ public:
 	// Formatted output.
 	void print(const char *format, ...);
 };
+
+#endif

@@ -2,14 +2,9 @@
 // Copyright (C) 2004-2005 Justin Forest <justin.forest@gmail.com>
 //
 // $Id$
-//
-// There are three types of symbols:
-//
-// 1. Ones emitting data.  This includes all expressions occuring inside
-//    the parameter list of an instructions.  These are evaluated and
-//    emitted as a sequence of bytes.
 
-#pragma once
+#ifndef __zat_zymbol_h
+#define __zat_zymbol_h
 #include <vector>
 #include "zstring.h"
 #include "zconst.h"
@@ -89,3 +84,5 @@ public:
 	~zorigin();
 	bool evaluate(list &all);
 };
+
+#endif

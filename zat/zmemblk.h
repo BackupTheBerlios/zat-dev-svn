@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zmemblk_h
+#define __zat_zmemblk_h
 #include "zstring.h"
 
 class zorigin;
@@ -51,3 +52,5 @@ public:
 	// Returns the base address.
 	size_t get_origin() const { return (basex == NULL) ? base : NULL; }
 };
+
+#endif

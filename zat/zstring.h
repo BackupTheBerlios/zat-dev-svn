@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zstring_h
+#define __zat_zstring_h
 #include <string>
 
 class zstring : public std::string
@@ -37,3 +38,5 @@ public:
 	// Extracts a token from a string.
 	static zstring gettok(const char *&src, char sep);
 };
+
+#endif

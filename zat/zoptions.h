@@ -3,7 +3,8 @@
 //
 // $Id$
 
-#pragma once
+#ifndef __zat_zoptions_h
+#define __zat_zoptions_h
 #include "zstream.h"
 
 class zoptions
@@ -35,3 +36,5 @@ public:
 };
 
 extern zoptions opt;
+
+#endif

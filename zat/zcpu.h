@@ -5,7 +5,8 @@
 //
 // Describes a virtual machine.
 
-#pragma once
+#ifndef __zat_zcpu_h
+#define __zat_zcpu_h
 #include <ext/hash_map>
 #include <vector>
 #include "zinput.h"
@@ -93,3 +94,5 @@ public:
 };
 
 extern zcpu cpu;
+
+#endif
