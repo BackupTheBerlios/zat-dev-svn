@@ -71,8 +71,7 @@ bool zstream::read(zstring &str)
 
 	// flockfile(in);
 
-	int c;
-	for (; (c = getc_unlocked(in)) != EOF; ) {
+	for (int c; (c = getc_unlocked(in)) != EOF; ) {
 		if (c == '\r') {
 			while (c == '\r')
 				c = getc_unlocked(in);
