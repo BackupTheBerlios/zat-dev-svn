@@ -371,7 +371,7 @@ bool zcpu::do_variable(const zstring &line, zoutput &out, zstring &label)
 				switch (*it) {
 				case op_byte:
 				case op_boffset:
-					emit(args[0], op_byte, out, base);
+					emit(args[0], static_cast<opcode_e>(*it), out, base);
 					args.erase(args.begin());
 					break;
 				case op_word:
@@ -439,9 +439,16 @@ void zcpu::emit(const zstring &expr, opcode op, zoutput &out, int base)
 		symbols.push_back(new zexpression(expr.c_str(), &out.block(), base, out.block().size(), op));
 		if (opt.debug.newsym)
 			debug("Expression \"%s\" stored for later evaluation.\n", expr.c_str());
-	} else if (opt.debug.newsym) {
-		debug("Expression \"%s\" emits data.\n", expr.c_str());
+	} else {
+		if (op == op_boffset)
+			value -= base;
+
+		if (opt.debug.newsym)
+			debug("Expression \"%s\" emits data.\n", expr.c_str());
 	}
+
+	if (op == op_boffset)
+		op = op_byte;
 
 	switch (op) {
 	case op_byte:
